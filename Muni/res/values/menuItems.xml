@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="menuItems">
+        <item>Home</item>
+        <item>People</item>
+        <item>Alerts</item>
+        <item>Places</item>
+        <item>News</item>
+        <item>Events</item>
+        <item>Twitter</item>
+        <item>Facebook</item>
+        <item>Contact</item>
+        <item>Documents</item>
+    </array>
+</resources>
