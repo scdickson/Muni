@@ -117,6 +117,7 @@ public class PeopleFragment extends Fragment
                             for(ParseObject parse : result)
                             {
                                 Person tmp = new Person();
+                                tmp.objectId = (parse.getString("objectId"));
                                 tmp.name = (parse.getString("D_Firstname") + " " + parse.getString("C_Lastname"));
                                 tmp.email = (parse.getString("F_Email"));
                                 tmp.group_a = (parse.getString("A_Grouping"));

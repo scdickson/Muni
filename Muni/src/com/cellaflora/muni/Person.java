@@ -2,6 +2,7 @@ package com.cellaflora.muni;
 
 public class Person 
 {
+    public String objectId;
 	public String name;
 	public String title;
 	public String group_a;

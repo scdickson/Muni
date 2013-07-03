@@ -129,7 +129,6 @@ public class PeopleListAdapter extends BaseAdapter
  
     public View getView(int position, View convertView, ViewGroup parent) 
     {
-        Log.d("Adapter", "Begin getView");
     	TextView txtName, txtTitle;
         ImageView imgArrow;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
