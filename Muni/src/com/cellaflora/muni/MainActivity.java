@@ -39,6 +39,7 @@ public class MainActivity extends Activity{
 	private DrawerLayout drawerLayout;
 	public static String storedWeather = null;
 	ActionBarDrawerToggle mMenuToggle;
+    Fragment currentFragment = null;
 
 	//Parse constants
 	public static final String PARSE_APPLICATION_ID = "ACXaa1A1Vo759kga9aYlMYGiUJABaKpphndbeFhn";
@@ -103,51 +104,80 @@ public class MainActivity extends Activity{
 	
 	private void selectItem(int position)
 	{
-		Fragment fragment = null;
+		//Fragment fragment = null;
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		
 		switch(position)
 		{
 			case 0:
-				fragment = new HomeFragment();
+				currentFragment = new HomeFragment();
 				break;
 			case 1:
-				fragment = new PeopleFragment();
+                currentFragment = new PeopleFragment();
 				break;
 			case 2:
-				fragment = new AlertFragment();
+                currentFragment = new AlertFragment();
 				break;
 			case 3:
-				fragment = new PlaceFragment();
+                currentFragment = new PlaceFragment();
 				break;
 			case 4:
-				fragment = new NewsFragment();
+                currentFragment = new NewsFragment();
 				break;
 			case 5:
-				fragment = new EventFragment();
+                currentFragment = new EventFragment();
 				break;
 			case 6:
-				fragment = new TwitterFragment();
+                currentFragment = new TwitterFragment();
 				break;
 			case 7:
-				fragment = new FacebookFragment();
+                currentFragment = new FacebookFragment();
 				break;
 			case 8:
-				fragment = new ContactFragment();
+                currentFragment = new ContactFragment();
 				break;
 			case 9:
-				fragment = new DocumentFragment();
+                currentFragment = new DocumentFragment();
 				break;
 		}
 		
 		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-		fragmentTransaction.replace(R.id.container, fragment);
+		fragmentTransaction.replace(R.id.container, currentFragment);
 		fragmentTransaction.addToBackStack(null);
 	    fragmentTransaction.commit();
 	    drawerLayout.closeDrawer(menuDrawer);
 	}
 	
-	
+	public void onBackPressed()
+    {
+        if(getFragmentManager().findFragmentById(R.id.container).getClass().equals(PeopleFragment.class))
+        {
+            PeopleFragment tmp = (PeopleFragment) currentFragment;
+            if(tmp.adapter.level == 1)
+            {
+                tmp.adapter.clearContent();
+                tmp.adapter.setLevel(0, " ", null);
+                tmp.adapter.notifyDataSetChanged();
+                tmp.peopleList.invalidateViews();
+            }
+            else if(tmp.adapter.level == 2)
+            {
+                tmp.adapter.clearContent();
+                tmp.adapter.setLevel(1, tmp.adapter.groupA, null);
+                tmp.adapter.notifyDataSetChanged();
+                tmp.peopleList.invalidateViews();
+            }
+            else
+            {
+                super.onBackPressed();
+            }
+        }
+        else
+        {
+            super.onBackPressed();
+        }
+    }
+
 	private class DrawerItemClickListener implements ListView.OnItemClickListener 
 	{
 	    @Override
