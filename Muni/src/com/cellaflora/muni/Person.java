@@ -10,6 +10,7 @@ public class Person
 	public String email;
 	public String tel_number;
 	public String notes;
+    public String url;
 
     public Person(){}
 

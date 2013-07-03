@@ -2,17 +2,15 @@ package com.cellaflora.muni.fragments;
 
 import com.cellaflora.muni.Person;
 import com.cellaflora.muni.R;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +19,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.List;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class PeopleDetailFragment extends Fragment
 {
@@ -41,53 +41,125 @@ public class PeopleDetailFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		TextView name = (TextView) getActivity().findViewById(R.id.people_detail_name);
-        TextView title = (TextView) getActivity().findViewById(R.id.people_detail_title);
+
+        TextView name = (TextView) getActivity().findViewById(R.id.people_detail_name);
 		name.setText(requested.name);
-        title.setText(requested.title);
 
-        try
+        if(requested.title != null)
         {
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("People");
-            //http://www.androidbegin.com/tutorial/android-parse-com-image-download-tutorial/
-            // Locate the objectId from the class
-            query.getInBackground(requested.objectId, new GetCallback<ParseObject>() {
+            TextView title = (TextView) getActivity().findViewById(R.id.people_detail_title);
+            title.setText(requested.title);
+        }
 
-                public void done(ParseObject object, ParseException e) {
-                    // TODO Auto-generated method stub
+        if(requested.tel_number != null)
+        {
+            TextView tel_number = (TextView) getActivity().findViewById(R.id.people_detail_tel_number);
+            tel_number.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view)
+                        {
 
-                    // Locate the column named "ImageName" and set the string
-                    ParseFile fileObject = (ParseFile) object.get("H_Photo");
-                    fileObject.getDataInBackground(new GetDataCallback() {
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
-                        public void done(byte[] data, ParseException e) {
-                            if (e == null) {
-                                Log.d("test", "We've got data in data.");
-                                // Decode the Byte[] into Bitmap
-                                Bitmap bmp = BitmapFactory.decodeByteArray(data, 0,
-                                        data.length);
+                            // set title
+                            alertDialogBuilder.setTitle("Confirm");
 
-                                // Get the ImageView from main.xml
-                                ImageView image = (ImageView) getActivity().findViewById(R.id.people_detail_image);
+                            // set dialog message
+                            alertDialogBuilder
+                                    .setMessage("Call " + requested.name + "?")
+                                    .setCancelable(false)
+                                    .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id)
+                                        {
+                                            String uri = "tel:" + requested.tel_number.trim();
+                                            Intent intent = new Intent(Intent.ACTION_CALL);
+                                            intent.setData(Uri.parse(uri));
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id)
+                                        {
+                                            // if this button is clicked, just close
+                                            // the dialog box and do nothing
+                                            dialog.cancel();
+                                        }
+                                    });
 
-                                // Set the Bitmap into the ImageView
-                                image.setImageBitmap(bmp);
+                            // create alert dialog
+                            AlertDialog alertDialog = alertDialogBuilder.create();
 
-
-                            } else {
-                                Log.d("test",
-                                        "There was a problem downloading the data.");
-                            }
+                            // show it
+                            alertDialog.show();
                         }
-                    });
-                }
-            });
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
+                    }
+            );
+            tel_number.setText(requested.tel_number);
         }
 
+        if(requested.email != null)
+        {
+            TextView email = (TextView) getActivity().findViewById(R.id.people_detail_email);
+            email.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                            String to[] = {requested.email};
+                            emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, to);
+                            emailIntent.setType("plain/text");
+                            startActivity(Intent.createChooser(emailIntent, "Send your email using:"));
+                        }
+                    }
+            );
+            email.setText(requested.email);
+        }
+
+        if(requested.notes != null)
+        {
+            TextView notes = (TextView) getActivity().findViewById(R.id.people_detail_notes);
+            notes.setText(requested.notes);
+        }
+
+        if(requested.url != null)
+        {
+            ImageView photo = (ImageView) getActivity().findViewById(R.id.people_detail_image);
+            new loadWeather().execute(photo);
+        }
 
 	}
+
+    private class loadWeather extends AsyncTask<ImageView, Integer, Void>
+    {
+        ImageView photo;
+        Bitmap image;
+
+        protected Void doInBackground(ImageView... arg0)
+        {
+            try
+            {
+                photo = arg0[0];
+                URL url = new URL(requested.url);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                image = BitmapFactory.decodeStream(input);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void v)
+        {
+            if(image != null)
+            {
+                photo.setImageBitmap(image);
+            }
+        }
+    }
 }

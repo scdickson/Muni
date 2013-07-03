@@ -125,6 +125,12 @@ public class PeopleFragment extends Fragment
                                 tmp.title = (parse.getString("E_Position"));
                                 tmp.notes = (parse.getString("I_Notes"));
                                 tmp.tel_number = (parse.getString("G_Phone"));
+                                ParseFile file = (ParseFile) parse.get("H_Photo");
+
+                                if(file != null && file.getUrl() != null)
+                                {
+                                    tmp.url = file.getUrl();
+                                }
 
                                 if(tmp.group_a == null)
                                     tmp.group_a = " ";
