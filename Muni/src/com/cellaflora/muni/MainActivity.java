@@ -32,7 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity{
 	
 	private String[] menuDrawerItems;
 	private ListView menuDrawer;

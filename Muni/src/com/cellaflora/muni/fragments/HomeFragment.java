@@ -1,13 +1,19 @@
 package com.cellaflora.muni.fragments;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 
 import com.cellaflora.muni.*;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,6 +32,8 @@ public class HomeFragment extends Fragment
 	private static final String WEATHER_KEY = "mg8xd4e3c3vc2tjkh2hvtcau";
 	private static final int WEATHER_ZIPCODE = 47906;
 	private static final int WEATHER_NUM_DAYS = 1;
+    private static final String SAVED_WEATHER_PATH = "com.cellaflora.muni.saved_weather"; //Name of saved weather file
+    private static final int WEATHER_REPLACE_INTERVAL = 60; //In Minutes!
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -36,20 +44,36 @@ public class HomeFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		
-		//Load weather asynchronously and set custom font
-		TextView weatherBox = (TextView) getView().findViewById(R.id.weather_box);
-		
-		if(MainActivity.storedWeather == null)
-		{
-			new loadWeather().execute(weatherBox);	
-		}
-		else
-		{
-			weatherBox.setText(MainActivity.storedWeather);
-		}
-        Typeface avenirBlack = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Avenir LT 95 Black.ttf");
-	    weatherBox.setTypeface(avenirBlack);
+
+        try
+        {
+            //Load weather asynchronously and set custom font
+            TextView weatherBox = (TextView) getView().findViewById(R.id.weather_box);
+
+
+            Calendar now = Calendar.getInstance();
+            File f = getActivity().getFileStreamPath(SAVED_WEATHER_PATH);
+
+            if((f.lastModified() + (WEATHER_REPLACE_INTERVAL * 60 * 1000)) < now.getTimeInMillis())
+            {
+                new loadWeather().execute(weatherBox);
+            }
+            else
+            {
+                FileInputStream in = getActivity().openFileInput(SAVED_WEATHER_PATH);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                weatherBox.setText(reader.readLine());
+                in.close();
+                reader.close();
+            }
+
+            Typeface avenirBlack = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Avenir LT 95 Black.ttf");
+            weatherBox.setTypeface(avenirBlack);
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(getActivity().getApplicationContext(), "Error loading weather.", Toast.LENGTH_LONG).show();
+        }
 	}
 	
 	private class loadWeather extends AsyncTask<TextView, Integer, Void>
@@ -73,8 +97,11 @@ public class HomeFragment extends Fragment
 					if(element.contains("temp_F")) //Could also allow Celsius in settings or something
 					{
 						//Parse temperature
-						temp = element.substring(element.indexOf(" ") + 2, element.length() - 1);
-						MainActivity.storedWeather = temp + (char) 0x00B0;
+						temp = element.substring(element.indexOf(" ") + 2, element.length() - 1) + (char) 0x00B0;
+                        FileOutputStream out = getActivity().openFileOutput(SAVED_WEATHER_PATH, Context.MODE_PRIVATE);
+                        out.write(temp.getBytes());
+                        out.flush();
+                        out.close();
 						break;
 					}
 				}
@@ -93,14 +120,26 @@ public class HomeFragment extends Fragment
 				//Kind of a cool fade in animation for the weather
 				final Animation in = new AlphaAnimation(0.0f, 1.0f);
 			    in.setDuration(1200);
-			    weatherBox.setText(temp + (char) 0x00B0);
+			    weatherBox.setText(temp);
 			    weatherBox.startAnimation(in);
 			}
 			else
 			{
 				//Weather couldn't be loaded for some reason
-				Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
-			}
+				//Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
+               try
+               {
+                    FileInputStream in = getActivity().openFileInput(SAVED_WEATHER_PATH);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    weatherBox.setText(reader.readLine());
+                    in.close();
+                    reader.close();
+               }
+               catch(Exception e)
+               {
+                   Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
+               }
+            }
 		}
 	}
 }
