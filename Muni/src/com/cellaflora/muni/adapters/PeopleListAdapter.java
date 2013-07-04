@@ -1,4 +1,4 @@
-package com.cellaflora.muni;
+package com.cellaflora.muni.adapters;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.cellaflora.muni.Person;
+import com.cellaflora.muni.PersonGroup;
+import com.cellaflora.muni.R;
 
 public class PeopleListAdapter extends BaseAdapter
 {

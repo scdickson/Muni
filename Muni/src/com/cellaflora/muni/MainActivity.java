@@ -1,35 +1,20 @@
 package com.cellaflora.muni;
 
+import com.cellaflora.muni.adapters.MenuListAdapter;
 import com.cellaflora.muni.fragments.*;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.Socket;
-import java.net.URL;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class MainActivity extends Activity{

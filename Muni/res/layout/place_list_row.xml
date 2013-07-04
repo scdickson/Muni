@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+    <TextView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/place_list_section_header"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dip"
+            android:visibility="gone"
+            style="?android:attr/listSeparatorTextViewStyle" />
+
+    <ImageView
+            android:id="@+id/imgPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxHeight="60dp"
+            android:maxWidth="60dp"
+            android:adjustViewBounds="true"
+            android:layout_below="@id/place_list_section_header"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
+
+    <TextView android:id="@+id/place_name"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="15dp"
+              android:gravity="center_vertical"
+              android:layout_toRightOf="@id/imgPlace"
+              android:layout_below="@id/place_list_section_header"
+              android:textSize="20sp"
+              android:textColor="#333b46" />
+
+    <TextView android:id="@+id/place_distance"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="15dp"
+              android:layout_below="@id/place_name"
+              android:gravity="center_vertical"
+              android:layout_toRightOf="@id/imgPlace"
+              android:textSize="14sp"
+              android:textColor="#e84d3d"/>
+
+    <TextView android:id="@+id/place_group"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="15dp"
+              android:layout_toRightOf="@id/imgPlace"
+              android:layout_below="@id/place_distance"
+              android:gravity="center_vertical"
+              android:textSize="14sp"
+              android:textColor="#e84d3d"/>
+
+
+</RelativeLayout>
