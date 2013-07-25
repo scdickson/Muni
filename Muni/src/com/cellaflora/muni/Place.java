@@ -2,10 +2,12 @@ package com.cellaflora.muni;
 
 import android.location.LocationManager;
 
+import java.io.Serializable;
+
 /**
  * Created by sdickson on 7/3/13.
  */
-public class Place
+public class Place implements Serializable
 {
     public String name;
     public String category;

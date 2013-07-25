@@ -2,13 +2,10 @@ package com.cellaflora.muni.fragments;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
 
 import com.cellaflora.muni.*;
 
@@ -32,12 +29,13 @@ public class HomeFragment extends Fragment
 	private static final String WEATHER_KEY = "mg8xd4e3c3vc2tjkh2hvtcau";
 	private static final int WEATHER_ZIPCODE = 47906;
 	private static final int WEATHER_NUM_DAYS = 1;
-    private static final String SAVED_WEATHER_PATH = "com.cellaflora.muni.saved_weather"; //Name of saved weather file
+    private static final String SAVED_WEATHER_KEY = "muni_saved_weather"; //Name of saved weather file
     private static final int WEATHER_REPLACE_INTERVAL = 60; //In Minutes!
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View view = inflater.inflate(R.layout.home_fragment, container, false);
+        MainActivity.actionbarTitle.setText("");
 		return view;
 	}
 	
@@ -50,21 +48,14 @@ public class HomeFragment extends Fragment
             //Load weather asynchronously and set custom font
             TextView weatherBox = (TextView) getView().findViewById(R.id.weather_box);
 
-
-            Calendar now = Calendar.getInstance();
-            File f = getActivity().getFileStreamPath(SAVED_WEATHER_PATH);
-
-            if((f.lastModified() + (WEATHER_REPLACE_INTERVAL * 60 * 1000)) < now.getTimeInMillis())
+            File f = new File(getActivity().getFilesDir(), SAVED_WEATHER_KEY);
+            if((f.lastModified() + (WEATHER_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
             {
-                new loadWeather().execute(weatherBox);
+                weatherBox.setText((String)(PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_WEATHER_KEY)));
             }
             else
             {
-                FileInputStream in = getActivity().openFileInput(SAVED_WEATHER_PATH);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                weatherBox.setText(reader.readLine());
-                in.close();
-                reader.close();
+                new loadWeather().execute(weatherBox);
             }
 
             Typeface avenirBlack = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Avenir LT 95 Black.ttf");
@@ -98,18 +89,11 @@ public class HomeFragment extends Fragment
 					{
 						//Parse temperature
 						temp = element.substring(element.indexOf(" ") + 2, element.length() - 1) + (char) 0x00B0;
-                        FileOutputStream out = getActivity().openFileOutput(SAVED_WEATHER_PATH, Context.MODE_PRIVATE);
-                        out.write(temp.getBytes());
-                        out.flush();
-                        out.close();
 						break;
 					}
 				}
 			}
-			catch(Exception e)
-			{
-				Log.w("myApp", "ERROR: " + e.getMessage());
-			}
+			catch(Exception e){}
 			return null;
 		}
 		
@@ -122,6 +106,11 @@ public class HomeFragment extends Fragment
 			    in.setDuration(1200);
 			    weatherBox.setText(temp);
 			    weatherBox.startAnimation(in);
+                try
+                {
+                    PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_WEATHER_KEY, temp);
+                }
+                catch(Exception e){}
 			}
 			else
 			{
@@ -129,11 +118,7 @@ public class HomeFragment extends Fragment
 				//Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
                try
                {
-                    FileInputStream in = getActivity().openFileInput(SAVED_WEATHER_PATH);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    weatherBox.setText(reader.readLine());
-                    in.close();
-                    reader.close();
+                   weatherBox.setText((String)(PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_WEATHER_KEY)));
                }
                catch(Exception e)
                {

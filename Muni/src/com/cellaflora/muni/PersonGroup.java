@@ -1,11 +1,12 @@
 package com.cellaflora.muni;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by sdickson on 7/3/13.
  */
-public class PersonGroup
+public class PersonGroup implements Serializable
 {
     public String groupName;
     public ArrayList<Person> people;

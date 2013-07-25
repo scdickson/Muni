@@ -1,6 +1,8 @@
 package com.cellaflora.muni;
 
-public class Person 
+import java.io.Serializable;
+
+public class Person implements Serializable
 {
     public String objectId;
 	public String name;

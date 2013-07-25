@@ -5,6 +5,7 @@ import com.cellaflora.muni.R;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,10 +27,12 @@ import java.net.URL;
 public class PeopleDetailFragment extends Fragment
 {
 	Person requested;
+    View view;
+    private ProgressDialog progressDialog;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.people_detail_fragment, container, false);
+		view = inflater.inflate(R.layout.people_detail_fragment, container, false);
 		return view;
 	}
 	
@@ -41,6 +44,9 @@ public class PeopleDetailFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
+        progressDialog = new ProgressDialog(view.getContext());
+        progressDialog.setTitle("");
+        progressDialog.setMessage("Loading...");
 
         TextView name = (TextView) getActivity().findViewById(R.id.people_detail_name);
 		name.setText(requested.name);
@@ -135,6 +141,11 @@ public class PeopleDetailFragment extends Fragment
         ImageView photo;
         Bitmap image;
 
+        protected void onPreExecute()
+        {
+            progressDialog.show();
+        }
+
         protected Void doInBackground(ImageView... arg0)
         {
             try
@@ -156,6 +167,7 @@ public class PeopleDetailFragment extends Fragment
 
         protected void onPostExecute(Void v)
         {
+            progressDialog.dismiss();
             if(image != null)
             {
                 photo.setImageBitmap(image);

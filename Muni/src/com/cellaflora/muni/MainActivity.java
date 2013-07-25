@@ -5,6 +5,8 @@ import com.cellaflora.muni.fragments.*;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 
+import android.app.ActionBar;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Fragment;
@@ -14,7 +16,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 
 public class MainActivity extends Activity{
@@ -25,7 +29,7 @@ public class MainActivity extends Activity{
 	public static String storedWeather = null;
 	ActionBarDrawerToggle mMenuToggle;
     Fragment currentFragment = null;
-
+    public static TextView actionbarTitle;
 	//Parse constants
 	public static final String PARSE_APPLICATION_ID = "ACXaa1A1Vo759kga9aYlMYGiUJABaKpphndbeFhn";
 	public static final String PARSE_CLIENT_KEY = "7VthvZjSwbXzMV3h4hXOmnazhYYTn7CICKAGd7cJ";
@@ -34,11 +38,19 @@ public class MainActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_front_page);
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setCustomView(R.layout.title_bar);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionbarTitle = (TextView) findViewById(R.id.actionbar_title);
+        Typeface avenirBlack = Typeface.createFromAsset(getAssets(), "fonts/Avenir LT 95 Black.ttf");
+        actionbarTitle.setTypeface(avenirBlack);
 		
 		//Initialize Parse
 		Parse.initialize(this, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);
 		ParseAnalytics.trackAppOpened(getIntent());
-		setContentView(R.layout.activity_front_page);
 		
 		//Load initial fragment
 		HomeFragment homeFragment = new HomeFragment();
@@ -61,8 +73,25 @@ public class MainActivity extends Activity{
         menuDrawer.setAdapter(mMenuAdapter);
         DrawerItemClickListener drawerListener = new DrawerItemClickListener();
         menuDrawer.setOnItemClickListener(drawerListener);
+
+        ImageButton ib = (ImageButton) findViewById(R.id.toggle_button);
+        ib.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(drawerLayout.isDrawerOpen(menuDrawer))
+                {
+                    drawerLayout.closeDrawer(menuDrawer);
+                }
+                else
+                {
+                    drawerLayout.openDrawer(menuDrawer);
+                }
+            }
+        });
+
 	}
-	
+
 	protected void onPostCreate(Bundle savedInstanceState) 
 	{
         super.onPostCreate(savedInstanceState);
@@ -126,7 +155,7 @@ public class MainActivity extends Activity{
 				break;
 		}
 		
-		fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out);
 		fragmentTransaction.replace(R.id.container, currentFragment);
 		fragmentTransaction.addToBackStack(null);
 	    fragmentTransaction.commit();

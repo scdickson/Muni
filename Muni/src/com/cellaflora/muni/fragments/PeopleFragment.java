@@ -10,6 +10,7 @@ import java.util.List;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,8 +20,11 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.adapters.PeopleListAdapter;
 import com.cellaflora.muni.Person;
 import com.cellaflora.muni.PersonGroup;
@@ -34,14 +38,16 @@ public class PeopleFragment extends Fragment
 	ArrayList<Person> people = null;
     public PeopleListAdapter adapter = null;
     public ListView peopleList = null;
+    private ProgressDialog progressDialog;
 
-    private static final String SAVED_PEOPLE_PATH = "com.cellaflora.muni.saved_people"; //Name of saved people file
-    private static final int PEOPLE_REPLACE_INTERVAL = 1; //In minutes!
+    private static final String SAVED_PEOPLE_PATH = "muni_saved_people"; //Name of saved people file
+    private static final int PEOPLE_REPLACE_INTERVAL = 60; //In minutes!
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.people_fragment, container, false);
-		return view;
+        MainActivity.actionbarTitle.setText("People");
+        return view;
 	}
 
     public void populateGroup(Person person)
@@ -79,152 +85,110 @@ public class PeopleFragment extends Fragment
         }
     }
 
+    public void loadPeople()
+    {
+        people = new ArrayList<Person>();
+        groups = new ArrayList<PersonGroup>();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("People");
+        progressDialog.show();
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> result, ParseException e)
+            {
+                if (e == null)
+                {
+                    for(ParseObject parse : result)
+                    {
+                        Person tmp = new Person();
+                        tmp.objectId = (parse.getString("objectId"));
+                        tmp.name = (parse.getString("D_Firstname") + " " + parse.getString("C_Lastname"));
+                        tmp.email = (parse.getString("F_Email"));
+                        tmp.group_a = (parse.getString("A_Grouping"));
+                        tmp.group_b = (parse.getString("B_Subgrouping"));
+                        tmp.title = (parse.getString("E_Position"));
+                        tmp.notes = (parse.getString("I_Notes"));
+                        tmp.tel_number = (parse.getString("G_Phone"));
+                        ParseFile file = (ParseFile) parse.get("H_Photo");
+
+                        if(file != null && file.getUrl() != null)
+                        {
+                            tmp.url = file.getUrl();
+                        }
+
+                        if(tmp.group_a == null)
+                            tmp.group_a = " ";
+                        if(tmp.group_b == null)
+                            tmp.group_b = " ";
+
+                        populateGroup(tmp);
+                    }
+
+                    try
+                    {
+                        PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH, groups);
+                    }
+                    catch(Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+
+                    progressDialog.dismiss();
+                    adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                    peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                    peopleList.setAdapter(adapter);
+                    peopleList.setOnItemClickListener(new PeopleItemClickListener());
+
+                }
+                else
+                {
+                    e.printStackTrace();
+                    //Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
+                    try
+                    {
+                        groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH);
+                        progressDialog.dismiss();
+                        adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                        peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                        peopleList.setAdapter(adapter);
+                        peopleList.setOnItemClickListener(new PeopleItemClickListener());
+                    }
+                    catch(Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
 	public void onResume()
 	{
 		super.onResume();
+        progressDialog = new ProgressDialog(view.getContext());
+        progressDialog.setTitle("");
+        progressDialog.setMessage("Loading...");
 
-        Calendar now = Calendar.getInstance();
-        File f = getActivity().getFileStreamPath(SAVED_PEOPLE_PATH);
-
-        if((f.lastModified() + (PEOPLE_REPLACE_INTERVAL)) < now.getTimeInMillis())
+        try
         {
-
-                people = new ArrayList<Person>();
-                groups = new ArrayList<PersonGroup>();
-
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("People");
-                //query.whereNotEqualTo("A_Grouping", "City Council");
-                query.findInBackground(new FindCallback<ParseObject>() {
-                    public void done(List<ParseObject> result, ParseException e)
-                    {
-                        /*FileOutputStream out = null;
-
-                        try
-                        {
-                            out = getActivity().openFileOutput(SAVED_PEOPLE_PATH, Context.MODE_APPEND | Context.MODE_WORLD_READABLE);
-                        }
-                        catch(Exception ex){}*/
-
-                        if (e == null)
-                        {
-                            for(ParseObject parse : result)
-                            {
-                                Person tmp = new Person();
-                                tmp.objectId = (parse.getString("objectId"));
-                                tmp.name = (parse.getString("D_Firstname") + " " + parse.getString("C_Lastname"));
-                                tmp.email = (parse.getString("F_Email"));
-                                tmp.group_a = (parse.getString("A_Grouping"));
-                                tmp.group_b = (parse.getString("B_Subgrouping"));
-                                tmp.title = (parse.getString("E_Position"));
-                                tmp.notes = (parse.getString("I_Notes"));
-                                tmp.tel_number = (parse.getString("G_Phone"));
-                                ParseFile file = (ParseFile) parse.get("H_Photo");
-
-                                if(file != null && file.getUrl() != null)
-                                {
-                                    tmp.url = file.getUrl();
-                                }
-
-                                if(tmp.group_a == null)
-                                    tmp.group_a = " ";
-                                if(tmp.group_b == null)
-                                    tmp.group_b = " ";
-
-                                populateGroup(tmp);
-                                //people.add(tmp);
-                                //Log.d("people", "Writing: " + tmp.toString());
-                                /*try
-                                {
-                                    out.write(tmp.toString().getBytes());
-                                    out.flush();
-                                }
-                                catch(Exception ex)
-                                {
-                                    Log.d("People", "97: " + ex.getMessage());
-                                }*/
-                            }
-
-                            /*try
-                            {
-                                out.close();
-                            }
-                            catch(Exception ex)
-                            {
-                                Log.d("People", "107: " + ex.getMessage());
-                            }*/
-
-                            final Animation in = new AlphaAnimation(0.0f, 1.0f);
-                            in.setDuration(1000);
-                            adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                            peopleList = (ListView) getActivity().findViewById(R.id.people_list);
-                            peopleList.setAdapter(adapter);
-                            peopleList.setOnItemClickListener(new PeopleItemClickListener());
-                            peopleList.startAnimation(in);
-
-                        }
-                        else
-                        {
-                            Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-                //TextView peopleHeader = (TextView) view.findViewById(R.id.people_header);
-                //Typeface avenirBlack = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Avenir LT 95 Black.ttf");
-                //peopleHeader.setTypeface(avenirBlack);
-
+            File f = getActivity().getFileStreamPath(SAVED_PEOPLE_PATH);
+            if((f.lastModified() + (PEOPLE_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+            {
+                groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH);
+                adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                peopleList.setAdapter(adapter);
+                peopleList.setOnItemClickListener(new PeopleItemClickListener());
+            }
+            else
+            {
+                loadPeople();
+            }
         }
-        else
+        catch(Exception e)
         {
-            try
-            {
-                if(people == null)
-                {
-                    people = new ArrayList<Person>();
-                }
-
-                FileInputStream in = getActivity().openFileInput(SAVED_PEOPLE_PATH);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                String line = null;
-
-                while((line = reader.readLine()) != null)
-                {
-                    String personData[] = line.split(",");
-                    Person tmp = new Person();
-                    tmp.name = personData[0];
-                    tmp.title = personData[1];
-                    tmp.group_a = personData[2];
-                    tmp.group_b = personData[3];
-                    tmp.email = personData[4];
-                    tmp.tel_number = personData[5];
-                    //tmp.notes = personData[6];
-                    people.add(tmp);
-                }
-
-                in.close();
-                reader.close();
-            }
-            catch(Exception e){}
-
-            for(Person p : people)
-            {
-                Log.d("people", p.toString());
-            }
-
-            PeopleListAdapter adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-            ListView peopleList = (ListView) getActivity().findViewById(R.id.people_list);
-            peopleList.setAdapter(adapter);
-            peopleList.setOnItemClickListener(new PeopleItemClickListener());
+            loadPeople();
         }
 
-
-
-	}
-	
-	public void onDestroy()
-	{
-		super.onDestroy();
-		people = null;
 	}
 
 	private void selectItem(int position)
