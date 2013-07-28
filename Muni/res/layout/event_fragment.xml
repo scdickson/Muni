@@ -1,8 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical" >
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="#B9C2C9"
+        android:paddingTop="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="4dp"
+        android:orientation="horizontal">
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:id="@+id/events_upcoming_selector"
+            android:background="@drawable/rounded_rectangle_button_selected_left"
+            android:textColor="#F5FDFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="Upcoming Events"/>
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:id="@+id/events_past_selector"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_rectangle_button_unselected_right"
+                android:textColor="#50667B"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_toRightOf="@id/events_upcoming_selector"
+                android:text="Past Events"/>
+        </LinearLayout>
+
+    <FrameLayout
+              android:id="@+id/event_content"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:layout_alignParentBottom="true"
+            />
+
 
 </LinearLayout>
