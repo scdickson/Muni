@@ -150,6 +150,7 @@ public class PlaceFragment extends Fragment
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             loadPlaces();
         }
 

@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.EventListAdapter;
+import com.cellaflora.muni.fileComparator;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -27,6 +30,8 @@ import com.parse.ParseQuery;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class EventFragment extends Fragment
@@ -64,7 +69,7 @@ public class EventFragment extends Fragment
         try
         {
             view = inflater.inflate(R.layout.event_fragment, container, false);
-            ecf = new EventContentFragment();
+            ecf = new EventContentFragment(new nestedFragmentHandler());
             getFragmentManager().beginTransaction().replace(R.id.event_content, ecf).commit();
 
             MainActivity.actionbarTitle.setText("Events");
@@ -218,17 +223,22 @@ public class EventFragment extends Fragment
             {
                 events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_EVENTS_PATH);
             }
-            else
-            {
-                loadEvents();
-            }
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             loadEvents();
         }
+    }
 
 
-
+    private class nestedFragmentHandler extends Handler
+    {
+        public void handleMessage(Message msg)
+        {
+            adapter = new EventListAdapter(view.getContext(), events, EVENT_TYPE_UPCOMING);
+            eventList = (ListView) getActivity().findViewById(R.id.event_list);
+            eventList.setAdapter(adapter);
+        }
     }
 }

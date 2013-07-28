@@ -13,12 +13,18 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 
 public class MainActivity extends Activity{
@@ -30,6 +36,10 @@ public class MainActivity extends Activity{
 	ActionBarDrawerToggle mMenuToggle;
     Fragment currentFragment = null;
     public static TextView actionbarTitle;
+
+    public static final int MAX_CACHE_SIZE = 20; //In Megabytes!
+    public static final int CACHE_DECREASE_AMOUNT = 7; //In Megabytes!
+
 	//Parse constants
 	public static final String PARSE_APPLICATION_ID = "ACXaa1A1Vo759kga9aYlMYGiUJABaKpphndbeFhn";
 	public static final String PARSE_CLIENT_KEY = "7VthvZjSwbXzMV3h4hXOmnazhYYTn7CICKAGd7cJ";
@@ -89,13 +99,51 @@ public class MainActivity extends Activity{
                 }
             }
         });
-
 	}
+
+    private long getDirSize()
+    {
+        long size = 0;
+        File[] files = getFilesDir().listFiles();
+
+        for(File f : files)
+        {
+            size += f.length();
+        }
+
+        return size;
+    }
 
 	protected void onPostCreate(Bundle savedInstanceState) 
 	{
         super.onPostCreate(savedInstanceState);
         mMenuToggle.syncState();
+
+        try
+        {
+            if(getDirSize() >= (MAX_CACHE_SIZE * 1000000))
+            {
+                ArrayList<File> files = new ArrayList(Arrays.asList(getFilesDir().listFiles()));
+                Collections.sort(files, new fileComparator());
+                int i = 0;
+
+                //Log.d("err", "Size before: " + getDirSize());
+                while(getDirSize() >= ((MAX_CACHE_SIZE * 1000000) - (CACHE_DECREASE_AMOUNT * 1000000)) && i < files.size())
+                {
+                    if(!(files.get(i).getName().contains("muni_saved")))
+                    {
+                        //Log.d("err", "Deleting " + files.get(i).getName() + " to free " + files.get(i).length());
+                        files.get(i).delete();
+                    }
+                    i++;
+                }
+                //Log.d("err", "Size after: " + getDirSize());
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 	
 	/*No options menu. Can re-implement later.

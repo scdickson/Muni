@@ -9,7 +9,7 @@
                 android:background="#333B46"
                 android:orientation="horizontal">
 
-    <ImageButton android:src="@drawable/drawer_arrow"
+    <ImageButton android:src="@drawable/nav_button"
                  android:background="@null"
                  android:layout_width="wrap_content"
                  android:layout_height="match_parent"

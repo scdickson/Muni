@@ -1,12 +1,13 @@
 package com.cellaflora.muni;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by sdickson on 7/25/13.
  */
-public class Event
+public class Event implements Serializable
 {
     public String objectId;
     public String title;
@@ -19,5 +20,4 @@ public class Event
     public String associated_place;
     public String event_url;
     public String description;
-    public File photo_data;
 }

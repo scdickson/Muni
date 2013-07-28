@@ -105,13 +105,14 @@ public class EventListAdapter extends BaseAdapter
 
         if(e.photo_url != null)
         {
-            if(e.photo_data != null)
+            File f = new File(context.getFilesDir() + "/" + e.objectId);
+            if(f != null)
             {
                 try
                 {
                     BitmapFactory.Options o = new BitmapFactory.Options();
                     o.inJustDecodeBounds = true;
-                    BitmapFactory.decodeStream(new FileInputStream(e.photo_data),null,o);
+                    BitmapFactory.decodeStream(new FileInputStream(f),null,o);
                     final int REQUIRED_SIZE=80;
 
                     int width_tmp=o.outWidth, height_tmp=o.outHeight;
@@ -126,13 +127,13 @@ public class EventListAdapter extends BaseAdapter
 
                     BitmapFactory.Options o2 = new BitmapFactory.Options();
                     o2.inSampleSize=scale;
-                    Bitmap image = BitmapFactory.decodeStream(new FileInputStream(e.photo_data), null, o2);
+                    Bitmap image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
                     imgEvent.setImageBitmap(image);
 
                 }
                 catch(Exception ex)
                 {
-                    ex.printStackTrace();
+                    new loadImage().execute(imgEvent, e);
                 }
             }
             else
@@ -203,28 +204,6 @@ public class EventListAdapter extends BaseAdapter
         return itemView;
     }
 
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
-    {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            // Calculate ratios of height and width to requested height and width
-            final int heightRatio = Math.round((float) height / (float) reqHeight);
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
-
-            // Choose the smallest ratio as inSampleSize value, this will guarantee
-            // a final image with both dimensions larger than or equal to the
-            // requested height and width.
-            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
-        }
-
-        return inSampleSize;
-    }
-
     private class loadImage extends AsyncTask<Object, Integer, Void>
     {
         ImageView photo;
@@ -241,7 +220,6 @@ public class EventListAdapter extends BaseAdapter
                 InputStream is = connection.getInputStream();
 
                 File file = new File(context.getFilesDir() + "/" + event.objectId);
-                event.photo_data = file;
                 FileOutputStream fos = new FileOutputStream(file);
                 BufferedOutputStream bos = new BufferedOutputStream(fos, IMAGE_BUFFER_SIZE);
                 byte data[] = new byte[IMAGE_BUFFER_SIZE];
