@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -31,8 +33,11 @@ import com.parse.ParseQuery;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class EventFragment extends Fragment
 {
@@ -51,12 +56,11 @@ public class EventFragment extends Fragment
     EventContentFragment ecf;
     LayoutInflater inflater;
     ViewGroup container;
+    Parcelable state;
     private int current_event_type = EVENT_TYPE_UPCOMING;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        this.inflater = inflater;
-        this.container = container;
         if(view != null)
         {
             ViewGroup parent = (ViewGroup) view.getParent();
@@ -65,7 +69,6 @@ public class EventFragment extends Fragment
                 parent.removeView(view);
             }
         }
-
         try
         {
             view = inflater.inflate(R.layout.event_fragment, container, false);
@@ -77,56 +80,42 @@ public class EventFragment extends Fragment
             pastEventsSelector = (Button) view.findViewById(R.id.events_past_selector);
 
             upcomingEventsSelector.setOnClickListener(new View.OnClickListener() {
-                @Override
                 public void onClick(View view) {
                     if(current_event_type != EVENT_TYPE_UPCOMING)
                     {
+                        current_event_type = EVENT_TYPE_UPCOMING;
                         if(events == null)
                         {
                             loadEvents();
-                            adapter = new EventListAdapter(view.getContext(), events, EVENT_TYPE_UPCOMING);
-                            eventList = (ListView) getActivity().findViewById(R.id.event_list);
-                            eventList.setAdapter(adapter);
-                        }
-                        else
-                        {
-                            adapter = new EventListAdapter(view.getContext(), events, EVENT_TYPE_UPCOMING);
-                            eventList = (ListView) getActivity().findViewById(R.id.event_list);
-                            eventList.setAdapter(adapter);
                         }
 
+                        adapter.switchView(current_event_type);
+                        adapter.notifyDataSetChanged();
+                        eventList.invalidateViews();
                         upcomingEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
                         upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_selected_left);
                         pastEventsSelector.setTextColor(Color.parseColor("#50667B"));
                         pastEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_right);
-                        current_event_type = EVENT_TYPE_UPCOMING;
                     }
                 }
             });
             pastEventsSelector.setOnClickListener(new View.OnClickListener() {
-                @Override
                 public void onClick(View view) {
                     if(current_event_type != EVENT_TYPE_PAST)
                     {
+                        current_event_type = EVENT_TYPE_PAST;
                         if(events == null)
                         {
                             loadEvents();
-                            adapter = new EventListAdapter(view.getContext(), events, EVENT_TYPE_PAST);
-                            eventList = (ListView) getActivity().findViewById(R.id.event_list);
-                            eventList.setAdapter(adapter);
-                        }
-                        else
-                        {
-                            adapter = new EventListAdapter(view.getContext(), events, EVENT_TYPE_PAST);
-                            eventList = (ListView) getActivity().findViewById(R.id.event_list);
-                            eventList.setAdapter(adapter);
                         }
 
+                        adapter.switchView(current_event_type);
+                        adapter.notifyDataSetChanged();
+                        eventList.invalidateViews();
                         pastEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
                         pastEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_selected_right);
                         upcomingEventsSelector.setTextColor(Color.parseColor("#50667B"));
                         upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_left);
-                        current_event_type = EVENT_TYPE_PAST;
                     }
                 }
             });
@@ -136,20 +125,29 @@ public class EventFragment extends Fragment
         return view;
     }
 
-    /*public void onSaveInstanceState(Bundle savedInstanceState)
+    public void onPause()
     {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putInt("current_event_type", current_event_type);
+        super.onPause();
+        state = eventList.onSaveInstanceState();
     }
 
-    public void onActivityCreated(Bundle savedInstanceState)
+    private Date fixDate(Date date)
     {
-        super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null)
+        TimeZone tz = TimeZone.getDefault();
+        Date fixed = new Date(date.getTime() - tz.getRawOffset());
+
+        if(tz.inDaylightTime(fixed))
         {
-            current_event_type = savedInstanceState.getInt("current_event_type");
+            Date dst = new Date(fixed.getTime() - tz.getDSTSavings());
+
+            if(tz.inDaylightTime(dst))
+            {
+                fixed = dst;
+            }
         }
-    }*/
+
+        return fixed;
+    }
 
     public void loadEvents()
     {
@@ -168,12 +166,27 @@ public class EventFragment extends Fragment
                         tmp.objectId = parse.getObjectId();
                         tmp.title = parse.getString("A_Title");
                         tmp.description = parse.getString("B_Description");
-                        tmp.start_time = parse.getDate("C_Start_Time");
-                        tmp.end_time = parse.getDate("D_End_Time");
+
+                        if(parse.getDate("C_Start_Time") != null)
+                        {
+                            tmp.start_time = fixDate(parse.getDate("C_Start_Time"));
+                        }
+
+                        if(parse.getDate("D_End_Time") != null)
+                        {
+                            tmp.end_time = fixDate(parse.getDate("D_End_Time"));
+                        }
+
                         tmp.photo_caption = parse.getString("F_Photo_Caption");
                         tmp.location = parse.getString("H1_Location_Title");
-                        tmp.address = parse.getString("H_Street_Address") + "\n" + parse.getString("I_City") + " " + parse.getString("J_State") + " " + parse.getString("K_Zip_Code");
+
+                        if(parse.getString("H_Street_Address") != null && parse.getString("I_City") != null && parse.getString("J_State") != null && parse.getString("K_Zip_Code") != null)
+                        {
+                            tmp.address = parse.getString("H_Street_Address") + "\n" + parse.getString("I_City") + " " + parse.getString("J_State") + " " + parse.getString("K_Zip_Code");
+                        }
+
                         tmp.event_url = parse.getString("L_Hyperlink");
+                        tmp.isAllDay = parse.getBoolean("E_Event_Is_All_Day");
 
                         ParseFile file = (ParseFile) parse.get("G_Photo");
 
@@ -181,6 +194,7 @@ public class EventFragment extends Fragment
                         {
                             tmp.photo_url = file.getUrl();
                         }
+
                         events.add(tmp);
                     }
 
@@ -195,15 +209,12 @@ public class EventFragment extends Fragment
                     e.printStackTrace();
                 }
 
-                //final Animation in = new AlphaAnimation(0.0f, 1.0f);
-                //in.setDuration(1000);
                 progressDialog.dismiss();
 
                 adapter = new EventListAdapter(view.getContext(), events, current_event_type);
                 eventList = (ListView) getActivity().findViewById(R.id.event_list);
                 eventList.setAdapter(adapter);
-                //placeList.setOnItemClickListener(new PlaceItemClickListener());
-                //placeList.startAnimation(in);
+                eventList.setOnItemClickListener(new EventItemClickListener());
             }
         });
     }
@@ -216,29 +227,113 @@ public class EventFragment extends Fragment
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
 
-        try
+        if(events == null)
         {
-            File f = getActivity().getFileStreamPath(SAVED_EVENTS_PATH);
-            if((f.lastModified() + (EVENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+            try
             {
-                events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_EVENTS_PATH);
+                File f = getActivity().getFileStreamPath(SAVED_EVENTS_PATH);
+                if((f.lastModified() + (EVENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                {
+                    events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_EVENTS_PATH);
+                }
+                else
+                {
+                    loadEvents();
+                }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                loadEvents();
             }
         }
-        catch(Exception e)
+        else
         {
-            e.printStackTrace();
-            loadEvents();
+            switch(current_event_type)
+            {
+                case EVENT_TYPE_UPCOMING:
+                    upcomingEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
+                    upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_selected_left);
+                    pastEventsSelector.setTextColor(Color.parseColor("#50667B"));
+                    pastEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_right);
+                    break;
+                case EVENT_TYPE_PAST:
+                    pastEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
+                    pastEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_selected_right);
+                    upcomingEventsSelector.setTextColor(Color.parseColor("#50667B"));
+                    upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_left);
+                    break;
+            }
         }
+
     }
 
+    public void selectItem(int position)
+    {
+        Event selected = null;
+        int current_position = 0;
+        Calendar c = Calendar.getInstance();
+        Date now = c.getTime();
+
+        if(current_event_type == EVENT_TYPE_UPCOMING)
+        {
+            for(Event e : events)
+            {
+                if(e.start_time.after(now))
+                {
+                    if(current_position == position)
+                    {
+                        selected = e;
+                    }
+                    current_position++;
+                }
+            }
+        }
+        else if(current_event_type == EVENT_TYPE_PAST)
+        {
+            for(Event e : events)
+            {
+                if(e.start_time.before(now))
+                {
+                    if(current_position == position)
+                    {
+                        selected = e;
+                    }
+                    current_position++;
+                }
+            }
+        }
+
+        EventDetailFragment fragment = new EventDetailFragment(selected);
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.replace(R.id.container, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private class EventItemClickListener implements ListView.OnItemClickListener
+    {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id)
+        {
+            selectItem(position);
+        }
+    }
 
     private class nestedFragmentHandler extends Handler
     {
         public void handleMessage(Message msg)
         {
-            adapter = new EventListAdapter(view.getContext(), events, EVENT_TYPE_UPCOMING);
+            adapter = new EventListAdapter(view.getContext(), events, current_event_type);
             eventList = (ListView) getActivity().findViewById(R.id.event_list);
             eventList.setAdapter(adapter);
+            eventList.setOnItemClickListener(new EventItemClickListener());
+
+            if(state != null)
+            {
+                eventList.onRestoreInstanceState(state);
+            }
         }
     }
 }

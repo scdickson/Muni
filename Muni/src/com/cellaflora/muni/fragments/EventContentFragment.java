@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,11 +36,5 @@ public class EventContentFragment extends Fragment
         view = inflater.inflate(R.layout.event_content_fragment, container, false);
         handler.sendEmptyMessage(0);
         return view;
-    }
-
-    public void onResume()
-    {
-        super.onResume();
-
     }
 }

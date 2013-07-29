@@ -20,4 +20,5 @@ public class Event implements Serializable
     public String associated_place;
     public String event_url;
     public String description;
+    public boolean isAllDay;
 }

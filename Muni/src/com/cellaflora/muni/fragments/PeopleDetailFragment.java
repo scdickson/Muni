@@ -30,15 +30,15 @@ public class PeopleDetailFragment extends Fragment
     View view;
     private ProgressDialog progressDialog;
 
+    public PeopleDetailFragment(Person requested)
+    {
+        this.requested = requested;
+    }
+
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.people_detail_fragment, container, false);
 		return view;
-	}
-	
-	public void setPerson(Person requested)
-	{
-		this.requested = requested;
 	}
 	
 	public void onResume()

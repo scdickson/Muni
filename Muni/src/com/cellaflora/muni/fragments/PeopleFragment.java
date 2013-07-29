@@ -197,8 +197,7 @@ public class PeopleFragment extends Fragment
 
         if(tmp.getClass().equals(Person.class))
         {
-            PeopleDetailFragment fragment = new PeopleDetailFragment();
-            fragment.setPerson(((Person) tmp));
+            PeopleDetailFragment fragment = new PeopleDetailFragment((Person) tmp);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             fragmentTransaction.replace(R.id.container, fragment);

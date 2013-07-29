@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.cellaflora.muni.Event;
 import com.cellaflora.muni.R;
+import com.cellaflora.muni.fragments.EventDetailFragment;
 import com.cellaflora.muni.fragments.EventFragment;
 
 import java.io.BufferedOutputStream;
@@ -29,9 +30,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by sdickson on 7/25/13.
@@ -40,7 +44,10 @@ public class EventListAdapter extends BaseAdapter
 {
     LayoutInflater inflater;
     ArrayList<Event> events;
+    ArrayList<Event> allEvents;
     Context context;
+    Calendar c;
+    Date now;
 
     public static final int IMAGE_BUFFER_SIZE = 20480;
 
@@ -48,8 +55,9 @@ public class EventListAdapter extends BaseAdapter
     {
         this.context = context;
         this.events = new ArrayList<Event>();
-        Calendar c = Calendar.getInstance();
-        Date now = c.getTime();
+        this.allEvents = events;
+        this.c = Calendar.getInstance();
+        this.now = c.getTime();
 
         if(event_selector == EventFragment.EVENT_TYPE_UPCOMING)
         {
@@ -64,6 +72,33 @@ public class EventListAdapter extends BaseAdapter
         else if(event_selector == EventFragment.EVENT_TYPE_PAST)
         {
             for(Event e : events)
+            {
+                if(e.start_time.before(now))
+                {
+                    this.events.add(e);
+                }
+            }
+        }
+    }
+
+    public void switchView(int event_selector)
+    {
+        this.events = null;
+        this.events = new ArrayList<Event>();
+
+        if(event_selector == EventFragment.EVENT_TYPE_UPCOMING)
+        {
+            for(Event e : allEvents)
+            {
+                if(e.start_time.after(now))
+                {
+                    this.events.add(e);
+                }
+            }
+        }
+        else if(event_selector == EventFragment.EVENT_TYPE_PAST)
+        {
+            for(Event e : allEvents)
             {
                 if(e.start_time.before(now))
                 {
@@ -106,39 +141,21 @@ public class EventListAdapter extends BaseAdapter
         if(e.photo_url != null)
         {
             File f = new File(context.getFilesDir() + "/" + e.objectId);
-            if(f != null)
+            if(f != null && f.exists())
             {
                 try
                 {
-                    BitmapFactory.Options o = new BitmapFactory.Options();
-                    o.inJustDecodeBounds = true;
-                    BitmapFactory.decodeStream(new FileInputStream(f),null,o);
-                    final int REQUIRED_SIZE=80;
-
-                    int width_tmp=o.outWidth, height_tmp=o.outHeight;
-                    int scale=1;
-                    while(true){
-                        if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
-                            break;
-                        width_tmp/=2;
-                        height_tmp/=2;
-                        scale*=2;
-                    }
-
-                    BitmapFactory.Options o2 = new BitmapFactory.Options();
-                    o2.inSampleSize=scale;
-                    Bitmap image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-                    imgEvent.setImageBitmap(image);
-
+                    imgEvent.setImageBitmap(null);
+                    new loadImage().execute(imgEvent, f);
                 }
                 catch(Exception ex)
                 {
-                    new loadImage().execute(imgEvent, e);
+                    new loadImageFromParse().execute(imgEvent, e);
                 }
             }
             else
             {
-                new loadImage().execute(imgEvent, e);
+                new loadImageFromParse().execute(imgEvent, e);
             }
         }
         else
@@ -166,7 +183,80 @@ public class EventListAdapter extends BaseAdapter
 
         if(e.start_time != null)
         {
-            txtDate.setText(e.start_time.toString());
+            String startFormat = null, endFormat = null;
+
+            if(e.isAllDay)
+            {
+                if(e.start_time != null && e.end_time != null)
+                {
+                    if(e.start_time.equals(e.end_time))
+                    {
+                        startFormat = "EEE, MMMM d, yyyy";
+                        SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
+                        txtDate.setText(start.format(e.start_time));
+                    }
+                    else
+                    {
+                        startFormat = endFormat = "EEE, MMMM d, yyyy";
+                        SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
+                        SimpleDateFormat end = new SimpleDateFormat(endFormat, Locale.US);
+                        txtDate.setText(start.format(e.start_time) + " - " + end.format(e.end_time));
+                    }
+                }
+                else
+                {
+                    if(e.start_time != null)
+                    {
+                        startFormat = "EEE, MMMM d, yyyy";
+                        SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
+                        txtDate.setText(start.format(e.start_time));
+                    }
+                    else if(e.end_time != null)
+                    {
+                        endFormat = "EEE, MMMM d, yyyy";
+                        SimpleDateFormat end = new SimpleDateFormat(endFormat, Locale.US);
+                        txtDate.setText(end.format(e.end_time));
+                    }
+                }
+            }
+            else
+            {
+                if(e.start_time != null && e.end_time != null)
+                {
+
+                    if(e.start_time.getDate() < e.end_time.getDate())
+                    {
+                        startFormat = "EEE, MMMM d, h:mm a";
+                        endFormat = "EEE, MMMM d, h:mm a z";
+                        SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
+                        SimpleDateFormat end = new SimpleDateFormat(endFormat, Locale.US);
+                        txtDate.setText(start.format(e.start_time) + " - " + end.format(e.end_time));
+                    }
+                    else if(e.start_time.getDate() == e.end_time.getDate())
+                    {
+                        startFormat = "EEE, MMMM d, h:mm a";
+                        endFormat = "h:mm a z";
+                        SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
+                        SimpleDateFormat end = new SimpleDateFormat(endFormat, Locale.US);
+                        txtDate.setText(start.format(e.start_time) + " - " + end.format(e.end_time));
+                    }
+                }
+                else
+                {
+                    if(e.start_time != null)
+                    {
+                        startFormat = "EEE, MMMM d, h:mm a z";
+                        SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
+                        txtDate.setText(start.format(e.start_time));
+                    }
+                    else if(e.end_time != null)
+                    {
+                        endFormat = "EEE, MMMM d, h:mm a z";
+                        SimpleDateFormat end = new SimpleDateFormat(endFormat, Locale.US);
+                        txtDate.setText(end.format(e.end_time));
+                    }
+                }
+            }
         }
         else
         {
@@ -184,16 +274,7 @@ public class EventListAdapter extends BaseAdapter
 
         if(e.event_url != null)
         {
-            txtUrl.setText(Html.fromHtml("<u>" + e.event_url + "</u>"));
-            /*final String url = e.event_url;
-            txtUrl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    context.startActivity(intent);
-                }
-            });*/
+            txtUrl.setText(e.event_url);
         }
         else
         {
@@ -205,6 +286,56 @@ public class EventListAdapter extends BaseAdapter
     }
 
     private class loadImage extends AsyncTask<Object, Integer, Void>
+    {
+        ImageView photo;
+        Bitmap image;
+
+        protected Void doInBackground(Object... arg0)
+        {
+            try
+            {
+                photo = (ImageView) arg0[0];
+                File f = (File) arg0[1];
+
+                BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+                final int REQUIRED_SIZE=80;
+
+                int width_tmp=o.outWidth, height_tmp=o.outHeight;
+                int scale=1;
+                while(true){
+                    if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+                        break;
+                    width_tmp/=2;
+                    height_tmp/=2;
+                    scale*=2;
+                }
+
+                BitmapFactory.Options o2 = new BitmapFactory.Options();
+                o2.inSampleSize=scale;
+                image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void v)
+        {
+            if(image != null)
+            {
+                final Animation in = new AlphaAnimation(0.0f, 1.0f);
+                in.setDuration(150);
+                photo.setImageBitmap(image);
+                photo.startAnimation(in);
+            }
+        }
+    }
+
+    private class loadImageFromParse extends AsyncTask<Object, Integer, Void>
     {
         ImageView photo;
         Bitmap image;
