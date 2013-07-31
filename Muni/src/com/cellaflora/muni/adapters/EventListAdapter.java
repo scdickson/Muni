@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
@@ -137,6 +138,7 @@ public class EventListAdapter extends BaseAdapter
         txtLocation = (TextView) itemView.findViewById(R.id.event_location);
         txtUrl = (TextView) itemView.findViewById(R.id.event_url);
         imgEvent = (ImageView) itemView.findViewById(R.id.event_image);
+        Typeface avenirBlack = Typeface.createFromAsset(context.getAssets(), "fonts/Avenir LT 95 Black.ttf");
 
         if(e.photo_url != null)
         {
@@ -166,6 +168,7 @@ public class EventListAdapter extends BaseAdapter
         if(e.title != null)
         {
             txtTitle.setText(e.title);
+            //txtTitle.setTypeface(avenirBlack);
         }
         else
         {
@@ -175,6 +178,7 @@ public class EventListAdapter extends BaseAdapter
         if(e.description != null)
         {
             txtDescription.setText(e.description);
+            //txtDescription.setTypeface(avenirBlack);
         }
         else
         {
@@ -184,6 +188,7 @@ public class EventListAdapter extends BaseAdapter
         if(e.start_time != null)
         {
             String startFormat = null, endFormat = null;
+            //txtDate.setTypeface(avenirBlack);
 
             if(e.isAllDay)
             {
@@ -266,6 +271,7 @@ public class EventListAdapter extends BaseAdapter
         if(e.location != null)
         {
             txtLocation.setText(e.location);
+            //txtLocation.setTypeface(avenirBlack);
         }
         else
         {
@@ -275,6 +281,7 @@ public class EventListAdapter extends BaseAdapter
         if(e.event_url != null)
         {
             txtUrl.setText(e.event_url);
+            //txtUrl.setTypeface(avenirBlack);
         }
         else
         {

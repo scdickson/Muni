@@ -9,13 +9,16 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@drawable/rounded_rectangle_event">
+
     <RelativeLayout
+        android:background="#E8EBED"
         android:id="@+id/event_top_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
+            android:background="@drawable/custom_imageview"
             android:adjustViewBounds="true"
             android:id="@+id/event_image"
             android:layout_width="80dp"
@@ -30,6 +33,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
             android:id="@+id/event_title"
+            android:textColor="#333B46"
             android:layout_toRightOf="@id/event_image"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -42,10 +46,11 @@
             android:layout_below="@id/event_title"
             android:layout_toRightOf="@id/event_image"
             android:textSize="12sp"
-            android:textColor="#999999"/>
+            android:textColor="#989C9F"/>
         </RelativeLayout>
 
     <RelativeLayout
+        android:background="#E8EBED"
         android:paddingTop="10dp"
         android:id="@+id/event_bottom_layout"
         android:orientation="vertical"
@@ -55,10 +60,13 @@
 
         <TextView
             android:id="@+id/event_location"
+            android:paddingBottom="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="#808080"/>
+            android:textColor="#989C9F"/>
+
+
 
         <TextView
                 android:paddingTop="5dp"
@@ -68,9 +76,11 @@
                 android:layout_below="@id/event_location"
                 android:textSize="14sp"/>
 
+
+
         <TextView
                 android:id="@+id/event_url"
-                android:textColor="#0000FF"
+                android:textColor="#989C9F"
                 android:paddingTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

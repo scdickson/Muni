@@ -2,14 +2,14 @@
 <resources>
     <array name="menuItems">
         <item>Home</item>
-        <item>People</item>
-        <item>Alerts</item>
-        <item>Places</item>
         <item>News</item>
+        <item>Social</item>
         <item>Events</item>
-        <item>Twitter</item>
-        <item>Facebook</item>
         <item>Contact</item>
+        <item>Alerts</item>
+        <item>Polling</item>
+        <item>Places</item>
         <item>Documents</item>
+        <item>Directory</item>
     </array>
 </resources>

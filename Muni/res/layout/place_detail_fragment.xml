@@ -3,6 +3,103 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
+              android:background="#E8EBED"
               android:layout_height="match_parent">
 
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/place_map"
+              android:layout_weight="4"
+              android:layout_width="match_parent"
+              android:layout_height="0dp"
+              class="com.google.android.gms.maps.MapFragment"/>
+
+    <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="6">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:background="#E8EBED"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:layout_width="match_parent">
+
+        <TextView
+                android:padding="10dp"
+                android:id="@+id/place_detail_name"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:background="@drawable/rounded_rectangle_event"
+                android:layout_marginBottom="15dp"/>
+
+        <TextView
+            android:padding="10dp"
+            android:id="@+id/place_detail_phone"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:background="@drawable/rounded_rectangle_event"
+            android:layout_marginBottom="12dp"/>
+
+        <RelativeLayout
+            android:padding="5dp"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="12dp"
+            android:id="@+id/place_detail_address_layout"
+            android:background="@drawable/rounded_rectangle_event">
+
+        <TextView
+                android:padding="10dp"
+                android:id="@+id/place_detail_address"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="5dp"/>
+            <View
+                    android:layout_width="fill_parent"
+                    android:layout_below="@id/place_detail_address"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="#D9D9D9"/>
+        <Button
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_below="@id/place_detail_address"
+            android:id="@+id/place_detail_map"
+            android:layout_marginBottom="5dp"
+            android:text="Open in Maps"/>
+
+            <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/place_detail_map"
+                    android:layout_marginBottom="5dp"
+                    android:background="#D9D9D9"/>
+
+            <Button
+                    android:layout_marginTop="5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_below="@id/place_detail_map"
+                    android:id="@+id/place_detail_directions"
+                    android:layout_marginBottom="5dp"
+                    android:text="Get directions to here"/>
+        </RelativeLayout>
+
+        <TextView
+                android:padding="10dp"
+                android:id="@+id/place_detail_url"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/rounded_rectangle_event"/>
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

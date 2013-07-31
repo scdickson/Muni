@@ -175,31 +175,31 @@ public class MainActivity extends Activity{
 				currentFragment = new HomeFragment();
 				break;
 			case 1:
-                currentFragment = new PeopleFragment();
-				break;
-			case 2:
-                currentFragment = new AlertFragment();
-				break;
-			case 3:
-                currentFragment = new PlaceFragment();
-				break;
-			case 4:
                 currentFragment = new NewsFragment();
 				break;
-			case 5:
+			case 2:
+                //Social
+				break;
+			case 3:
                 currentFragment = new EventFragment();
 				break;
-			case 6:
-                currentFragment = new TwitterFragment();
-				break;
-			case 7:
-                currentFragment = new FacebookFragment();
-				break;
-			case 8:
+			case 4:
                 currentFragment = new ContactFragment();
 				break;
-			case 9:
+			case 5:
+                currentFragment = new AlertFragment();
+				break;
+			case 6:
+                //Polling
+				break;
+			case 7:
+                currentFragment = new PlaceFragment();
+				break;
+			case 8:
                 currentFragment = new DocumentFragment();
+				break;
+			case 9:
+                currentFragment = new PeopleFragment();
 				break;
 		}
 		
@@ -217,15 +217,21 @@ public class MainActivity extends Activity{
             PeopleFragment tmp = (PeopleFragment) currentFragment;
             if(tmp.adapter.level == 1)
             {
+                tmp.groupA = " ";
+                tmp.groupB = null;
+                tmp.level = 0;
                 tmp.adapter.clearContent();
-                tmp.adapter.setLevel(0, " ", null);
+                tmp.adapter.setLevel(tmp.level, tmp.groupA, tmp.groupB);
                 tmp.adapter.notifyDataSetChanged();
                 tmp.peopleList.invalidateViews();
             }
             else if(tmp.adapter.level == 2)
             {
+                tmp.level = 1;
+                tmp.groupA = tmp.adapter.groupA;
+                tmp.groupB = null;
                 tmp.adapter.clearContent();
-                tmp.adapter.setLevel(1, tmp.adapter.groupA, null);
+                tmp.adapter.setLevel(tmp.level, tmp.groupA, tmp.groupB);
                 tmp.adapter.notifyDataSetChanged();
                 tmp.peopleList.invalidateViews();
             }

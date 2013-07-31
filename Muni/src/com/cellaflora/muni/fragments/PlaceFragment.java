@@ -1,6 +1,7 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -44,6 +47,7 @@ public class PlaceFragment extends Fragment
     ListView placeList;
     PlaceListAdapter adapter;
     private ProgressDialog progressDialog;
+    Parcelable state;
 
     public static final String SAVED_PLACES_PATH = "muni_saved_places";
     public static final int PLACES_REPLACE_INTERVAL = 60; //In minutes!
@@ -65,12 +69,18 @@ public class PlaceFragment extends Fragment
         super.onCreate(savedInstanceState);
         service = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new CoarseLocationListener();
-        service.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        service.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         Location lastKnownLocation = service.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if(lastKnownLocation != null)
         {
             currentLocation = lastKnownLocation;
         }
+    }
+
+    public void onPause()
+    {
+        super.onPause();
+        state = placeList.onSaveInstanceState();
     }
 
     public void loadPlaces()
@@ -120,7 +130,7 @@ public class PlaceFragment extends Fragment
                 adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
                 placeList = (ListView) getActivity().findViewById(R.id.place_list);
                 placeList.setAdapter(adapter);
-                //placeList.setOnItemClickListener(new PlaceItemClickListener());
+                placeList.setOnItemClickListener(new PlaceItemClickListener());
                 //placeList.startAnimation(in);
             }
         });
@@ -129,32 +139,43 @@ public class PlaceFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
 
-        try
+        if(state != null)
         {
-            File f = getActivity().getFileStreamPath(SAVED_PLACES_PATH);
-            if((f.lastModified() + (PLACES_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+            adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
+            placeList = (ListView) getActivity().findViewById(R.id.place_list);
+            placeList.setAdapter(adapter);
+            placeList.setOnItemClickListener(new PlaceItemClickListener());
+            placeList.onRestoreInstanceState(state);
+        }
+        else
+        {
+            try
             {
-                places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PLACES_PATH);
-                adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                placeList = (ListView) getActivity().findViewById(R.id.place_list);
-                placeList.setAdapter(adapter);
+                File f = getActivity().getFileStreamPath(SAVED_PLACES_PATH);
+                if((f.lastModified() + (PLACES_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                {
+                    places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PLACES_PATH);
+                    adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
+                    placeList = (ListView) getActivity().findViewById(R.id.place_list);
+                    placeList.setAdapter(adapter);
+                    placeList.setOnItemClickListener(new PlaceItemClickListener());
+                }
+                else
+                {
+                    loadPlaces();
+                }
             }
-            else
+            catch(Exception e)
             {
+                e.printStackTrace();
                 loadPlaces();
             }
         }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            loadPlaces();
-        }
-
-
     }
 
     private class CoarseLocationListener implements LocationListener
@@ -166,6 +187,7 @@ public class PlaceFragment extends Fragment
             {
                 adapter.setCurrentLocation(location);
                 adapter.notifyDataSetChanged();
+                placeList.invalidateViews();
             }
         }
 
@@ -173,5 +195,27 @@ public class PlaceFragment extends Fragment
         public void onProviderDisabled(String provider){}
         public void onStatusChanged(String provider, int status, Bundle extras){}
 
+    }
+
+    public void selectItem(int position)
+    {
+        if(((Place) adapter.getItem(position)) != null)
+        {
+            PlaceDetailFragment fragment = new PlaceDetailFragment(((Place) adapter.getItem(position)));
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out);
+            fragmentTransaction.replace(R.id.container, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
+
+    private class PlaceItemClickListener implements ListView.OnItemClickListener
+    {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id)
+        {
+            selectItem(position);
+        }
     }
 }

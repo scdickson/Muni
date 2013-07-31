@@ -306,7 +306,7 @@ public class EventFragment extends Fragment
 
         EventDetailFragment fragment = new EventDetailFragment(selected);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out);
         fragmentTransaction.replace(R.id.container, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();

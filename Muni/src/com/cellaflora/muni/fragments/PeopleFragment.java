@@ -12,7 +12,9 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +41,10 @@ public class PeopleFragment extends Fragment
     public PeopleListAdapter adapter = null;
     public ListView peopleList = null;
     private ProgressDialog progressDialog;
+    Parcelable state;
+    public int level = 0;
+    public String groupA = " ";
+    public String groupB = null;
 
     private static final String SAVED_PEOPLE_PATH = "muni_saved_people"; //Name of saved people file
     private static final int PEOPLE_REPLACE_INTERVAL = 60; //In minutes!
@@ -83,6 +89,12 @@ public class PeopleFragment extends Fragment
             groups.add(new PersonGroup(person.group_a));
             populateGroup(person);
         }
+    }
+
+    public void onPause()
+    {
+        super.onPause();
+        state = peopleList.onSaveInstanceState();
     }
 
     public void loadPeople()
@@ -168,25 +180,36 @@ public class PeopleFragment extends Fragment
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
 
-        try
+        if(state != null)
         {
-            File f = getActivity().getFileStreamPath(SAVED_PEOPLE_PATH);
-            if((f.lastModified() + (PEOPLE_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
-            {
-                groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH);
-                adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                adapter = new PeopleListAdapter(view.getContext(), groups, level, groupA, groupB);
                 peopleList = (ListView) getActivity().findViewById(R.id.people_list);
                 peopleList.setAdapter(adapter);
                 peopleList.setOnItemClickListener(new PeopleItemClickListener());
+                peopleList.onRestoreInstanceState(state);
+        }
+        else
+        {
+            try
+            {
+                File f = getActivity().getFileStreamPath(SAVED_PEOPLE_PATH);
+                if((f.lastModified() + (PEOPLE_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                {
+                    groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH);
+                    adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                    peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                    peopleList.setAdapter(adapter);
+                    peopleList.setOnItemClickListener(new PeopleItemClickListener());
+                }
+                else
+                {
+                    loadPeople();
+                }
             }
-            else
+            catch(Exception e)
             {
                 loadPeople();
             }
-        }
-        catch(Exception e)
-        {
-            loadPeople();
         }
 
 	}
@@ -199,7 +222,7 @@ public class PeopleFragment extends Fragment
         {
             PeopleDetailFragment fragment = new PeopleDetailFragment((Person) tmp);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out);
             fragmentTransaction.replace(R.id.container, fragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
@@ -210,12 +233,18 @@ public class PeopleFragment extends Fragment
 
             if(adapter.level == 0)
             {
+                level = 1;
+                groupA = (String) tmp;
+                groupB = null;
 
-                adapter.setLevel(1, ((String) tmp), null);
+                adapter.setLevel(level, groupA, groupB);
             }
             else if(adapter.level == 1)
             {
-                adapter.setLevel(2, adapter.groupA, ((String) tmp));
+                level = 2;
+                groupA = adapter.groupA;
+                groupB = (String) tmp;
+                adapter.setLevel(level, groupA, groupB);
             }
 
             adapter.notifyDataSetChanged();
