@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -133,7 +132,7 @@ public class MainActivity extends FragmentActivity {
             if(getDirSize() >= (MAX_CACHE_SIZE * 1000000))
             {
                 ArrayList<File> files = new ArrayList(Arrays.asList(getFilesDir().listFiles()));
-                Collections.sort(files, new fileComparator());
+                Collections.sort(files, new FileComparator());
                 int i = 0;
 
                 //Log.d("err", "Size before: " + getDirSize());

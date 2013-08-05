@@ -26,7 +26,7 @@ public class PollingFragment extends Fragment
 {
     View view;
     public static ArrayList<Poll> polls;
-    ArrayList<String> completedPolls;
+    public static ArrayList<String[]> completedPolls;
     private ProgressDialog progressDialog;
 
     public static final String SAVED_POLLS_PATH = "muni_saved_polls";
@@ -65,6 +65,31 @@ public class PollingFragment extends Fragment
                     }
                 }
 
+                try
+                {
+                    completedPolls = (ArrayList<String[]>) PersistenceManager.readObject(view.getContext(), SAVED_POLLS_PATH);
+                    if(completedPolls != null)
+                    {
+                        for(String[] data : completedPolls)
+                        {
+                            for(Poll p : polls)
+                            {
+                                if(data[0].equals(p.objectId))
+                                {
+                                    p.completed = true;
+                                    p.selected_option = Integer.parseInt(data[1]);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                    completedPolls = new ArrayList<String[]>();
+                }
+
                 ViewPager pager=(ViewPager) view.findViewById(R.id.poll_pager);
                 pager.setAdapter(buildAdapter());
                 progressDialog.dismiss();
@@ -78,22 +103,26 @@ public class PollingFragment extends Fragment
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
-
-        try
-        {
-            completedPolls = (ArrayList<String>) PersistenceManager.readObject(view.getContext(), SAVED_POLLS_PATH);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            completedPolls = new ArrayList<String>();
-        }
-
         loadPolls();
     }
 
     private PagerAdapter buildAdapter()
     {
-        return (new PollingPageAdapter(getActivity(), getChildFragmentManager()));
+        return (new PollingPageAdapter(getActivity(), getChildFragmentManager(), this));
+    }
+
+    public void savePollState()
+    {
+        try
+        {
+            if(completedPolls != null)
+            {
+                PersistenceManager.writeObject(view.getContext(), "muni_saved_polls", completedPolls);
+            }
+        }
+        catch(Exception e)
+        {
+
+        }
     }
 }

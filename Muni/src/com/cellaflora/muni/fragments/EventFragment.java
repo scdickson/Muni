@@ -1,6 +1,5 @@
 package com.cellaflora.muni.fragments;
 
-import android.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.graphics.Color;
@@ -9,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,20 +22,16 @@ import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.EventListAdapter;
-import com.cellaflora.muni.fileComparator;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;

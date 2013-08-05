@@ -14,17 +14,19 @@ import com.cellaflora.muni.fragments.PollingPage;
 public class PollingPageAdapter extends FragmentPagerAdapter
 {
     Context context;
+    PollingFragment pf;
 
-    public PollingPageAdapter(Context context, FragmentManager mgr)
+    public PollingPageAdapter(Context context, FragmentManager mgr, PollingFragment pf)
     {
         super(mgr);
         this.context = context;
+        this.pf = pf;
     }
 
     @Override
     public Fragment getItem(int position)
     {
-        return(new PollingPage(PollingFragment.polls.get(position)));
+        return(new PollingPage(PollingFragment.polls.get(position), pf));
     }
 
     @Override
