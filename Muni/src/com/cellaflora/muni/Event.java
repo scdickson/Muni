@@ -17,7 +17,7 @@ public class Event implements Serializable
     public String photo_url;
     public String location;
     public String address;
-    public String associated_place;
+    public Place associated_place;
     public String event_url;
     public String description;
     public boolean isAllDay;

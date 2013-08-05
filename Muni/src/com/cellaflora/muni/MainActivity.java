@@ -4,16 +4,18 @@ import com.cellaflora.muni.adapters.MenuListAdapter;
 import com.cellaflora.muni.fragments.*;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
+import com.parse.ParseInstallation;
+import com.parse.PushService;
 
 import android.app.ActionBar;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 
-public class MainActivity extends Activity{
+public class MainActivity extends FragmentActivity {
 	
 	private String[] menuDrawerItems;
 	private ListView menuDrawer;
@@ -61,10 +63,12 @@ public class MainActivity extends Activity{
 		//Initialize Parse
 		Parse.initialize(this, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);
 		ParseAnalytics.trackAppOpened(getIntent());
+        PushService.setDefaultPushCallback(this, MainActivity.class);
+        ParseInstallation.getCurrentInstallation().saveInBackground();
 		
 		//Load initial fragment
 		HomeFragment homeFragment = new HomeFragment();
-		FragmentTransaction tx = getFragmentManager().beginTransaction();
+		FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         tx.add(R.id.container, homeFragment);
         tx.commit();
         
@@ -114,10 +118,15 @@ public class MainActivity extends Activity{
         return size;
     }
 
-	protected void onPostCreate(Bundle savedInstanceState) 
-	{
+    protected void onPostCreate(Bundle savedInstanceState)
+    {
         super.onPostCreate(savedInstanceState);
         mMenuToggle.syncState();
+    }
+
+	protected void onDestroy()
+	{
+        super.onDestroy();
 
         try
         {
@@ -167,7 +176,7 @@ public class MainActivity extends Activity{
 	private void selectItem(int position)
 	{
 		//Fragment fragment = null;
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 		
 		switch(position)
 		{
@@ -190,7 +199,7 @@ public class MainActivity extends Activity{
                 currentFragment = new AlertFragment();
 				break;
 			case 6:
-                //Polling
+                currentFragment = new PollingFragment();
 				break;
 			case 7:
                 currentFragment = new PlaceFragment();
@@ -202,17 +211,20 @@ public class MainActivity extends Activity{
                 currentFragment = new PeopleFragment();
 				break;
 		}
-		
-        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out);
-		fragmentTransaction.replace(R.id.container, currentFragment);
-		fragmentTransaction.addToBackStack(null);
-	    fragmentTransaction.commit();
-	    drawerLayout.closeDrawer(menuDrawer);
+
+        if(currentFragment != null)
+        {
+            fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
+		    fragmentTransaction.replace(R.id.container, currentFragment);
+		    fragmentTransaction.addToBackStack(null);
+	        fragmentTransaction.commit();
+            drawerLayout.closeDrawer(menuDrawer);
+        }
 	}
 	
 	public void onBackPressed()
     {
-        if(getFragmentManager().findFragmentById(R.id.container).getClass().equals(PeopleFragment.class))
+        if(getSupportFragmentManager().findFragmentById(R.id.container).getClass().equals(PeopleFragment.class))
         {
             PeopleFragment tmp = (PeopleFragment) currentFragment;
             if(tmp.adapter.level == 1)
@@ -238,11 +250,13 @@ public class MainActivity extends Activity{
             else
             {
                 super.onBackPressed();
+                //overridePendingTransition(R.animator.slide_out, R.animator.slide_in);
             }
         }
         else
         {
             super.onBackPressed();
+            //overridePendingTransition(R.animator.slide_out, R.animator.slide_in);
         }
     }
 

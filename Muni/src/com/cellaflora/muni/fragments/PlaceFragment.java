@@ -1,7 +1,7 @@
 package com.cellaflora.muni.fragments;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -203,7 +203,7 @@ public class PlaceFragment extends Fragment
         {
             PlaceDetailFragment fragment = new PlaceDetailFragment(((Place) adapter.getItem(position)));
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out);
+            fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
             fragmentTransaction.replace(R.id.container, fragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();

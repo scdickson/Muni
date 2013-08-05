@@ -1,8 +1,8 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
@@ -25,6 +25,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -66,7 +67,7 @@ public class PlaceDetailFragment extends Fragment
     {
         super.onDestroyView();
         Fragment fragment = (getFragmentManager().findFragmentById(R.id.place_map));
-        FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.remove(fragment);
         ft.commit();
     }
@@ -79,7 +80,7 @@ public class PlaceDetailFragment extends Fragment
         {
             try
             {
-                map = ((MapFragment) getFragmentManager().findFragmentById(R.id.place_map)).getMap();
+                map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.place_map)).getMap();
                 map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 String geopoint[] = place.geo_point.split(", ");
                 LatLng coords = new LatLng(Double.parseDouble(geopoint[0]), Double.parseDouble(geopoint[1]));

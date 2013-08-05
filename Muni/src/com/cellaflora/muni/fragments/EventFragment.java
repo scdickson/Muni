@@ -1,11 +1,11 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
@@ -21,14 +21,17 @@ import android.widget.ListView;
 import com.cellaflora.muni.Event;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.PersistenceManager;
+import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.EventListAdapter;
 import com.cellaflora.muni.fileComparator;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -180,24 +183,58 @@ public class EventFragment extends Fragment
                         tmp.photo_caption = parse.getString("F_Photo_Caption");
                         tmp.location = parse.getString("H1_Location_Title");
 
-                        if(parse.getString("H_Street_Address") != null && parse.getString("I_City") != null && parse.getString("J_State") != null && parse.getString("K_Zip_Code") != null)
-                        {
-                            tmp.address = parse.getString("H_Street_Address") + "\n" + parse.getString("I_City") + " " + parse.getString("J_State") + " " + parse.getString("K_Zip_Code");
-                        }
-
                         tmp.event_url = parse.getString("L_Hyperlink");
                         tmp.isAllDay = parse.getBoolean("E_Event_Is_All_Day");
 
-                        ParseFile file = (ParseFile) parse.get("G_Photo");
+                        ParseFile photo = (ParseFile) parse.get("G_Photo");
 
-                        if(file != null && file.getUrl() != null)
+                        if(photo != null && photo.getUrl() != null)
                         {
-                            tmp.photo_url = file.getUrl();
+                            tmp.photo_url = photo.getUrl();
                         }
 
                         events.add(tmp);
-                    }
 
+                        try
+                        {
+                            parse.getParseObject("O_Location").fetchIfNeededInBackground(new GetCallback<ParseObject>()
+                            {
+                                public void done(ParseObject object, ParseException e)
+                                {
+                                    if(e == null)
+                                    {
+                                        Place associated_place = new Place(object.getString("A_Name"));
+                                        associated_place.street_address = object.getString("C_Street_Address");
+                                        associated_place.city = object.getString("D_City");
+                                        associated_place.state = object.getString("E_State");
+                                        associated_place.zip_code = object.getString("F_Zip_Code");
+                                        associated_place.tel_number = object.getString("G_Phone_Number");
+                                        associated_place.web_url = object.getString("H_Website");
+                                        associated_place.geo_point = object.getParseGeoPoint("I_GeoPoint").getLatitude() + ", " + object.getParseGeoPoint("I_GeoPoint").getLongitude();
+                                        associated_place.notes = object.getString("J_Notes");
+
+                                        if(events.get(events.size()-1) != null)
+                                        {
+                                            if(associated_place != null)
+                                            {
+                                                events.get(events.size()-1).address = associated_place.street_address + "\n" + associated_place.city + " " + associated_place.state + " " + associated_place.zip_code;
+                                                events.get(events.size()-1).associated_place = associated_place;
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        catch(Exception ex)
+                        {
+                            //if(parse.getString("H_Street_Address") != null && parse.getString("I_City") != null && parse.getString("J_State") != null && parse.getString("K_Zip_Code") != null)
+                            //{
+                                //events.get(events.size()-1).address = parse.getString("H_Street_Address") + "\n" + parse.getString("I_City") + " " + parse.getString("J_State") + " " + parse.getString("K_Zip_Code");
+                            //}
+                            ex.printStackTrace();
+                        }
+
+                    }
                     try
                     {
                         PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_EVENTS_PATH, events);
@@ -306,7 +343,7 @@ public class EventFragment extends Fragment
 
         EventDetailFragment fragment = new EventDetailFragment(selected);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out);
+        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
         fragmentTransaction.replace(R.id.container, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();

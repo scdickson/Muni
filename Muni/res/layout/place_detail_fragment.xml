@@ -11,7 +11,7 @@
               android:layout_weight="4"
               android:layout_width="match_parent"
               android:layout_height="0dp"
-              class="com.google.android.gms.maps.MapFragment"/>
+              class="com.google.android.gms.maps.SupportMapFragment"/>
 
     <ScrollView
                 android:layout_width="fill_parent"

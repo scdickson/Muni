@@ -2,7 +2,7 @@ package com.cellaflora.muni.fragments;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.view.LayoutInflater;

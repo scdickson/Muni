@@ -126,7 +126,7 @@ public class EventListAdapter extends BaseAdapter
 
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        TextView txtTitle, txtDescription, txtDate, txtLocation, txtUrl;
+        TextView txtTitle, txtDescription, txtDate, txtLocation, txtUrl, txtAddress;
         ImageView imgEvent;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.event_list_row, parent, false);
@@ -136,9 +136,15 @@ public class EventListAdapter extends BaseAdapter
         txtDescription = (TextView) itemView.findViewById(R.id.event_description);
         txtDate = (TextView) itemView.findViewById(R.id.event_time);
         txtLocation = (TextView) itemView.findViewById(R.id.event_location);
+        txtAddress = (TextView) itemView.findViewById(R.id.event_address);
         txtUrl = (TextView) itemView.findViewById(R.id.event_url);
         imgEvent = (ImageView) itemView.findViewById(R.id.event_image);
         Typeface avenirBlack = Typeface.createFromAsset(context.getAssets(), "fonts/Avenir LT 95 Black.ttf");
+
+        if(e.address != null)
+        {
+            Log.d("fatal", e.address);
+        }
 
         if(e.photo_url != null)
         {
@@ -173,6 +179,15 @@ public class EventListAdapter extends BaseAdapter
         else
         {
             txtTitle.setVisibility(View.GONE);
+        }
+
+        if(e.address != null)
+        {
+            txtAddress.setText(e.address);
+        }
+        else
+        {
+            txtAddress.setVisibility(View.GONE);
         }
 
         if(e.description != null)
