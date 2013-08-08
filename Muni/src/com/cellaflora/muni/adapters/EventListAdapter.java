@@ -1,5 +1,6 @@
 package com.cellaflora.muni.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import com.cellaflora.muni.Event;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.fragments.EventDetailFragment;
 import com.cellaflora.muni.fragments.EventFragment;
+import com.cellaflora.muni.fragments.FullScreenImageView;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,16 +51,18 @@ public class EventListAdapter extends BaseAdapter
     Context context;
     Calendar c;
     Date now;
+    Activity activity;
 
     public static final int IMAGE_BUFFER_SIZE = 20480;
 
-    public EventListAdapter(Context context, ArrayList<Event> events, int event_selector)
+    public EventListAdapter(Context context, ArrayList<Event> events, int event_selector, Activity activity)
     {
         this.context = context;
         this.events = new ArrayList<Event>();
         this.allEvents = events;
         this.c = Calendar.getInstance();
         this.now = c.getTime();
+        this.activity = activity;
 
         if(event_selector == EventFragment.EVENT_TYPE_UPCOMING)
         {
@@ -154,7 +158,7 @@ public class EventListAdapter extends BaseAdapter
                 try
                 {
                     imgEvent.setImageBitmap(null);
-                    new loadImage().execute(imgEvent, f);
+                    new loadImage().execute(imgEvent, f, e);
                 }
                 catch(Exception ex)
                 {
@@ -311,32 +315,45 @@ public class EventListAdapter extends BaseAdapter
     {
         ImageView photo;
         Bitmap image;
+        File f;
+        Event event;
 
         protected Void doInBackground(Object... arg0)
         {
             try
             {
                 photo = (ImageView) arg0[0];
-                File f = (File) arg0[1];
+                f = (File) arg0[1];
+                event = (Event) arg0[2];
+                image = BitmapFactory.decodeStream(new FileInputStream(f));
+            }
+            catch(OutOfMemoryError ome)
+            {
+                try
+                {
+                    photo = (ImageView) arg0[0];
+                    f = (File) arg0[1];
 
-                BitmapFactory.Options o = new BitmapFactory.Options();
-                o.inJustDecodeBounds = true;
-                BitmapFactory.decodeStream(new FileInputStream(f),null,o);
-                final int REQUIRED_SIZE=80;
+                    BitmapFactory.Options o = new BitmapFactory.Options();
+                    o.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+                    final int REQUIRED_SIZE=80;
 
-                int width_tmp=o.outWidth, height_tmp=o.outHeight;
-                int scale=1;
-                while(true){
-                    if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
-                        break;
-                    width_tmp/=2;
-                    height_tmp/=2;
-                    scale*=2;
+                    int width_tmp=o.outWidth, height_tmp=o.outHeight;
+                    int scale=1;
+                    while(true){
+                        if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+                            break;
+                        width_tmp/=2;
+                        height_tmp/=2;
+                        scale*=2;
+                    }
+
+                    BitmapFactory.Options o2 = new BitmapFactory.Options();
+                    o2.inSampleSize=scale;
+                    image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
                 }
-
-                BitmapFactory.Options o2 = new BitmapFactory.Options();
-                o2.inSampleSize=scale;
-                image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+                catch(Exception ex){}
             }
             catch(Exception e)
             {
@@ -349,10 +366,21 @@ public class EventListAdapter extends BaseAdapter
         {
             if(image != null)
             {
-                final Animation in = new AlphaAnimation(0.0f, 1.0f);
-                in.setDuration(150);
+                //final Animation in = new AlphaAnimation(0.0f, 1.0f);
+                //in.setDuration(150);
                 photo.setImageBitmap(image);
-                photo.startAnimation(in);
+                //photo.startAnimation(in);
+                photo.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        Intent fullscreenimage = new Intent(activity, FullScreenImageView.class);
+                        fullscreenimage.putExtra("image", f.getAbsolutePath() + "_uncompressed");
+                        fullscreenimage.putExtra("caption", event.photo_caption);
+                        activity.startActivity(fullscreenimage);
+                    }
+                });
             }
         }
     }
@@ -361,18 +389,21 @@ public class EventListAdapter extends BaseAdapter
     {
         ImageView photo;
         Bitmap image;
+        File compressed, file;
+        Event event;
 
         protected Void doInBackground(Object... arg0)
         {
             try
             {
                 photo = (ImageView) arg0[0];
-                Event event = (Event) arg0[1];
+                event = (Event) arg0[1];
                 URL url = new URL(event.photo_url);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 InputStream is = connection.getInputStream();
 
-                File file = new File(context.getFilesDir() + "/" + event.objectId);
+                file = new File(context.getFilesDir() + "/" + event.objectId + "_uncompressed");
+                compressed = new File(context.getFilesDir() + "/" + event.objectId);
                 FileOutputStream fos = new FileOutputStream(file);
                 BufferedOutputStream bos = new BufferedOutputStream(fos, IMAGE_BUFFER_SIZE);
                 byte data[] = new byte[IMAGE_BUFFER_SIZE];
@@ -405,6 +436,8 @@ public class EventListAdapter extends BaseAdapter
                 BitmapFactory.Options o2 = new BitmapFactory.Options();
                 o2.inSampleSize=scale;
                 image = BitmapFactory.decodeStream(new FileInputStream(file), null, o2);
+                FileOutputStream out = new FileOutputStream(compressed);
+                image.compress(Bitmap.CompressFormat.JPEG, 90, out);
 
             }
             catch(Exception e)
@@ -422,6 +455,18 @@ public class EventListAdapter extends BaseAdapter
                 in.setDuration(1000);
                 photo.setImageBitmap(image);
                 photo.startAnimation(in);
+
+                photo.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        Intent fullscreenimage = new Intent(activity, FullScreenImageView.class);
+                        fullscreenimage.putExtra("image", file.getAbsolutePath());
+                        fullscreenimage.putExtra("caption", event.photo_caption);
+                        activity.startActivity(fullscreenimage);
+                    }
+                });
             }
         }
     }

@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="13"
         android:targetSdkVersion="17" />
 
     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
@@ -45,8 +45,8 @@
         </activity>
 
         <activity
-                android:name="com.cellaflora.muni.fragments.PollingFragment"
-                android:screenOrientation="portrait"/>
+                android:name="com.cellaflora.muni.fragments.FullScreenImageView"
+                android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
 
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"

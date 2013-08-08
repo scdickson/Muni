@@ -6,7 +6,7 @@ import java.util.Comparator;
 /**
  * Created by sdickson on 7/28/13.
  */
-public class FileComparator implements Comparator<File>
+public class fileComparator implements Comparator<File>
 {
     //Sorts from largest files to smallest files.
     public int compare(File f1, File f2)

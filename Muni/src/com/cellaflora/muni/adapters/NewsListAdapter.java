@@ -1,9 +1,12 @@
 package com.cellaflora.muni.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.R;
+import com.cellaflora.muni.fragments.FullScreenImageView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -35,14 +39,16 @@ public class NewsListAdapter extends BaseAdapter
     Context context;
     ArrayList<NewsObject> news;
     LayoutInflater inflater;
+    Activity activity;
 
     public static final int IMAGE_BUFFER_SIZE = 20480;
 
-    public NewsListAdapter(Context context, ArrayList<NewsObject> news)
+    public NewsListAdapter(Context context, ArrayList<NewsObject> news, Activity activity)
     {
         this.context = context;
         this.inflater = inflater;
         this.news = news;
+        this.activity = activity;
     }
 
     public int getCount()
@@ -82,7 +88,7 @@ public class NewsListAdapter extends BaseAdapter
                 try
                 {
                     imgNews.setImageBitmap(null);
-                    new loadImage().execute(imgNews, f);
+                    new loadImage().execute(imgNews, f, n.photo_caption);
                 }
                 catch(Exception ex)
                 {
@@ -135,37 +141,50 @@ public class NewsListAdapter extends BaseAdapter
     {
         ImageView photo;
         Bitmap image;
+        File f;
+        String caption;
 
         protected Void doInBackground(Object... arg0)
         {
             try
             {
                 photo = (ImageView) arg0[0];
-                File f = (File) arg0[1];
+                f = (File) arg0[1];
+                caption = (String) arg0[2];
 
-                BitmapFactory.Options o = new BitmapFactory.Options();
-                o.inJustDecodeBounds = true;
-                BitmapFactory.decodeStream(new FileInputStream(f),null,o);
-                final int REQUIRED_SIZE=80;
+                image = BitmapFactory.decodeStream(new FileInputStream(f));
+            }
+            catch(OutOfMemoryError ome)
+            {
+                try
+                {
+                    photo = (ImageView) arg0[0];
+                    f = (File) arg0[1];
+                    caption = (String) arg0[2];
 
-                int width_tmp=o.outWidth, height_tmp=o.outHeight;
-                int scale=1;
-                while(true){
-                    if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
-                        break;
-                    width_tmp/=2;
-                    height_tmp/=2;
-                    scale*=2;
+                    BitmapFactory.Options o = new BitmapFactory.Options();
+                    o.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+                    final int REQUIRED_SIZE=80;
+
+                    int width_tmp=o.outWidth, height_tmp=o.outHeight;
+                    int scale=1;
+                    while(true){
+                        if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+                            break;
+                        width_tmp/=2;
+                        height_tmp/=2;
+                        scale*=2;
+                    }
+
+                    BitmapFactory.Options o2 = new BitmapFactory.Options();
+                    o2.inSampleSize=scale;
+                    image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
                 }
-
-                BitmapFactory.Options o2 = new BitmapFactory.Options();
-                o2.inSampleSize=scale;
-                image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+                catch(Exception ex){}
             }
             catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+            {}
             return null;
         }
 
@@ -173,10 +192,22 @@ public class NewsListAdapter extends BaseAdapter
         {
             if(image != null)
             {
-                final Animation in = new AlphaAnimation(0.0f, 1.0f);
-                in.setDuration(100);
+                //final Animation in = new AlphaAnimation(0.0f, 1.0f);
+                //in.setDuration(100);
                 photo.setImageBitmap(image);
-                photo.startAnimation(in);
+                //photo.startAnimation(in);
+
+                photo.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        Intent fullscreenimage = new Intent(activity, FullScreenImageView.class);
+                        fullscreenimage.putExtra("image", f.getAbsolutePath() + "_uncompressed");
+                        fullscreenimage.putExtra("caption", caption);
+                        activity.startActivity(fullscreenimage);
+                    }
+                });
             }
         }
     }
@@ -185,18 +216,21 @@ public class NewsListAdapter extends BaseAdapter
     {
         ImageView photo;
         Bitmap image;
+        NewsObject n;
+        File file, compressed;
 
         protected Void doInBackground(Object... arg0)
         {
             try
             {
                 photo = (ImageView) arg0[0];
-                NewsObject n = (NewsObject) arg0[1];
+                n = (NewsObject) arg0[1];
                 URL url = new URL(n.photo_url);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 InputStream is = connection.getInputStream();
 
-                File file = new File(context.getFilesDir() + "/" + n.objectId);
+                file = new File(context.getFilesDir() + "/" + n.objectId + "_uncompressed");
+                compressed = new File(context.getFilesDir() + "/" + n.objectId);
                 FileOutputStream fos = new FileOutputStream(file);
                 BufferedOutputStream bos = new BufferedOutputStream(fos, IMAGE_BUFFER_SIZE);
                 byte data[] = new byte[IMAGE_BUFFER_SIZE];
@@ -230,6 +264,9 @@ public class NewsListAdapter extends BaseAdapter
                 o2.inSampleSize=scale;
                 image = BitmapFactory.decodeStream(new FileInputStream(file), null, o2);
 
+                FileOutputStream out = new FileOutputStream(compressed);
+                image.compress(Bitmap.CompressFormat.JPEG, 90, out);
+
             }
             catch(Exception e)
             {
@@ -246,6 +283,18 @@ public class NewsListAdapter extends BaseAdapter
                 in.setDuration(1000);
                 photo.setImageBitmap(image);
                 photo.startAnimation(in);
+
+                photo.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        Intent fullscreenimage = new Intent(activity, FullScreenImageView.class);
+                        fullscreenimage.putExtra("image", file.getAbsolutePath());
+                        fullscreenimage.putExtra("caption", n.photo_caption);
+                        activity.startActivity(fullscreenimage);
+                    }
+                });
             }
         }
     }

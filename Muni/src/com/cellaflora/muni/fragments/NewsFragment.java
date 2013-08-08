@@ -136,7 +136,7 @@ public class NewsFragment extends Fragment
 
                 progressDialog.dismiss();
 
-                adapter = new NewsListAdapter(view.getContext(), news);
+                adapter = new NewsListAdapter(view.getContext(), news, getActivity());
                 newsList = (ListView) getActivity().findViewById(R.id.news_list);
                 newsList.setAdapter(adapter);
                 newsList.setOnItemClickListener(new NewsItemClickListener());
@@ -162,7 +162,7 @@ public class NewsFragment extends Fragment
 
         if(state != null)
         {
-            adapter = new NewsListAdapter(view.getContext(), news);
+            adapter = new NewsListAdapter(view.getContext(), news, getActivity());
             newsList = (ListView) getActivity().findViewById(R.id.news_list);
             newsList.setAdapter(adapter);
             newsList.setOnItemClickListener(new NewsItemClickListener());
@@ -176,7 +176,7 @@ public class NewsFragment extends Fragment
                 if((f.lastModified() + (NEWS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
                     news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_NEWS_PATH);
-                    adapter = new NewsListAdapter(view.getContext(), news);
+                    adapter = new NewsListAdapter(view.getContext(), news, getActivity());
                     newsList = (ListView) getActivity().findViewById(R.id.news_list);
                     newsList.setAdapter(adapter);
                     newsList.setOnItemClickListener(new NewsItemClickListener());

@@ -5,6 +5,7 @@ import com.cellaflora.muni.fragments.*;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseInstallation;
+import com.parse.ParseTwitterUtils;
 import com.parse.PushService;
 
 import android.app.ActionBar;
@@ -44,6 +45,8 @@ public class MainActivity extends FragmentActivity {
 	//Parse constants
 	public static final String PARSE_APPLICATION_ID = "ACXaa1A1Vo759kga9aYlMYGiUJABaKpphndbeFhn";
 	public static final String PARSE_CLIENT_KEY = "7VthvZjSwbXzMV3h4hXOmnazhYYTn7CICKAGd7cJ";
+    public static final String TWITTER_CONSUMER_KEY = "N6X3G2gj4RJNO6c5B1xlA";
+    public static final String TWITTER_CONSUMER_SECRET = "zU2eCl3vnZsRcwhDpCgIj4AFORGq6gVXiiApTNo0Q";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -64,6 +67,7 @@ public class MainActivity extends FragmentActivity {
 		ParseAnalytics.trackAppOpened(getIntent());
         PushService.setDefaultPushCallback(this, MainActivity.class);
         ParseInstallation.getCurrentInstallation().saveInBackground();
+        ParseTwitterUtils.initialize(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
 		
 		//Load initial fragment
 		HomeFragment homeFragment = new HomeFragment();
@@ -132,7 +136,7 @@ public class MainActivity extends FragmentActivity {
             if(getDirSize() >= (MAX_CACHE_SIZE * 1000000))
             {
                 ArrayList<File> files = new ArrayList(Arrays.asList(getFilesDir().listFiles()));
-                Collections.sort(files, new FileComparator());
+                Collections.sort(files, new fileComparator());
                 int i = 0;
 
                 //Log.d("err", "Size before: " + getDirSize());
@@ -186,7 +190,7 @@ public class MainActivity extends FragmentActivity {
                 currentFragment = new NewsFragment();
 				break;
 			case 2:
-                //Social
+                currentFragment = new TwitterFragment();
 				break;
 			case 3:
                 currentFragment = new EventFragment();

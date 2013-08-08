@@ -242,7 +242,7 @@ public class EventFragment extends Fragment
 
                 progressDialog.dismiss();
 
-                adapter = new EventListAdapter(view.getContext(), events, current_event_type);
+                adapter = new EventListAdapter(view.getContext(), events, current_event_type, getActivity());
                 eventList = (ListView) getActivity().findViewById(R.id.event_list);
                 eventList.setAdapter(adapter);
                 eventList.setOnItemClickListener(new EventItemClickListener());
@@ -356,7 +356,7 @@ public class EventFragment extends Fragment
     {
         public void handleMessage(Message msg)
         {
-            adapter = new EventListAdapter(view.getContext(), events, current_event_type);
+            adapter = new EventListAdapter(view.getContext(), events, current_event_type, getActivity());
             eventList = (ListView) getActivity().findViewById(R.id.event_list);
             eventList.setAdapter(adapter);
             eventList.setOnItemClickListener(new EventItemClickListener());

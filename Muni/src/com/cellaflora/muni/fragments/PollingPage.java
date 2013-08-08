@@ -1,20 +1,16 @@
 package com.cellaflora.muni.fragments;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
@@ -34,9 +30,17 @@ public class PollingPage extends Fragment
     Poll poll;
     long total;
     PollingFragment pf;
-    TextView txtOptionA, txtOptionB, txtOptionC;
+    ScrollView pollOptionsView;
+    LinearLayout pollResultsView;
+    TextView txtOptionA, txtOptionB, txtOptionC, txtPollExternal;
+    Button btnPollA, btnPollB, btnPollC;
     ArrayList<Bar> points;
     BarGraph g;
+
+    public static final String OPTION_A_COLOR = "#323C45";
+    public static final String OPTION_B_COLOR = "#EC4B43";
+    public static final String OPTION_C_COLOR = "#A0A6B2";
+
 
     public PollingPage(Poll poll, PollingFragment pf)
     {
@@ -51,157 +55,217 @@ public class PollingPage extends Fragment
         return view;
     }
 
+    public int getPercent(int option)
+    {
+        long total = poll.option_A_results + poll.option_B_results + poll.option_C_results;
+        int percent = 0;
+
+        switch(option)
+        {
+            case 1:
+                percent = (int)(((float) poll.option_A_results / (float) total) * 100.0);
+                break;
+            case 2:
+                percent = (int)(((float) poll.option_B_results / (float) total) * 100.0);
+                break;
+            case 3:
+                percent = (int)(((float) poll.option_C_results / (float) total) * 100.0);
+                break;
+        }
+
+        return percent;
+    }
+
     public void onResume()
     {
         super.onResume();
         TextView txtPoll = (TextView) view.findViewById(R.id.poll_question);
+        txtPollExternal = (TextView) view.findViewById(R.id.poll_question_external);
         txtOptionA = (TextView) view.findViewById(R.id.poll_option_A_text);
         txtOptionB = (TextView) view.findViewById(R.id.poll_option_B_text);
         txtOptionC = (TextView) view.findViewById(R.id.poll_option_C_text);
+        btnPollA = (Button) view.findViewById(R.id.poll_option_a);
+        btnPollB = (Button) view.findViewById(R.id.poll_option_b);
+        btnPollC = (Button) view.findViewById(R.id.poll_option_c);
+        pollOptionsView = (ScrollView) view.findViewById(R.id.poll_option_view);
+        pollResultsView = (LinearLayout) view.findViewById(R.id.poll_results_layout);
+        points = new ArrayList<Bar>();
+
+        txtPoll.setText(poll.question);
+        txtPollExternal.setText(poll.question);
 
         if(poll.completed)
         {
-            if(txtOptionA != null)
+            if(poll.option_A != null)
             {
-                if(poll.selected_option != 1)
-                {
-                    txtOptionA.setBackgroundColor(Color.TRANSPARENT);
-                }
+                txtOptionA.setText(poll.option_A + "\n" + getPercent(1) + "%");
+                Bar optionA = new Bar();
+                optionA.setColor(Color.parseColor(OPTION_A_COLOR));
+                optionA.setValue(poll.option_A_results);
+                optionA.setName("OPTION_A");
+                points.add(optionA);
+            }
+            else
+            {
+                txtOptionA.setVisibility(View.GONE);
             }
 
-            if(txtOptionB != null)
+            if(poll.option_B != null)
             {
-                if(poll.selected_option != 2)
-                {
-                    txtOptionB.setBackgroundColor(Color.TRANSPARENT);
-                }
+                txtOptionB.setText(poll.option_B + "\n" + getPercent(2) + "%");
+                Bar optionB = new Bar();
+                optionB.setColor(Color.parseColor(OPTION_B_COLOR));
+                optionB.setValue(poll.option_B_results);
+                optionB.setName("OPTION_B");
+                points.add(optionB);
+            }
+            else
+            {
+                txtOptionB.setVisibility(View.GONE);
             }
 
-            if(txtOptionC != null)
+            if(poll.option_C != null)
             {
-                if(poll.selected_option != 3)
-                {
-                    txtOptionC.setBackgroundColor(Color.TRANSPARENT);
-                }
+                txtOptionC.setText(poll.option_C + "\n" + getPercent(3) + "%");
+                Bar optionC = new Bar();
+                optionC.setColor(Color.parseColor(OPTION_C_COLOR));
+                optionC.setValue(poll.option_C_results);
+                optionC.setName("OPTION_C");
+                points.add(optionC);
             }
-        }
+            else
+            {
+                txtOptionC.setVisibility(View.GONE);
+            }
 
-        txtPoll.setText(poll.question);
-
-        points = new ArrayList<Bar>();
-
-        if(poll.option_A != null)
-        {
-            txtOptionA.setText(poll.option_A);
-            txtOptionA.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(!poll.completed)
-                    {
-                        pollCompleted(1);
-                    }
-                }
-            });
-            Bar tmp = new Bar();
-            tmp.setColor(Color.parseColor("#99CC00"));
-            tmp.setValue(poll.option_A_results);
-            tmp.setName("OPTION_A");
-            tmp.option = 1;
-            points.add(tmp);
+            displayPollResults(false);
         }
         else
         {
-            txtOptionA.setVisibility(View.GONE);
-        }
-
-        if(poll.option_B != null)
-        {
-            txtOptionB.setText(poll.option_B);
-            txtOptionB.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(!poll.completed)
-                    {
-                        pollCompleted(2);
+            if(poll.option_A != null)
+            {
+                btnPollA.setText(poll.option_A);
+                btnPollA.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!poll.completed)
+                        {
+                            poll.option_A_results++;
+                            pollCompleted(1);
+                        }
                     }
-                }
-            });
-            Bar tmp = new Bar();
-            tmp.setColor(Color.parseColor("#FFBB33"));
-            tmp.setValue(poll.option_B_results);
-            tmp.setName("OPTION_B");
-            tmp.option = 2;
-            points.add(tmp);
-        }
-        else
-        {
-            txtOptionB.setVisibility(View.GONE);
-        }
+                });
+                txtOptionA.setText(poll.option_A);
 
-        if(poll.option_C != null)
-        {
-            txtOptionC.setText(poll.option_C);
-            txtOptionC.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(!poll.completed)
-                    {
-                        pollCompleted(3);
+            }
+            else
+            {
+                btnPollA.setVisibility(View.GONE);
+                txtOptionA.setVisibility(View.GONE);
+            }
+
+            if(poll.option_B != null)
+            {
+                btnPollB.setText(poll.option_B);
+                btnPollB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!poll.completed)
+                        {
+                            poll.option_B_results++;
+                            pollCompleted(2);
+                        }
                     }
-                }
-            });
-            Bar tmp = new Bar();
-            tmp.setColor(Color.parseColor("#007ab7"));
-            tmp.setName("OPTION_C");
-            tmp.option = 3;
-            tmp.setValue(poll.option_C_results);
-            points.add(tmp);
+                });
+                txtOptionB.setText(poll.option_B);
+
+            }
+            else
+            {
+                btnPollB.setVisibility(View.GONE);
+                txtOptionB.setVisibility(View.GONE);
+            }
+
+            if(poll.option_C != null)
+            {
+                btnPollC.setText(poll.option_C);
+                btnPollC.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!poll.completed)
+                        {
+                            poll.option_C_results++;
+                            pollCompleted(3);
+                        }
+                    }
+                });
+                txtOptionC.setText(poll.option_C);
+
+            }
+            else
+            {
+                btnPollC.setVisibility(View.GONE);
+                txtOptionC.setVisibility(View.GONE);
+            }
         }
-        else
+    }
+
+    public void displayPollResults(boolean animate)
+    {
+        if(pollOptionsView != null && pollResultsView != null)
         {
-            txtOptionC.setVisibility(View.GONE);
+            g = (BarGraph) view.findViewById(R.id.poll_graph);
+            g.setShowBarText(false);
+            g.setBars(points);
+            txtPollExternal.setVisibility(View.VISIBLE);
+
+            final Animation in = new AlphaAnimation(0.0f, 1.0f);
+            in.setDuration(1000);
+            pollOptionsView.setVisibility(View.GONE);
+            pollResultsView.setVisibility(View.VISIBLE);
+            if(animate)
+            {
+                pollResultsView.startAnimation(in);
+            }
         }
-
-        g = (BarGraph) view.findViewById(R.id.poll_graph);
-        g.setShowBarText(false);
-        g.setBars(points);
-
     }
 
     public void pollCompleted(int option)
     {
-        for(Bar b : points)
-        {
-            if(b.option == option)
-            {
-                b.setValue(b.getValue() + 1);
-                g.invalidate();
-                g.setBars(points);
-                break;
-            }
-        }
-
         poll.increment(option);
         pf.savePollState();
 
-        if(txtOptionA != null && poll.selected_option != 1)
+        if(poll.option_A != null)
         {
-            txtOptionA.setBackgroundColor(Color.TRANSPARENT);
-            //txtOptionA.startAnimation(in);
+            txtOptionA.setText(poll.option_A + "\n" + getPercent(1) + "%");
+            Bar optionA = new Bar();
+            optionA.setColor(Color.parseColor(OPTION_A_COLOR));
+            optionA.setValue(poll.option_A_results);
+            optionA.setName("OPTION_A");
+            points.add(optionA);
         }
 
-        if(txtOptionB != null && poll.selected_option != 2)
+        if(poll.option_B != null)
         {
-            txtOptionB.setBackgroundColor(Color.TRANSPARENT);
-            //txtOptionB.startAnimation(in);
+            txtOptionB.setText(poll.option_B + "\n" + getPercent(2) + "%");
+            Bar optionB = new Bar();
+            optionB.setColor(Color.parseColor(OPTION_B_COLOR));
+            optionB.setValue(poll.option_B_results);
+            optionB.setName("OPTION_B");
+            points.add(optionB);
         }
 
-        if(txtOptionC != null && poll.selected_option != 3)
+        if(poll.option_C != null)
         {
-            txtOptionC.setBackgroundColor(Color.TRANSPARENT);
-            //txtOptionC.startAnimation(in);
+            txtOptionC.setText(poll.option_C + "\n" + getPercent(3) + "%");
+            Bar optionC = new Bar();
+            optionC.setColor(Color.parseColor(OPTION_C_COLOR));
+            optionC.setValue(poll.option_C_results);
+            optionC.setName("OPTION_C");
+            points.add(optionC);
         }
 
+        displayPollResults(true);
     }
 
 }

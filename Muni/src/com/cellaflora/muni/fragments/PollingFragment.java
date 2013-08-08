@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cellaflora.muni.CirclePageIndicator;
+import com.cellaflora.muni.LinePageIndicator;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Poll;
@@ -30,6 +33,7 @@ public class PollingFragment extends Fragment
     private ProgressDialog progressDialog;
 
     public static final String SAVED_POLLS_PATH = "muni_saved_polls";
+    public static final int MAX_RECENT_POLLS = 6;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -43,6 +47,7 @@ public class PollingFragment extends Fragment
         polls = new ArrayList<Poll>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Polls");
         query.addDescendingOrder("createdAt");
+        query.setLimit(MAX_RECENT_POLLS);
         progressDialog.show();
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
@@ -92,6 +97,8 @@ public class PollingFragment extends Fragment
 
                 ViewPager pager=(ViewPager) view.findViewById(R.id.poll_pager);
                 pager.setAdapter(buildAdapter());
+                CirclePageIndicator titleIndicator = (CirclePageIndicator) view.findViewById(R.id.poll_indicator);
+                titleIndicator.setViewPager(pager);
                 progressDialog.dismiss();
             }
         });

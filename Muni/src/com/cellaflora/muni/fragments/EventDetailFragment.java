@@ -84,6 +84,14 @@ public class EventDetailFragment extends Fragment
             try
             {
                 File f = new File(getActivity().getFilesDir() + "/" + event.objectId);
+                Bitmap image = BitmapFactory.decodeStream(new FileInputStream(f));
+                imgEvent.setImageBitmap(image);
+            }
+            catch(OutOfMemoryError ome)
+            {
+                try
+                {
+                    File f = new File(getActivity().getFilesDir() + "/" + event.objectId);
 
                     BitmapFactory.Options o = new BitmapFactory.Options();
                     o.inJustDecodeBounds = true;
@@ -104,6 +112,8 @@ public class EventDetailFragment extends Fragment
                     o2.inSampleSize=scale;
                     Bitmap image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
                     imgEvent.setImageBitmap(image);
+                }
+                catch(Exception ex){}
             }
             catch(Exception e)
             {

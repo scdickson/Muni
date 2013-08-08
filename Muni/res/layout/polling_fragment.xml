@@ -2,13 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:background="#EFF0F2"
     android:orientation="vertical" >
 
     <android.support.v4.view.ViewPager
             android:id="@+id/poll_pager"
+            android:background="@drawable/rounded_rectangle_poll"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_marginBottom="10dp"
+            android:layout_weight="9"/>
+
+    <com.cellaflora.muni.CirclePageIndicator
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:id="@+id/poll_indicator"
+            android:layout_height="0dp"
+            android:layout_width="match_parent" />
     
 
 </LinearLayout>

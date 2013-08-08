@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:paddingTop="10dp"
+              android:paddingBottom="10dp"
+              android:paddingLeft="10dp"
+              android:paddingRight="10dp"
+              android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/twitter_time"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:textStyle="bold"
+        android:textColor="#EC4B43"/>
+
+    <TextView
+        android:id="@+id/twitter_tweet"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        />
+
+
+</LinearLayout>

@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
-import com.google.android.gms.maps.CameraUpdate;
+/*import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -29,7 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MarkerOptions;*/
 
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +41,7 @@ public class PlaceDetailFragment extends Fragment
 {
     View view;
     Place place;
-    GoogleMap map;
+    //GoogleMap map;
 
     public PlaceDetailFragment(Place place)
     {
@@ -76,7 +76,7 @@ public class PlaceDetailFragment extends Fragment
     {
         super.onResume();
 
-        if(map == null)
+        /*if(map == null)
         {
             try
             {
@@ -93,7 +93,7 @@ public class PlaceDetailFragment extends Fragment
             {
                 e.printStackTrace();
             }
-        }
+        }*/
 
         TextView txtName = (TextView) view.findViewById(R.id.place_detail_name);
         TextView txtPhone = (TextView) view.findViewById(R.id.place_detail_phone);
@@ -160,11 +160,11 @@ public class PlaceDetailFragment extends Fragment
             @Override
             public void onClick(View view) {
 
-                String geopoint[] = place.geo_point.split(", ");
+                /*String geopoint[] = place.geo_point.split(", ");
                 LatLng coords = new LatLng(Double.parseDouble(geopoint[0]), Double.parseDouble(geopoint[1]));
                 String uri = "geo:" + coords.latitude + "," + coords.longitude + "?z=16";
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                view.getContext().startActivity(intent);
+                view.getContext().startActivity(intent);*/
             }
             });
 

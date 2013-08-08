@@ -5,7 +5,79 @@
               android:padding="10dp"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+
+    <TextView
+            android:visibility="gone"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textSize="20sp"
+            android:layout_marginBottom="45dp"
+            android:id="@+id/poll_question_external"/>
+
+    <ScrollView
+            android:layout_height="wrap_content"
+            android:id="@+id/poll_option_view"
+            android:layout_width="match_parent">
+
+        <LinearLayout
+                android:paddingTop="15dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp">
+            <TextView
+                    android:gravity="center_horizontal"
+                    android:layout_height="0dp"
+                    android:layout_width="match_parent"
+                    android:textSize="20sp"
+                    android:layout_weight="3"
+                    android:layout_marginBottom="45dp"
+                    android:id="@+id/poll_question"/>
+
+        <Button
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/poll_button_a"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:id="@+id/poll_option_a"
+                android:textColor="#ffffff"
+                android:layout_width="250dp"
+                android:textSize="20sp"
+                android:layout_marginBottom="20dp"
+                android:layout_height="0dp"/>
+        <Button
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:background="@drawable/poll_button_b"
+                android:layout_weight="1"
+                android:id="@+id/poll_option_b"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:layout_marginBottom="20dp"
+                android:layout_width="250dp"
+                android:layout_height="0dp"/>
+        <Button
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:background="@drawable/poll_button_c"
+                android:gravity="center"
+                android:id="@+id/poll_option_c"
+                android:textSize="20sp"
+                android:textColor="#ffffff"
+                android:layout_marginBottom="20dp"
+                android:layout_width="250dp"
+                android:layout_height="0dp"/>
+
+    </LinearLayout>
+</ScrollView>
+
 <LinearLayout
+    android:id="@+id/poll_results_layout"
+    android:visibility="gone"
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
@@ -14,25 +86,15 @@
         android:layout_width="match_parent"
         android:layout_weight="9"
         android:layout_height="wrap_content">
-    <TextView
-        android:layout_centerHorizontal="true"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="20dp"
-        android:id="@+id/poll_question"/>
 
         <com.cellaflora.muni.graph.BarGraph
                 android:layout_width="match_parent"
-                android:layout_below="@id/poll_question"
                 android:layout_height="wrap_content"
                 android:id="@+id/poll_graph"/>
     </RelativeLayout>
 
     <LinearLayout
             android:layout_gravity="center"
-            android:paddingTop="10dp"
             android:layout_centerHorizontal="true"
             android:id="@+id/poll_bottom_layout"
             android:layout_weight="1"
@@ -44,11 +106,8 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:layout_width="0dp"
-                android:background="@drawable/graph_bar_a"
-                android:textStyle="bold"
                 android:layout_marginRight="5dp"
-                android:textSize="16sp"
-                android:padding="5dp"
+                android:textSize="14sp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
         <TextView
@@ -56,10 +115,7 @@
                 android:layout_width="0dp"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
-                android:background="@drawable/graph_bar_b"
-                android:textStyle="bold"
-                android:padding="5dp"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
@@ -68,10 +124,7 @@
                 android:layout_width="0dp"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:padding="5dp"
-                android:background="@drawable/graph_bar_c"
+                android:textSize="14sp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
     </LinearLayout>
