@@ -253,13 +253,50 @@ public class MainActivity extends FragmentActivity {
             else
             {
                 super.onBackPressed();
-                //overridePendingTransition(R.animator.slide_out, R.animator.slide_in);
             }
+        }
+        else if(getSupportFragmentManager().findFragmentById(R.id.container).getClass().equals(DocumentFragment.class))
+        {
+            DocumentFragment tmp = (DocumentFragment) currentFragment;
+            DocumentFolder currentDir = tmp.adapter.currentDir;
+
+            if(currentDir != null)
+            {
+                DocumentFolder parentDir = null;
+
+                for(DocumentFolder folder : tmp.folders)
+                {
+                    for(DocumentFolder child : folder.folders)
+                    {
+                        if(child.equals(currentDir))
+                        {
+                            parentDir = folder;
+                            break;
+                        }
+                    }
+                }
+
+                if(parentDir != null)
+                {
+                    tmp.currentDir = parentDir;
+                    tmp.changeFolder(tmp.currentDir);
+                }
+                else
+                {
+                    tmp.currentDir = null;
+                    tmp.changeFolder(tmp.currentDir);
+                }
+            }
+            else
+            {
+                super.onBackPressed();
+            }
+
+
         }
         else
         {
             super.onBackPressed();
-            //overridePendingTransition(R.animator.slide_out, R.animator.slide_in);
         }
     }
 
