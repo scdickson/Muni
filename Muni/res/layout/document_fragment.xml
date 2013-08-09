@@ -4,6 +4,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <EditText
+        android:id="@+id/document_search"
+        android:hint="Search"
+        android:layout_width="0dp"
+        android:inputType="text"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:singleLine="true"
+        android:drawableLeft="@drawable/search_icon"/>
+    <Button
+        android:id="@+id/document_search_cancel"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:text="Cancel"/>
+    </LinearLayout>
+
     <ListView
         android:id="@+id/document_list"
         android:layout_height="match_parent"

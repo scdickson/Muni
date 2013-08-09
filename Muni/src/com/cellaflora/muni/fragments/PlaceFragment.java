@@ -101,7 +101,7 @@ public class PlaceFragment extends Fragment
                         {
                             tmp.category = "Uncategorized";
                         }
-
+                        tmp.objectId = parse.getObjectId();
                         tmp.street_address = parse.getString("C_Street_Address");
                         tmp.city = parse.getString("D_City");
                         tmp.state = parse.getString("E_State");

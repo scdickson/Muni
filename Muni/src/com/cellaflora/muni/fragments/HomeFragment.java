@@ -51,7 +51,8 @@ public class HomeFragment extends Fragment
             File f = new File(getActivity().getFilesDir(), SAVED_WEATHER_KEY);
             if((f.lastModified() + (WEATHER_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
             {
-                weatherBox.setText((String)(PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_WEATHER_KEY)));
+                String weather[] = (String[])(PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_WEATHER_KEY));
+                weatherBox.setText(weather[0]);
             }
             else
             {
@@ -69,7 +70,7 @@ public class HomeFragment extends Fragment
 	
 	private class loadWeather extends AsyncTask<TextView, Integer, Void>
 	{
-		private String temp = null;
+        private String weather[] = new String[2];
 		TextView weatherBox;
 		
 		protected Void doInBackground(TextView... arg0) 
@@ -88,9 +89,13 @@ public class HomeFragment extends Fragment
 					if(element.contains("temp_F")) //Could also allow Celsius in settings or something
 					{
 						//Parse temperature
-						temp = element.substring(element.indexOf(" ") + 2, element.length() - 1) + (char) 0x00B0;
-						break;
+						weather[0] = element.substring(element.indexOf(" ") + 2, element.length() - 1) + (char) 0x00B0;
 					}
+                    else if(element.contains("weatherDesc"))
+                    {
+                        weather[1] = element.substring(element.indexOf("\"value\": ") + 10, element.length() - 5);
+                        break;
+                    }
 				}
 			}
 			catch(Exception e){}
@@ -99,16 +104,16 @@ public class HomeFragment extends Fragment
 		
 		protected void onPostExecute(Void v) 
 		{
-			if(temp != null)
+			if(weather[0] != null)
 			{
 				//Kind of a cool fade in animation for the weather
 				final Animation in = new AlphaAnimation(0.0f, 1.0f);
 			    in.setDuration(1200);
-			    weatherBox.setText(temp);
+			    weatherBox.setText(weather[0]);
 			    weatherBox.startAnimation(in);
                 try
                 {
-                    PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_WEATHER_KEY, temp);
+                    PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_WEATHER_KEY, weather);
                 }
                 catch(Exception e){}
 			}

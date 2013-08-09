@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +42,7 @@ public class EventFragment extends Fragment
     public static final int EVENT_TYPE_UPCOMING = 0;
     public static final int EVENT_TYPE_PAST = 1;
     public static final String SAVED_EVENTS_PATH = "muni_saved_events";
-    public static final int EVENTS_REPLACE_INTERVAL = 60; //In minutes!
+    public static final int EVENTS_REPLACE_INTERVAL = 1; //In minutes!
 
 
     View view;
@@ -146,11 +147,13 @@ public class EventFragment extends Fragment
         return fixed;
     }
 
+
     public void loadEvents()
     {
         events = new ArrayList<Event>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
         query.addDescendingOrder("C_Start_Time");
+        query.include("O_Location");
         progressDialog.show();
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
@@ -162,7 +165,7 @@ public class EventFragment extends Fragment
                         Event tmp = new Event();
                         tmp.objectId = parse.getObjectId();
                         tmp.title = parse.getString("A_Title");
-                        tmp.description = parse.getString("B_Description");
+                        tmp.description = parse.getString("B_Description");//.replace("\n", "");
 
                         if(parse.getDate("C_Start_Time") != null)
                         {
@@ -187,47 +190,29 @@ public class EventFragment extends Fragment
                             tmp.photo_url = photo.getUrl();
                         }
 
-                        events.add(tmp);
-
-                        try
+                        ParseObject location = parse.getParseObject("O_Location");
+                        if(location != null && location.getObjectId() != null)
                         {
-                            parse.getParseObject("O_Location").fetchIfNeededInBackground(new GetCallback<ParseObject>()
+                            try
                             {
-                                public void done(ParseObject object, ParseException e)
-                                {
-                                    if(e == null)
-                                    {
-                                        Place associated_place = new Place(object.getString("A_Name"));
-                                        associated_place.street_address = object.getString("C_Street_Address");
-                                        associated_place.city = object.getString("D_City");
-                                        associated_place.state = object.getString("E_State");
-                                        associated_place.zip_code = object.getString("F_Zip_Code");
-                                        associated_place.tel_number = object.getString("G_Phone_Number");
-                                        associated_place.web_url = object.getString("H_Website");
-                                        associated_place.geo_point = object.getParseGeoPoint("I_GeoPoint").getLatitude() + ", " + object.getParseGeoPoint("I_GeoPoint").getLongitude();
-                                        associated_place.notes = object.getString("J_Notes");
-
-                                        if(events.get(events.size()-1) != null)
-                                        {
-                                            if(associated_place != null)
-                                            {
-                                                events.get(events.size()-1).address = associated_place.street_address + "\n" + associated_place.city + " " + associated_place.state + " " + associated_place.zip_code;
-                                                events.get(events.size()-1).associated_place = associated_place;
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                        catch(Exception ex)
-                        {
-                            //if(parse.getString("H_Street_Address") != null && parse.getString("I_City") != null && parse.getString("J_State") != null && parse.getString("K_Zip_Code") != null)
-                            //{
-                                //events.get(events.size()-1).address = parse.getString("H_Street_Address") + "\n" + parse.getString("I_City") + " " + parse.getString("J_State") + " " + parse.getString("K_Zip_Code");
-                            //}
-                            ex.printStackTrace();
+                                tmp.associated_place.objectId = location.getObjectId();
+                                tmp.associated_place.name = location.getString("A_Name");
+                                tmp.associated_place.street_address = location.getString("C_Street_Address");
+                                tmp.associated_place.city = location.getString("D_City");
+                                tmp.associated_place.state = location.getString("E_State");
+                                tmp.associated_place.zip_code = location.getString("F_Zip_Code");
+                                tmp.associated_place.tel_number = location.getString("G_Phone_Number");
+                                tmp.associated_place.web_url = location.getString("H_Website");
+                                tmp.associated_place.geo_point = location.getParseGeoPoint("I_GeoPoint").getLatitude() + ", " + parse.getParseGeoPoint("I_GeoPoint").getLongitude();
+                                tmp.associated_place.notes = location.getString("J_Notes");
+                            }
+                            catch(Exception ex)
+                            {
+                                ex.printStackTrace();
+                            }
                         }
 
+                        events.add(tmp);
                     }
                     try
                     {

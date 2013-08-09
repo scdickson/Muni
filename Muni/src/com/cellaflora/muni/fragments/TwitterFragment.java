@@ -8,16 +8,15 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.cellaflora.muni.MuniJSONParser;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.Tweet;
-import com.cellaflora.muni.TwitterParser;
 import com.cellaflora.muni.adapters.TwitterListAdapter;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -26,7 +25,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.twitter.Twitter;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -34,7 +32,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 public class TwitterFragment extends Fragment
@@ -137,8 +134,8 @@ public class TwitterFragment extends Fragment
                 HttpResponse response = client.execute(verifyGet);
                 ResponseHandler<String> handler = new BasicResponseHandler();
                 String body = handler.handleResponse(response);
-                TwitterParser parser = new TwitterParser(body);
-                tweets = parser.parse();
+                MuniJSONParser parser = new MuniJSONParser(body);
+                tweets = parser.parseTweet();
 
             }
             catch(Exception e)

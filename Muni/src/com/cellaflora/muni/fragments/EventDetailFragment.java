@@ -1,5 +1,7 @@
 package com.cellaflora.muni.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -7,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cellaflora.muni.Event;
+import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
 
 import java.io.File;
@@ -35,7 +40,8 @@ public class EventDetailFragment extends Fragment
     View view;
     Event event;
     TextView txtTitle, txtDescription, txtDate, txtLocation, txtUrl, txtAddress;
-    ImageView imgEvent;
+    ImageView imgEvent, mapAction, callAction, webAction;
+    View mapDivider, callDivider;
     Button btnAdd;
     Intent calIntent;
 
@@ -47,6 +53,7 @@ public class EventDetailFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         view = inflater.inflate(R.layout.event_detail_fragment, container, false);
+        MainActivity.actionbarTitle.setText(" ");
         return view;
     }
 
@@ -65,7 +72,9 @@ public class EventDetailFragment extends Fragment
         txtDescription = (TextView) view.findViewById(R.id.event_description_detail);
         txtDate = (TextView) view.findViewById(R.id.event_time_detail);
         txtLocation = (TextView) view.findViewById(R.id.event_location_detail);
-        txtUrl = (TextView) view.findViewById(R.id.event_url_detail);
+        callAction = (ImageView) view.findViewById(R.id.event_call_action);
+        webAction = (ImageView) view.findViewById(R.id.event_web_action);
+        mapAction = (ImageView) view.findViewById(R.id.event_map_action);
         txtAddress = (TextView) view.findViewById(R.id.event_address_detail);
         imgEvent = (ImageView) view.findViewById(R.id.event_image_detail);
 
@@ -242,6 +251,64 @@ public class EventDetailFragment extends Fragment
             txtDate.setVisibility(View.GONE);
         }
 
+        if(event.associated_place != null)
+        {
+            txtAddress.setText(event.associated_place.street_address + "\n" + event.associated_place.city + " " + event.associated_place.state + " " + event.associated_place.zip_code);
+
+            if(event.location == null)
+            {
+                txtLocation.setText(event.associated_place.name);
+                txtLocation.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        PlaceDetailFragment fragment = new PlaceDetailFragment(event.associated_place);
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
+                        fragmentTransaction.replace(R.id.container, fragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }
+                });
+            }
+
+            if(event.associated_place.tel_number != null)
+            {
+                callAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                        alertDialogBuilder.setTitle("Confirm");
+                        alertDialogBuilder
+                                .setMessage("Call " + event.associated_place.name + "?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id)
+                                    {
+                                        String uri = "tel:" + event.associated_place.tel_number.trim();
+                                        Intent intent = new Intent(Intent.ACTION_CALL);
+                                        intent.setData(Uri.parse(uri));
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id)
+                                    {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                    }
+                });
+            }
+        }
+        else
+        {
+            txtAddress.setVisibility(View.GONE);
+        }
+
         if(event.location != null)
         {
             txtLocation.setText(event.location);
@@ -249,30 +316,56 @@ public class EventDetailFragment extends Fragment
         }
         else
         {
-            txtLocation.setVisibility(View.GONE);
+            if(event.associated_place == null)
+            {
+                txtLocation.setVisibility(View.GONE);
+            }
         }
 
         if(event.event_url != null)
         {
-            txtUrl.setText(Html.fromHtml("<u>" + event.event_url + "</u>"));
-            final String url = event.event_url;
-            txtUrl.setOnClickListener(new View.OnClickListener() {
+            webAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
+                    intent.setData(Uri.parse(event.event_url));
                     view.getContext().startActivity(intent);
                 }
             });
         }
         else
         {
-            txtUrl.setVisibility(View.GONE);
+
         }
 
-        if(event.address != null)
+        if(event.address != null || event.associated_place != null)
         {
-            txtAddress.setText(event.address);
+            if(event.address != null)
+            {
+                txtAddress.setText(event.address);
+                mapAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?saddr=" + event.address));
+                        startActivity(intent);
+                    }
+                });
+            }
+            else if(event.associated_place.street_address != null)
+            {
+                txtAddress.setText(event.associated_place.street_address + "\n" + event.associated_place.city + " " + event.associated_place.state + " " + event.associated_place.zip_code);
+                mapAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PlaceDetailFragment fragment = new PlaceDetailFragment(event.associated_place);
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
+                        fragmentTransaction.replace(R.id.container, fragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }
+                });
+            }
         }
         else
         {

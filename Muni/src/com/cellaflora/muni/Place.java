@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 public class Place implements Serializable
 {
+    public String objectId;
     public String name;
     public String category;
     public String street_address;
@@ -24,6 +25,8 @@ public class Place implements Serializable
     {
         this.name = name;
     }
+
+    public Place(){}
 
     public String toString()
     {

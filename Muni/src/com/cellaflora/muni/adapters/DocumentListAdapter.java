@@ -41,6 +41,11 @@ public class DocumentListAdapter extends BaseAdapter
         content = new ArrayList<Object>();
     }
 
+    public void setContent(ArrayList<Object> content)
+    {
+        this.content = content;
+    }
+
     public void loadDirectory(DocumentFolder currentDir)
     {
         this.currentDir = currentDir;
@@ -127,9 +132,16 @@ public class DocumentListAdapter extends BaseAdapter
 
             if(folder.date != null)
             {
-                String dateFormat = "EEEE, MMMM d";
-                SimpleDateFormat start = new SimpleDateFormat(dateFormat, Locale.US);
-                txtDate.setText(start.format(folder.date));
+                if(folder.documents.size() == 0 && folder.folders.size() == 0)
+                {
+                    txtDate.setText("(Folder is empty)");
+                }
+                else
+                {
+                    String dateFormat = "EEEE, MMMM d";
+                    SimpleDateFormat start = new SimpleDateFormat(dateFormat, Locale.US);
+                    txtDate.setText(start.format(folder.date));
+                }
             }
         }
 

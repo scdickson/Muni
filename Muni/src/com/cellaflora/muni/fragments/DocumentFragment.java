@@ -3,6 +3,7 @@ package com.cellaflora.muni.fragments;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,11 +12,19 @@ import android.os.Environment;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.cellaflora.muni.Document;
@@ -48,16 +57,84 @@ public class DocumentFragment extends Fragment
     ProgressDialog progressDialog, pdfProgress;
     ListView documentList;
     Parcelable state;
+    EditText searchBar;
+    Button searchCancel;
+    InputMethodManager imm;
     public DocumentFolder currentDir = null;
+    ArrayList<Object> searchResults;
     public ArrayList<DocumentFolder> folders;
+    public ArrayList<Document> documents;
     public DocumentListAdapter adapter;
 
     public static final String SAVED_DOCUMENTS_PATH = "muni_saved_docs";
-    public static final int DOCUMENTS_REPLACE_INTERVAL = 1;
+    public static final String SAVED_DOCUMENT_FILE_PATH = "muni_saved_doc_files";
+    public static final int DOCUMENTS_REPLACE_INTERVAL = 60;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.document_fragment, container, false);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        searchBar = (EditText) view.findViewById(R.id.document_search);
+        searchCancel = (Button) view.findViewById(R.id.document_search_cancel);
+        searchCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                adapter.clearContent();
+                changeFolder(currentDir);
+                adapter.notifyDataSetChanged();
+                documentList.invalidateViews();
+                imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                searchBar.setText("");
+                searchCancel.setVisibility(View.GONE);
+                documentList.requestFocus();
+            }
+        });
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence cs, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence cs, int i, int i2, int i3)
+            {
+                searchResults = new ArrayList<Object>();
+
+                if(cs != null && !cs.toString().isEmpty())
+                {
+                    searchCancel.setVisibility(View.VISIBLE);
+
+                    for(Document document : documents)
+                    {
+                        if(document.title.toUpperCase().contains(cs.toString().toUpperCase()))
+                        {
+                            searchResults.add(document);
+                        }
+                    }
+
+                    adapter.clearContent();
+                    adapter.setContent(searchResults);
+                    adapter.notifyDataSetChanged();
+                    documentList.invalidateViews();
+
+                }
+                else
+                {
+                    searchCancel.setVisibility(View.GONE);
+                    adapter.clearContent();
+                    changeFolder(currentDir);
+                    adapter.notifyDataSetChanged();
+                    documentList.invalidateViews();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+            }
+        });
         MainActivity.actionbarTitle.setText("Documents");
 		return view;
 	}
@@ -113,6 +190,7 @@ public class DocumentFragment extends Fragment
     public void loadDocuments()
     {
         folders = new ArrayList<DocumentFolder>();
+        documents = new ArrayList<Document>();
         ParseQuery<ParseObject> folder_query = ParseQuery.getQuery("Doc_Folders");
         folder_query.include("Parent_Folder");
         progressDialog.show();
@@ -171,18 +249,22 @@ public class DocumentFragment extends Fragment
                                     {
                                         setFileFolder(tmp, folder.getObjectId());
                                     }
+
+                                    documents.add(tmp);
                                 }
                             }
 
                             try
                             {
                                 PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_DOCUMENTS_PATH, folders);
+                                PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_DOCUMENT_FILE_PATH, documents);
                             }
                             catch(Exception ex){}
                             adapter = new DocumentListAdapter(view.getContext(), folders, null);
                             documentList = (ListView) getActivity().findViewById(R.id.document_list);
                             documentList.setAdapter(adapter);
                             documentList.setOnItemClickListener(new DocumentItemClickListener());
+                            documentList.requestFocus();
                             progressDialog.dismiss();
                         }
                     });
@@ -207,11 +289,24 @@ public class DocumentFragment extends Fragment
 
         if(state != null)
         {
-            adapter = new DocumentListAdapter(view.getContext(), folders, currentDir);
-            documentList = (ListView) getActivity().findViewById(R.id.document_list);
-            documentList.setAdapter(adapter);
-            documentList.setOnItemClickListener(new DocumentItemClickListener());
-            documentList.onRestoreInstanceState(state);
+            if(searchResults != null)
+            {
+                adapter.clearContent();
+                adapter.setContent(searchResults);
+                adapter.notifyDataSetChanged();
+                documentList.invalidateViews();
+                searchBar.requestFocus();
+                searchCancel.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                adapter = new DocumentListAdapter(view.getContext(), folders, currentDir);
+                documentList = (ListView) getActivity().findViewById(R.id.document_list);
+                documentList.setAdapter(adapter);
+                documentList.setOnItemClickListener(new DocumentItemClickListener());
+                documentList.onRestoreInstanceState(state);
+                documentList.requestFocus();
+            }
         }
         else
         {
@@ -221,10 +316,12 @@ public class DocumentFragment extends Fragment
                 if((f.lastModified() + (DOCUMENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
                     folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_DOCUMENTS_PATH);
+                    documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_DOCUMENT_FILE_PATH);
                     adapter = new DocumentListAdapter(view.getContext(), folders, null);
                     documentList = (ListView) getActivity().findViewById(R.id.document_list);
                     documentList.setAdapter(adapter);
                     documentList.setOnItemClickListener(new DocumentItemClickListener());
+                    documentList.requestFocus();
                 }
                 else
                 {
@@ -267,6 +364,10 @@ public class DocumentFragment extends Fragment
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id)
         {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+            searchCancel.setVisibility(View.GONE);
+            documentList.requestFocus();
             selectItem(position);
         }
     }

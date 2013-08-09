@@ -140,7 +140,6 @@ public class EventListAdapter extends BaseAdapter
         txtDescription = (TextView) itemView.findViewById(R.id.event_description);
         txtDate = (TextView) itemView.findViewById(R.id.event_time);
         txtLocation = (TextView) itemView.findViewById(R.id.event_location);
-        txtAddress = (TextView) itemView.findViewById(R.id.event_address);
         txtUrl = (TextView) itemView.findViewById(R.id.event_url);
         imgEvent = (ImageView) itemView.findViewById(R.id.event_image);
         Typeface avenirBlack = Typeface.createFromAsset(context.getAssets(), "fonts/Avenir LT 95 Black.ttf");
@@ -183,15 +182,6 @@ public class EventListAdapter extends BaseAdapter
         else
         {
             txtTitle.setVisibility(View.GONE);
-        }
-
-        if(e.address != null)
-        {
-            txtAddress.setText(e.address);
-        }
-        else
-        {
-            txtAddress.setVisibility(View.GONE);
         }
 
         if(e.description != null)
@@ -287,9 +277,16 @@ public class EventListAdapter extends BaseAdapter
             txtDate.setVisibility(View.GONE);
         }
 
-        if(e.location != null)
+        if(e.location != null || e.associated_place != null)
         {
-            txtLocation.setText(e.location);
+            if(e.location != null)
+            {
+                txtLocation.setText(e.location);
+            }
+            else
+            {
+                txtLocation.setText(e.associated_place.name);
+            }
             //txtLocation.setTypeface(avenirBlack);
         }
         else

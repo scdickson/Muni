@@ -13,16 +13,14 @@ import java.util.Iterator;
 /**
  * Created by sdickson on 8/8/13.
  */
-public class TwitterParser
+public class MuniJSONParser
 {
-    ArrayList<Tweet> tweets;
-    JSONParser parser;
+    org.json.simple.parser.JSONParser parser;
     String data;
 
-    public TwitterParser(String data)
+    public MuniJSONParser(String data)
     {
-        tweets = new ArrayList<Tweet>();
-        parser = new JSONParser();
+        parser = new org.json.simple.parser.JSONParser();
         this.data = data;
     }
 
@@ -55,8 +53,9 @@ public class TwitterParser
     }
 
 
-    public ArrayList<Tweet> parse()
+    public ArrayList<Tweet> parseTweet()
     {
+        ArrayList<Tweet> tweets = new ArrayList<Tweet>();
         try
         {
             Object obj= JSONValue.parse(data);
