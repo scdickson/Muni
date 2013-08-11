@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
     <EditText
         android:id="@+id/document_search"
-        android:hint="Search"
+        android:hint="Search all documents"
         android:layout_width="0dp"
         android:inputType="text"
         android:layout_height="wrap_content"

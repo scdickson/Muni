@@ -1,8 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="#EFF0F2"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/contact_top_layout"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/contact_to_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/contact_to_field"
+            android:textColor="#333B46"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:paddingRight="10dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="To: "/>
+        <com.cellaflora.muni.ContactListItem
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/contact_to_field"
+            android:id="@+id/contact_to_view"/>
+        </RelativeLayout>
+    <GridView
+              android:visibility="gone"
+              android:paddingTop="5dp"
+              android:id="@+id/contact_list_grid"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:numColumns="2"
+              android:columnWidth="90dp"
+              android:horizontalSpacing="10dp"
+              android:verticalSpacing="10dp"
+              android:gravity="center"
+              android:stretchMode="columnWidth" >
+    </GridView>
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="#D9D9D9"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/contact_middle_layout"
+        android:layout_below="@id/contact_top_layout"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+                android:id="@+id/contact_subject_label"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:paddingRight="10dp"
+                android:textSize="16sp"
+                android:textColor="#333B46"
+                android:textStyle="bold"
+                android:text="Subject: "/>
+        <EditText
+            android:id="@+id/contact_subject_field"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_toRightOf="@id/contact_subject_label"
+            android:layout_width="match_parent"/>
+        <View
+                android:layout_width="fill_parent"
+                android:layout_below="@id/contact_subject_field"
+                android:layout_height="1dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="#D9D9D9"/>
+    </RelativeLayout>
+
+    <LinearLayout
+            android:id="@+id/contact_bottom_layout"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <ImageView
+                    android:id="@+id/contact_photo_action"
+                    android:src="@drawable/contact_photo_action"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_height="wrap_content"/>
+            <ImageView
+                    android:id="@+id/contact_location_action"
+                    android:src="@drawable/contact_location_action"
+                    android:layout_marginRight="5dp"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:text="Not intended for emergency use"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:textColor="#9FA3AE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+        <Button
+                android:id="@+id/contact_action_send"
+                android:textColor="#ffffff"
+                android:textSize="30sp"
+                android:background="#EC4B43"
+                android:text="Send Message"
+                android:layout_height="60dp"
+                android:layout_width="match_parent"/>
+    </LinearLayout>
+
+    <EditText
+        android:layout_below="@id/contact_middle_layout"
+        android:layout_above="@id/contact_bottom_layout"
+        android:paddingBottom="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/contact_description_field"
+        android:gravity="left"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:textColor="#333B46"
+        android:hint="Write a description..."
+        android:singleLine="false"/>
+
+
+
     
 
-</LinearLayout>
+</RelativeLayout>

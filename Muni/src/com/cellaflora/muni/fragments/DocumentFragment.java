@@ -106,11 +106,35 @@ public class DocumentFragment extends Fragment
                 {
                     searchCancel.setVisibility(View.VISIBLE);
 
-                    for(Document document : documents)
+                    if(currentDir == null)
                     {
-                        if(document.title.toUpperCase().contains(cs.toString().toUpperCase()))
+                        for(Document document : documents)
                         {
-                            searchResults.add(document);
+                            if(document.title.toUpperCase().contains(cs.toString().toUpperCase()))
+                            {
+                                searchResults.add(document);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for(Document document : currentDir.documents)
+                        {
+                            if(document.title.toUpperCase().contains(cs.toString().toUpperCase()))
+                            {
+                                searchResults.add(document);
+                            }
+                        }
+
+                        for(DocumentFolder folder : currentDir.folders)
+                        {
+                            for(Document document : folder.documents)
+                            {
+                                if(document.title.toUpperCase().contains(cs.toString().toUpperCase()))
+                                {
+                                    searchResults.add(document);
+                                }
+                            }
                         }
                     }
 
@@ -339,6 +363,14 @@ public class DocumentFragment extends Fragment
     public void changeFolder(DocumentFolder folder)
     {
         currentDir = folder;
+        if(folder == null)
+        {
+            searchBar.setHint("Search all documents");
+        }
+        else
+        {
+            searchBar.setHint("Search in " + currentDir.title);
+        }
         adapter.clearContent();
         adapter.loadDirectory(folder);
         adapter.notifyDataSetChanged();
