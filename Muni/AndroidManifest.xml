@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 	
     <application
         android:allowBackup="true"
@@ -51,7 +52,7 @@
 
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"
-                android:value="AIzaSyBtckY55ZyrXB6-pREMREr8gtzcyB4iGJk"/>
+                android:value="AIzaSyDHk4rJIQXw7e7ziEJt4i1ymfp7bGd860Q"/>
 
         <service android:name="com.parse.PushService"/>
         <reciever android:name="com.parse.ParseBroadcastReceiver">
