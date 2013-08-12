@@ -12,15 +12,20 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
@@ -45,11 +50,14 @@ public class PlaceFragment extends Fragment
 {
     View view;
     ArrayList<Place> places = new ArrayList<Place>();
+    ArrayList<Object> searchResults;
     ListView placeList;
     PlaceListAdapter adapter;
     private ProgressDialog progressDialog;
     Parcelable state;
-
+    public EditText searchBar;
+    public TextView searchCancel;
+    InputMethodManager imm;
     LocationManager service;
     LocationListener locationListener;
     String provider;
@@ -59,6 +67,67 @@ public class PlaceFragment extends Fragment
 	{
 		view = inflater.inflate(R.layout.place_fragment, container, false);
         MainActivity.actionbarTitle.setText("Places");
+        searchBar = (EditText) view.findViewById(R.id.place_search);
+        searchCancel = (TextView) view.findViewById(R.id.place_search_cancel);
+        searchCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                adapter.clearContent();
+                adapter.reloadPlaces();
+                adapter.notifyDataSetChanged();
+                placeList.invalidateViews();
+                imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                searchBar.setText("");
+                searchCancel.setVisibility(View.GONE);
+                placeList.requestFocus();
+            }
+        });
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence cs, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence cs, int i, int i2, int i3)
+            {
+                searchResults = new ArrayList<Object>();
+
+                if(cs != null && !cs.toString().isEmpty())
+                {
+                    searchCancel.setVisibility(View.VISIBLE);
+
+                    for(Place place : places)
+                    {
+                        if(place.name.toUpperCase().contains(cs.toString().toUpperCase()))
+                        {
+                            searchResults.add(place);
+                        }
+                    }
+
+                    adapter.clearContent();
+                    adapter.setContent(searchResults);
+                    adapter.notifyDataSetChanged();
+                    placeList.invalidateViews();
+
+                }
+                else
+                {
+                    adapter.clearContent();
+                    adapter.reloadPlaces();
+                    adapter.notifyDataSetChanged();
+                    placeList.invalidateViews();
+                    searchCancel.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+            }
+        });
 		return view;
 	}
 

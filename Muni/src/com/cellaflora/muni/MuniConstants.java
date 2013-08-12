@@ -53,6 +53,7 @@ public class MuniConstants
     //Place Fragment Constants
     public static final String SAVED_PLACES_PATH = "muni_saved_places";
     public static final int PLACES_REPLACE_INTERVAL = 60; //In minutes!
+    public static final double METERS_PER_MILE = 1609.3472;
 
     //Polling Fragment Constants
     public static final String SAVED_POLLS_PATH = "muni_saved_polls";

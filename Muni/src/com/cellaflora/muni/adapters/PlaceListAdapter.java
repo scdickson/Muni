@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.fragments.PlaceFragment;
@@ -25,28 +26,29 @@ import java.util.TreeSet;
  */
 public class PlaceListAdapter extends BaseAdapter
 {
+    Comparator<Place> PlaceComparator = new Comparator<Place>()
+    {
+
+        public int compare(Place p1, Place p2) {
+
+            String p1Name = p1.category;
+            String p2Name = p2.category;
+
+            return p1Name.compareToIgnoreCase(p2Name);
+        }
+    };
+
     LayoutInflater inflater;
     Context context;
     ArrayList<Object> content = new ArrayList<Object>();
+    ArrayList<Place> places;
     Location currentLocation;
-    final double METERS_PER_MILE = 1609.3472;
 
     public PlaceListAdapter(Context context, ArrayList<Place> places, Location currentLocation)
     {
         this.context = context;
+        this.places = places;
         this.currentLocation = currentLocation;
-
-        Comparator<Place> PlaceComparator = new Comparator<Place>()
-        {
-
-            public int compare(Place p1, Place p2) {
-
-                String p1Name = p1.category;
-                String p2Name = p2.category;
-
-                return p1Name.compareToIgnoreCase(p2Name);
-            }
-        };
 
         Collections.sort(places, PlaceComparator);
 
@@ -78,6 +80,51 @@ public class PlaceListAdapter extends BaseAdapter
 
 
         }
+    }
+
+    public void reloadPlaces()
+    {
+
+
+        Collections.sort(places, PlaceComparator);
+
+        Place previous = null;
+        boolean addSeparator = false;
+
+        for(int i = 0; i < places.size(); i++)
+        {
+            if(previous != null)
+            {
+                if(!places.get(i).category.equalsIgnoreCase(previous.category))
+                {
+                    addSeparator = true;
+                }
+            }
+            else
+            {
+                addSeparator = true;
+            }
+
+            if(addSeparator)
+            {
+                content.add(places.get(i).category);
+                addSeparator = false;
+            }
+
+            content.add(places.get(i));
+            previous = places.get(i);
+        }
+    }
+
+    public void clearContent()
+    {
+        content = null;
+        content = new ArrayList<Object>();
+    }
+
+    public void setContent(ArrayList<Object> content)
+    {
+        this.content = content;
     }
 
     public void setCurrentLocation(Location currentLocation)
@@ -124,7 +171,7 @@ public class PlaceListAdapter extends BaseAdapter
                 String locationData[] = tmp.geo_point.split(", ");
                 float result[] = new float[5];
                 Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.parseDouble(locationData[0]), Double.parseDouble(locationData[1]), result);
-                Double distance = (result[0] / METERS_PER_MILE);
+                Double distance = (result[0] / MuniConstants.METERS_PER_MILE);
                 DecimalFormat df = new DecimalFormat("0.#");
 
                 txtDistance.setText(df.format(distance) + " miles");
