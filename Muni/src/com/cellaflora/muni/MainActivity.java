@@ -246,6 +246,7 @@ public class MainActivity extends FragmentActivity {
                 tmp.level = 0;
                 tmp.adapter.clearContent();
                 tmp.adapter.setLevel(tmp.level, tmp.groupA, tmp.groupB);
+                tmp.searchBar.setHint("Search all people ");
                 tmp.adapter.notifyDataSetChanged();
                 tmp.peopleList.invalidateViews();
             }
@@ -254,6 +255,7 @@ public class MainActivity extends FragmentActivity {
                 tmp.level = 1;
                 tmp.groupA = tmp.adapter.groupA;
                 tmp.groupB = null;
+                tmp.searchBar.setHint("Search in " +  tmp.groupA);
                 tmp.adapter.clearContent();
                 tmp.adapter.setLevel(tmp.level, tmp.groupA, tmp.groupB);
                 tmp.adapter.notifyDataSetChanged();

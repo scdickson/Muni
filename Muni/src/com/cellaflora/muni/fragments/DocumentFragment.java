@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.cellaflora.muni.Document;
 import com.cellaflora.muni.DocumentFolder;
@@ -58,7 +59,7 @@ public class DocumentFragment extends Fragment
     ListView documentList;
     Parcelable state;
     EditText searchBar;
-    Button searchCancel;
+    TextView searchCancel;
     InputMethodManager imm;
     public DocumentFolder currentDir = null;
     ArrayList<Object> searchResults;
@@ -75,7 +76,7 @@ public class DocumentFragment extends Fragment
 		view = inflater.inflate(R.layout.document_fragment, container, false);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         searchBar = (EditText) view.findViewById(R.id.document_search);
-        searchCancel = (Button) view.findViewById(R.id.document_search_cancel);
+        searchCancel = (TextView) view.findViewById(R.id.document_search_cancel);
         searchCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)

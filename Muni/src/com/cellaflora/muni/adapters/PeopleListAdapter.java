@@ -37,6 +37,11 @@ public class PeopleListAdapter extends BaseAdapter
         loadData();
     }
 
+    public void setContent(ArrayList<Object> content)
+    {
+        this.content = content;
+    }
+
     public void loadData()
     {
         if(level == 0)
