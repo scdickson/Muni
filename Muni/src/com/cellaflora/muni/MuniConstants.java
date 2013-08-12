@@ -1,5 +1,7 @@
 package com.cellaflora.muni;
 
+import com.google.android.gms.maps.GoogleMap;
+
 /**
  * Created by sdickson on 8/12/13.
  */
@@ -54,6 +56,7 @@ public class MuniConstants
     public static final String SAVED_PLACES_PATH = "muni_saved_places";
     public static final int PLACES_REPLACE_INTERVAL = 60; //In minutes!
     public static final double METERS_PER_MILE = 1609.3472;
+    public static final int DETAIL_MAP_TYPE = GoogleMap.MAP_TYPE_NORMAL;
 
     //Polling Fragment Constants
     public static final String SAVED_POLLS_PATH = "muni_saved_polls";

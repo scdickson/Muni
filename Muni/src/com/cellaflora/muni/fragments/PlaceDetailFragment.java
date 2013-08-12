@@ -15,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -86,7 +88,7 @@ public class PlaceDetailFragment extends Fragment
             try
             {
                 map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.place_map)).getMap();
-                //map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                map.setMapType(MuniConstants.DETAIL_MAP_TYPE);
                 String geopoint[] = place.geo_point.split(", ");
                 LatLng coords = new LatLng(Double.parseDouble(geopoint[0]), Double.parseDouble(geopoint[1]));
                 Marker poi = map.addMarker(new MarkerOptions().position(coords));
@@ -100,27 +102,18 @@ public class PlaceDetailFragment extends Fragment
             }
         }
 
-        TextView txtName = (TextView) view.findViewById(R.id.place_detail_name);
-        TextView txtPhone = (TextView) view.findViewById(R.id.place_detail_phone);
         TextView txtAddress = (TextView) view.findViewById(R.id.place_detail_address);
         TextView txtUrl = (TextView) view.findViewById(R.id.place_detail_url);
-        Button btnMap = (Button) view.findViewById(R.id.place_detail_map);
-        Button btnDirections = (Button) view.findViewById(R.id.place_detail_directions);
+        TextView btnMap = (TextView) view.findViewById(R.id.place_detail_map);
+        ImageView actionCall = (ImageView) view.findViewById(R.id.place_detail_call_action);
+        ImageView actionMap = (ImageView) view.findViewById(R.id.place_detail_map_action);
+        ImageView actionWeb = (ImageView) view.findViewById(R.id.place_detail_web_action);
         RelativeLayout addressLayout = (RelativeLayout) view.findViewById(R.id.place_detail_address_layout);
 
-        if(place.name != null)
-        {
-            txtName.setText(place.name);
-        }
-        else
-        {
-            txtName.setVisibility(View.GONE);
-        }
 
         if(place.tel_number != null)
         {
-            txtPhone.setText(place.tel_number);
-            txtPhone.setOnClickListener(
+            actionCall.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view)
@@ -154,7 +147,7 @@ public class PlaceDetailFragment extends Fragment
         }
         else
         {
-            txtPhone.setVisibility(View.GONE);
+
         }
 
         if(place.street_address != null && place.city != null && place.zip_code != null && place.state != null)
@@ -173,12 +166,19 @@ public class PlaceDetailFragment extends Fragment
             }
             });
 
-            btnDirections.setOnClickListener(new View.OnClickListener() {
+            actionMap.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-
+                public void onClick(View view)
+                {
+                    String geopoint[] = place.geo_point.split(", ");
+                    LatLng coords = new LatLng(Double.parseDouble(geopoint[0]), Double.parseDouble(geopoint[1]));
+                    String uri = "geo:" + coords.latitude + "," + coords.longitude + "?z=16";
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    view.getContext().startActivity(intent);
                 }
             });
+
+
         }
         else
         {
@@ -187,9 +187,18 @@ public class PlaceDetailFragment extends Fragment
 
         if(place.web_url != null)
         {
-            txtUrl.setText(Html.fromHtml("<u>" + place.web_url + "</u>"));
+            //txtUrl.setText(Html.fromHtml("<u>" + place.web_url + "</u>"));
             final String url = place.web_url;
             txtUrl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    view.getContext().startActivity(intent);
+                }
+            });
+
+            actionWeb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);

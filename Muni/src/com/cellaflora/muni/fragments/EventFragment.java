@@ -246,7 +246,7 @@ public class EventFragment extends Fragment
                                 tmp.associated_place.zip_code = location.getString("F_Zip_Code");
                                 tmp.associated_place.tel_number = location.getString("G_Phone_Number");
                                 tmp.associated_place.web_url = location.getString("H_Website");
-                                tmp.associated_place.geo_point = location.getParseGeoPoint("I_GeoPoint").getLatitude() + ", " + parse.getParseGeoPoint("I_GeoPoint").getLongitude();
+                                tmp.associated_place.geo_point = location.getParseGeoPoint("I_GeoPoint").getLatitude() + ", " + location.getParseGeoPoint("I_GeoPoint").getLongitude();
                                 tmp.associated_place.notes = location.getString("J_Notes");
                             }
                             catch(Exception ex)

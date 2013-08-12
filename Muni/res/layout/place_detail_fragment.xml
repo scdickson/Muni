@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:background="#E8EBED"
+              android:background="#EFF0F2"
               android:layout_height="match_parent">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,30 +21,52 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_height="wrap_content"
-        android:background="#E8EBED"
+        android:background="#EFF0F2"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:paddingRight="10dp"
         android:paddingLeft="10dp"
         android:layout_width="match_parent">
 
-        <TextView
-                android:padding="10dp"
-                android:id="@+id/place_detail_name"
-                android:layout_height="wrap_content"
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:background="@drawable/rounded_rectangle_event"
-                android:layout_marginBottom="15dp"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
+            <ImageView
+                    android:layout_height="35dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/event_call_button"
+                    android:id="@+id/place_detail_call_action"/>
+            <View
+                    android:layout_marginRight="5dp"
+                    android:layout_width="1dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="#D9D9D9"/>
+            <ImageView
+                    android:layout_height="35dp"
+                    android:layout_width="0dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/event_map_button"
+                    android:id="@+id/place_detail_map_action"/>
+            <View
+                    android:layout_marginRight="5dp"
+                    android:layout_width="1dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="#D9D9D9"/>
+            <ImageView
+                    android:layout_height="35dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/event_web_button"
+                    android:id="@+id/place_detail_web_action"/>
 
-        <TextView
-            android:padding="10dp"
-            android:id="@+id/place_detail_phone"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:background="@drawable/rounded_rectangle_event"
-            android:layout_marginBottom="12dp"/>
+        </LinearLayout>
 
         <RelativeLayout
             android:padding="5dp"
@@ -52,11 +74,14 @@
             android:layout_width="match_parent"
             android:layout_marginBottom="12dp"
             android:id="@+id/place_detail_address_layout"
-            android:background="@drawable/rounded_rectangle_event">
+            android:background="@drawable/rounded_rectangle_poll">
 
         <TextView
                 android:padding="10dp"
                 android:id="@+id/place_detail_address"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="#A1A2A4"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_marginBottom="5dp"/>
@@ -66,39 +91,34 @@
                     android:layout_height="1dp"
                     android:layout_marginBottom="5dp"
                     android:background="#D9D9D9"/>
-        <Button
+        <TextView
             android:layout_marginTop="5dp"
+            android:padding="5dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="#A1A2A4"
+            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:layout_below="@id/place_detail_address"
             android:id="@+id/place_detail_map"
             android:layout_marginBottom="5dp"
-            android:text="Open in Maps"/>
-
-            <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/place_detail_map"
-                    android:layout_marginBottom="5dp"
-                    android:background="#D9D9D9"/>
-
-            <Button
-                    android:layout_marginTop="5dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:layout_below="@id/place_detail_map"
-                    android:id="@+id/place_detail_directions"
-                    android:layout_marginBottom="5dp"
-                    android:text="Get directions to here"/>
+            android:text="Get Directions"/>
         </RelativeLayout>
 
         <TextView
-                android:padding="10dp"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="#A1A2A4"
                 android:id="@+id/place_detail_url"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:layout_marginBottom="12dp"
-                android:background="@drawable/rounded_rectangle_event"/>
+                android:text="View Website"
+                android:background="@drawable/rounded_rectangle_poll"/>
 
         </LinearLayout>
     </ScrollView>
