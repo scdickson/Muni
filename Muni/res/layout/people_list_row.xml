@@ -3,13 +3,23 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:layout_centerInParent="true"
                 android:background="#EFF0F2"
                 android:padding="10dp">
+
+    <ImageView
+            android:id="@+id/imgArrow"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
 
     <TextView android:id="@+id/people_name"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:gravity="center_vertical"
+              android:layout_toLeftOf="@id/imgArrow"
               android:textSize="20sp"
               android:background="#EFF0F2"
               android:textColor="#333b46" />
@@ -17,18 +27,13 @@
     <TextView android:id="@+id/people_title"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
+              android:layout_toLeftOf="@id/imgArrow"
               android:layout_below="@id/people_name"
               android:gravity="center_vertical"
               android:textSize="14sp"
               android:background="#EFF0F2"
               android:textColor="#e84d3d"/>
 
-    <ImageView
-            android:id="@+id/imgArrow"
-            android:contentDescription="@string/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
+
 
 </RelativeLayout>

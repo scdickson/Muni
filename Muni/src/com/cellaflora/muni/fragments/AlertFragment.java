@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import com.cellaflora.muni.Alert;
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.AlertListAdapter;
 import com.parse.FindCallback;
@@ -29,8 +30,6 @@ public class AlertFragment extends Fragment
     ListView alertList;
     ArrayList<Alert> alerts;
     ProgressDialog progressDialog;
-
-    public static final int MAX_RECENT_ALERTS = 40;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -62,7 +61,7 @@ public class AlertFragment extends Fragment
             alerts = new ArrayList<Alert>();
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Alerts");
             query.addDescendingOrder("UpdatedAt");
-            query.setLimit(MAX_RECENT_ALERTS);
+            query.setLimit(MuniConstants.MAX_RECENT_ALERTS);
             progressDialog.show();
             query.findInBackground(new FindCallback<ParseObject>() {
                 public void done(List<ParseObject> result, ParseException e)

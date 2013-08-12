@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.R;
@@ -49,10 +50,6 @@ public class NewsFragment extends Fragment
     ListView newsList;
     NewsListAdapter adapter;
     Parcelable state;
-
-    public static final String SAVED_NEWS_PATH = "muni_saved_news";
-    public static final int NEWS_REPLACE_INTERVAL = 60; //In minutes!
-    public static final int PDF_BUFFER_SIZE = 20; //In Megabytes!
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -129,7 +126,7 @@ public class NewsFragment extends Fragment
 
                     try
                     {
-                        PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_NEWS_PATH, news);
+                        PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH, news);
                     }
                     catch(Exception ex){}
                 }
@@ -172,10 +169,10 @@ public class NewsFragment extends Fragment
         {
             try
             {
-                File f = getActivity().getFileStreamPath(SAVED_NEWS_PATH);
-                if((f.lastModified() + (NEWS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_NEWS_PATH);
+                if((f.lastModified() + (MuniConstants.NEWS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
-                    news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_NEWS_PATH);
+                    news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
                     adapter = new NewsListAdapter(view.getContext(), news, getActivity());
                     newsList = (ListView) getActivity().findViewById(R.id.news_list);
                     newsList.setAdapter(adapter);
@@ -238,7 +235,7 @@ public class NewsFragment extends Fragment
 
                 file = new File(Environment.getExternalStorageDirectory() + "/" + news_item.objectId);
                 FileOutputStream fos = new FileOutputStream(file);
-                byte data[] = new byte[1024];
+                byte data[] = new byte[MuniConstants.PDF_BUFFER_SIZE];
                 long total = 0;
                 int bytesRead = 0;
 

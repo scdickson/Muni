@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.cellaflora.muni.Document;
 import com.cellaflora.muni.DocumentFolder;
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.R;
@@ -66,10 +67,6 @@ public class DocumentFragment extends Fragment
     public ArrayList<DocumentFolder> folders;
     public ArrayList<Document> documents;
     public DocumentListAdapter adapter;
-
-    public static final String SAVED_DOCUMENTS_PATH = "muni_saved_docs";
-    public static final String SAVED_DOCUMENT_FILE_PATH = "muni_saved_doc_files";
-    public static final int DOCUMENTS_REPLACE_INTERVAL = 60;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -281,8 +278,8 @@ public class DocumentFragment extends Fragment
 
                             try
                             {
-                                PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_DOCUMENTS_PATH, folders);
-                                PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_DOCUMENT_FILE_PATH, documents);
+                                PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH, folders);
+                                PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH, documents);
                             }
                             catch(Exception ex){}
                             adapter = new DocumentListAdapter(view.getContext(), folders, null);
@@ -337,11 +334,11 @@ public class DocumentFragment extends Fragment
         {
             try
             {
-                File f = getActivity().getFileStreamPath(SAVED_DOCUMENTS_PATH);
-                if((f.lastModified() + (DOCUMENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_DOCUMENTS_PATH);
+                if((f.lastModified() + (MuniConstants.DOCUMENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
-                    folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_DOCUMENTS_PATH);
-                    documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_DOCUMENT_FILE_PATH);
+                    folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
+                    documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
                     adapter = new DocumentListAdapter(view.getContext(), folders, null);
                     documentList = (ListView) getActivity().findViewById(R.id.document_list);
                     documentList.setAdapter(adapter);

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.cellaflora.muni.CirclePageIndicator;
 import com.cellaflora.muni.LinePageIndicator;
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Poll;
 import com.cellaflora.muni.PollingPageAdapter;
@@ -32,9 +33,6 @@ public class PollingFragment extends Fragment
     public static ArrayList<String[]> completedPolls;
     private ProgressDialog progressDialog;
 
-    public static final String SAVED_POLLS_PATH = "muni_saved_polls";
-    public static final int MAX_RECENT_POLLS = 6;
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         view = inflater.inflate(R.layout.polling_fragment, container, false);
@@ -47,7 +45,7 @@ public class PollingFragment extends Fragment
         polls = new ArrayList<Poll>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Polls");
         query.addDescendingOrder("createdAt");
-        query.setLimit(MAX_RECENT_POLLS);
+        query.setLimit(MuniConstants.MAX_RECENT_POLLS);
         progressDialog.show();
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
@@ -72,7 +70,7 @@ public class PollingFragment extends Fragment
 
                 try
                 {
-                    completedPolls = (ArrayList<String[]>) PersistenceManager.readObject(view.getContext(), SAVED_POLLS_PATH);
+                    completedPolls = (ArrayList<String[]>) PersistenceManager.readObject(view.getContext(), MuniConstants.SAVED_POLLS_PATH);
                     if(completedPolls != null)
                     {
                         for(String[] data : completedPolls)
@@ -124,7 +122,7 @@ public class PollingFragment extends Fragment
         {
             if(completedPolls != null)
             {
-                PersistenceManager.writeObject(view.getContext(), "muni_saved_polls", completedPolls);
+                PersistenceManager.writeObject(view.getContext(), MuniConstants.SAVED_POLLS_PATH, completedPolls);
             }
         }
         catch(Exception e)

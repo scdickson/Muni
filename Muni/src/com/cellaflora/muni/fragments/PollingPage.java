@@ -14,6 +14,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.Poll;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.graph.Bar;
@@ -36,11 +37,6 @@ public class PollingPage extends Fragment
     Button btnPollA, btnPollB, btnPollC;
     ArrayList<Bar> points;
     BarGraph g;
-
-    public static final String OPTION_A_COLOR = "#323C45";
-    public static final String OPTION_B_COLOR = "#EC4B43";
-    public static final String OPTION_C_COLOR = "#A0A6B2";
-
 
     public PollingPage(Poll poll, PollingFragment pf)
     {
@@ -100,7 +96,7 @@ public class PollingPage extends Fragment
             {
                 txtOptionA.setText(poll.option_A + "\n" + getPercent(1) + "%");
                 Bar optionA = new Bar();
-                optionA.setColor(Color.parseColor(OPTION_A_COLOR));
+                optionA.setColor(Color.parseColor(MuniConstants.OPTION_A_COLOR));
                 optionA.setValue(poll.option_A_results);
                 optionA.setName("OPTION_A");
                 points.add(optionA);
@@ -114,7 +110,7 @@ public class PollingPage extends Fragment
             {
                 txtOptionB.setText(poll.option_B + "\n" + getPercent(2) + "%");
                 Bar optionB = new Bar();
-                optionB.setColor(Color.parseColor(OPTION_B_COLOR));
+                optionB.setColor(Color.parseColor(MuniConstants.OPTION_B_COLOR));
                 optionB.setValue(poll.option_B_results);
                 optionB.setName("OPTION_B");
                 points.add(optionB);
@@ -128,7 +124,7 @@ public class PollingPage extends Fragment
             {
                 txtOptionC.setText(poll.option_C + "\n" + getPercent(3) + "%");
                 Bar optionC = new Bar();
-                optionC.setColor(Color.parseColor(OPTION_C_COLOR));
+                optionC.setColor(Color.parseColor(MuniConstants.OPTION_C_COLOR));
                 optionC.setValue(poll.option_C_results);
                 optionC.setName("OPTION_C");
                 points.add(optionC);
@@ -239,7 +235,7 @@ public class PollingPage extends Fragment
         {
             txtOptionA.setText(poll.option_A + "\n" + getPercent(1) + "%");
             Bar optionA = new Bar();
-            optionA.setColor(Color.parseColor(OPTION_A_COLOR));
+            optionA.setColor(Color.parseColor(MuniConstants.OPTION_A_COLOR));
             optionA.setValue(poll.option_A_results);
             optionA.setName("OPTION_A");
             points.add(optionA);
@@ -249,7 +245,7 @@ public class PollingPage extends Fragment
         {
             txtOptionB.setText(poll.option_B + "\n" + getPercent(2) + "%");
             Bar optionB = new Bar();
-            optionB.setColor(Color.parseColor(OPTION_B_COLOR));
+            optionB.setColor(Color.parseColor(MuniConstants.OPTION_B_COLOR));
             optionB.setValue(poll.option_B_results);
             optionB.setName("OPTION_B");
             points.add(optionB);
@@ -259,7 +255,7 @@ public class PollingPage extends Fragment
         {
             txtOptionC.setText(poll.option_C + "\n" + getPercent(3) + "%");
             Bar optionC = new Bar();
-            optionC.setColor(Color.parseColor(OPTION_C_COLOR));
+            optionC.setColor(Color.parseColor(MuniConstants.OPTION_C_COLOR));
             optionC.setValue(poll.option_C_results);
             optionC.setName("OPTION_C");
             points.add(optionC);

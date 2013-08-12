@@ -42,15 +42,6 @@ public class MainActivity extends FragmentActivity {
     public static TextView actionbarContactReset;
     public static LinearLayout actionbarEventLayout;
     public static TextView actionBarEventUpcoming, actionBarEventPast;
-
-    public static final int MAX_CACHE_SIZE = 20; //In Megabytes!
-    public static final int CACHE_DECREASE_AMOUNT = 7; //In Megabytes!
-
-	//Parse constants
-	public static final String PARSE_APPLICATION_ID = "ACXaa1A1Vo759kga9aYlMYGiUJABaKpphndbeFhn";
-	public static final String PARSE_CLIENT_KEY = "7VthvZjSwbXzMV3h4hXOmnazhYYTn7CICKAGd7cJ";
-    public static final String TWITTER_CONSUMER_KEY = "N6X3G2gj4RJNO6c5B1xlA";
-    public static final String TWITTER_CONSUMER_SECRET = "zU2eCl3vnZsRcwhDpCgIj4AFORGq6gVXiiApTNo0Q";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -71,11 +62,11 @@ public class MainActivity extends FragmentActivity {
         actionbarTitle.setTypeface(avenirBlack);
 		
 		//Initialize Parse
-		Parse.initialize(this, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);
+		Parse.initialize(this, MuniConstants.PARSE_APPLICATION_ID, MuniConstants.PARSE_CLIENT_KEY);
 		ParseAnalytics.trackAppOpened(getIntent());
         PushService.setDefaultPushCallback(this, MainActivity.class);
         ParseInstallation.getCurrentInstallation().saveInBackground();
-        ParseTwitterUtils.initialize(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+        ParseTwitterUtils.initialize(MuniConstants.TWITTER_CONSUMER_KEY, MuniConstants.TWITTER_CONSUMER_SECRET);
 		
 		//Load initial fragment
 		HomeFragment homeFragment = new HomeFragment();
@@ -141,14 +132,14 @@ public class MainActivity extends FragmentActivity {
 
         try
         {
-            if(getDirSize() >= (MAX_CACHE_SIZE * 1000000))
+            if(getDirSize() >= (MuniConstants.MAX_CACHE_SIZE * 1000000))
             {
                 ArrayList<File> files = new ArrayList(Arrays.asList(getFilesDir().listFiles()));
                 Collections.sort(files, new fileComparator());
                 int i = 0;
 
                 //Log.d("err", "Size before: " + getDirSize());
-                while(getDirSize() >= ((MAX_CACHE_SIZE * 1000000) - (CACHE_DECREASE_AMOUNT * 1000000)) && i < files.size())
+                while(getDirSize() >= ((MuniConstants.MAX_CACHE_SIZE * 1000000) - (MuniConstants.CACHE_DECREASE_AMOUNT * 1000000)) && i < files.size())
                 {
                     if(!(files.get(i).getName().contains("muni_saved")))
                     {

@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.cellaflora.muni.ContactImageOptionDialog;
 import com.cellaflora.muni.ContactListItem;
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.ContactListAdapter;
 
@@ -58,12 +59,6 @@ public class ContactFragment extends Fragment
     File photoFile;
 
     public static final int SEND_REQUEST_CODE = 2;
-    public static final String[][] contacts = {{"Traffic","sam@cellaflora.com"},
-            {"Construction","sam@cellaflora.com"},{"Parks Department","sam@cellaflora.com"},
-            {"Waste Management","sam@cellaflora.com"},{"Police Department","sam@cellaflora.com"},
-            {"Legislature","sam@cellaflora.com"},{"Congress","sam@cellaflora.com"},
-            {"Mayor","sam@cellaflora.com"},{"Taxes","sam@cellaflora.com"},
-            {"Sewage Department","sam@cellaflora.com"},{"Water","sam@cellaflora.com"}};
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -113,7 +108,7 @@ public class ContactFragment extends Fragment
                 removeFromField(contactListItem.getName());
             }
         });
-        adapter = new ContactListAdapter(view.getContext(), contacts, new contactSelectionHandler());
+        adapter = new ContactListAdapter(view.getContext(), MuniConstants.CONTACTS, new contactSelectionHandler());
         contactGrid.setAdapter(adapter);
         toLayout = (RelativeLayout) view.findViewById(R.id.contact_to_layout);
         toLayout.setOnClickListener(new View.OnClickListener() {
@@ -294,7 +289,7 @@ public class ContactFragment extends Fragment
                                 String to[] = new String[1];
                                 String content = txtDescription.getText().toString();
 
-                                for(String[] contact : contacts)
+                                for(String[] contact : MuniConstants.CONTACTS)
                                 {
                                     if(contact[0].equals(contactListItem.getName()))
                                     {

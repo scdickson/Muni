@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.adapters.PeopleListAdapter;
 import com.cellaflora.muni.Person;
@@ -54,10 +55,6 @@ public class PeopleFragment extends Fragment
     InputMethodManager imm;
     public String groupA = " ";
     public String groupB = null;
-
-    private static final String SAVED_PEOPLE_PATH = "muni_saved_people"; //Name of saved people file
-    private static final String SAVED_PEOPLE_PERSON_PATH = "muni_saved_people_person";
-    private static final int PEOPLE_REPLACE_INTERVAL = 60; //In minutes!
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -239,8 +236,8 @@ public class PeopleFragment extends Fragment
 
                     try
                     {
-                        PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH, groups);
-                        PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PERSON_PATH, people);
+                        PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH, groups);
+                        PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH, people);
                     }
                     catch(Exception ex)
                     {
@@ -260,7 +257,7 @@ public class PeopleFragment extends Fragment
                     //Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
                     try
                     {
-                        groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH);
+                        groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
                         progressDialog.dismiss();
                         adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
                         peopleList = (ListView) getActivity().findViewById(R.id.people_list);
@@ -307,11 +304,11 @@ public class PeopleFragment extends Fragment
         {
             try
             {
-                File f = getActivity().getFileStreamPath(SAVED_PEOPLE_PATH);
-                if((f.lastModified() + (PEOPLE_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_PEOPLE_PATH);
+                if((f.lastModified() + (MuniConstants.PEOPLE_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
-                    groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PATH);
-                    people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PEOPLE_PERSON_PATH);
+                    groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
+                    people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
                     adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
                     peopleList = (ListView) getActivity().findViewById(R.id.people_list);
                     peopleList.setAdapter(adapter);

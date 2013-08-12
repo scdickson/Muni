@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.cellaflora.muni.Event;
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
@@ -41,9 +42,6 @@ public class EventFragment extends Fragment
 {
     public static final int EVENT_TYPE_UPCOMING = 0;
     public static final int EVENT_TYPE_PAST = 1;
-    public static final String SAVED_EVENTS_PATH = "muni_saved_events";
-    public static final int EVENTS_REPLACE_INTERVAL = 60; //In minutes!
-
 
     View view;
     ListView eventList;
@@ -261,7 +259,7 @@ public class EventFragment extends Fragment
                     }
                     try
                     {
-                        PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_EVENTS_PATH, events);
+                        PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_PATH, events);
                     }
                     catch(Exception ex){}
                 }
@@ -292,10 +290,10 @@ public class EventFragment extends Fragment
         {
             try
             {
-                File f = getActivity().getFileStreamPath(SAVED_EVENTS_PATH);
-                if((f.lastModified() + (EVENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_EVENTS_PATH);
+                if((f.lastModified() + (MuniConstants.EVENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
-                    events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_EVENTS_PATH);
+                    events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_PATH);
                 }
                 else
                 {

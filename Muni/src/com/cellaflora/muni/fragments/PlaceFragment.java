@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.PersonGroup;
 import com.cellaflora.muni.Place;
@@ -48,9 +49,6 @@ public class PlaceFragment extends Fragment
     PlaceListAdapter adapter;
     private ProgressDialog progressDialog;
     Parcelable state;
-
-    public static final String SAVED_PLACES_PATH = "muni_saved_places";
-    public static final int PLACES_REPLACE_INTERVAL = 60; //In minutes!
 
     LocationManager service;
     LocationListener locationListener;
@@ -122,7 +120,7 @@ public class PlaceFragment extends Fragment
                 //in.setDuration(1000);
                 try
                 {
-                    PersistenceManager.writeObject(getActivity().getApplicationContext(), SAVED_PLACES_PATH, places);
+                    PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH, places);
                 }
                 catch(Exception ex){}
 
@@ -156,10 +154,10 @@ public class PlaceFragment extends Fragment
         {
             try
             {
-                File f = getActivity().getFileStreamPath(SAVED_PLACES_PATH);
-                if((f.lastModified() + (PLACES_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_PLACES_PATH);
+                if((f.lastModified() + (MuniConstants.PLACES_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
-                    places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), SAVED_PLACES_PATH);
+                    places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
                     adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
                     placeList = (ListView) getActivity().findViewById(R.id.place_list);
                     placeList.setAdapter(adapter);

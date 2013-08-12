@@ -159,13 +159,15 @@ public class PeopleListAdapter extends BaseAdapter
         if(content.get(position).getClass().equals(Person.class))
         {
             Person tmp = (Person) content.get(position);
+            txtName.setTypeface(null, Typeface.NORMAL);
             txtName.setText(tmp.name);
             txtTitle.setText(tmp.title);
         }
         else
         {
+            txtName.setTypeface(null, Typeface.BOLD);
             txtName.setText(content.get(position).toString());
-            int id = context.getResources().getIdentifier("com.cellaflora.muni:drawable/transparent_arrow_right", null, null);
+            int id = context.getResources().getIdentifier("com.cellaflora.muni:drawable/arrow_list", null, null);
             imgArrow.setImageResource(id);
         }
 

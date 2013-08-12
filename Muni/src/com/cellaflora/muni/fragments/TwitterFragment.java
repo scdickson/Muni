@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.MuniJSONParser;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
@@ -42,8 +43,6 @@ public class TwitterFragment extends Fragment
     ListView twitterList;
     TwitterListAdapter adapter;
     private ProgressDialog progressDialog;
-    public static final String TWITTER_NAME = "WestLafayetteIN";
-    public static final String TWITTER_URL = "https://api.twitter.com/1.1/statuses/user_timeline.json?include_entities=false&include_rts=false&screen_name=";
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -53,7 +52,7 @@ public class TwitterFragment extends Fragment
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
         MainActivity.actionbarTitle.setTextSize(25);
-        MainActivity.actionbarTitle.setText(Html.fromHtml("<font color=\"#EC4B43\">@</font>" + TWITTER_NAME));
+        MainActivity.actionbarTitle.setText(Html.fromHtml("<font color=\"#EC4B43\">@</font>" + MuniConstants.TWITTER_NAME));
         ParseUser currentUser = ParseUser.getCurrentUser();
 
         if(currentUser != null)
@@ -129,7 +128,7 @@ public class TwitterFragment extends Fragment
             try
             {
                 HttpClient client = new DefaultHttpClient();
-                HttpGet verifyGet = new HttpGet(TWITTER_URL + TWITTER_NAME);
+                HttpGet verifyGet = new HttpGet(MuniConstants.TWITTER_URL + MuniConstants.TWITTER_NAME);
                 twitter.signRequest(verifyGet);
                 HttpResponse response = client.execute(verifyGet);
                 ResponseHandler<String> handler = new BasicResponseHandler();
