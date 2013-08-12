@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -69,6 +70,7 @@ public class ContactFragment extends Fragment
         contactFragment = this;
 		view = inflater.inflate(R.layout.contact_fragment, container, false);
         MainActivity.actionbarTitle.setText("Contact");
+        MainActivity.actionbarContactReset.setVisibility(View.VISIBLE);
         contactGrid = (GridView) view.findViewById(R.id.contact_list_grid);
         contactListItem = (ContactListItem) view.findViewById(R.id.contact_to_view);
         photoAction = (ImageView) view.findViewById(R.id.contact_photo_action);
@@ -76,6 +78,34 @@ public class ContactFragment extends Fragment
         txtSubject = (EditText) view.findViewById(R.id.contact_subject_field);
         locationAction = (ImageView) view.findViewById(R.id.contact_location_action);
         sendAction = (Button) view.findViewById(R.id.contact_action_send);
+        MainActivity.actionbarContactReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                alertDialogBuilder.setTitle("Reset");
+                alertDialogBuilder
+                        .setMessage("Are you sure you want to reset? All entered data will be lost.")
+                        .setCancelable(false)
+                        .setPositiveButton("Reset",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id)
+                            {
+                                resetForm();
+                            }
+                        })
+                        .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id)
+                            {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
         contactListItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
@@ -142,6 +172,12 @@ public class ContactFragment extends Fragment
         sendAction.setOnClickListener(new sendActionListener());
 		return view;
 	}
+
+    public void onPause()
+    {
+        super.onPause();
+        MainActivity.actionbarContactReset.setVisibility(View.GONE);
+    }
 
     public void photoDialogCallback(boolean callback, int code)
     {
@@ -322,6 +358,8 @@ public class ContactFragment extends Fragment
 
     public void resetForm()
     {
+        locationEnabled = false;
+        photoEnabled = false;
         ContactFragment fragment = new ContactFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         //fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,6 +39,9 @@ public class MainActivity extends FragmentActivity {
 	ActionBarDrawerToggle mMenuToggle;
     Fragment currentFragment = null;
     public static TextView actionbarTitle;
+    public static TextView actionbarContactReset;
+    public static LinearLayout actionbarEventLayout;
+    public static TextView actionBarEventUpcoming, actionBarEventPast;
 
     public static final int MAX_CACHE_SIZE = 20; //In Megabytes!
     public static final int CACHE_DECREASE_AMOUNT = 7; //In Megabytes!
@@ -59,6 +63,10 @@ public class MainActivity extends FragmentActivity {
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
         actionbarTitle = (TextView) findViewById(R.id.actionbar_title);
+        actionbarContactReset = (TextView) findViewById(R.id.contact_action_reset);
+        actionbarEventLayout = (LinearLayout) findViewById(R.id.event_selector_layout);
+        actionBarEventUpcoming = (TextView) findViewById(R.id.event_selector_upcoming);
+        actionBarEventPast = (TextView) findViewById(R.id.event_selector_past);
         Typeface avenirBlack = Typeface.createFromAsset(getAssets(), "fonts/Avenir LT 95 Black.ttf");
         actionbarTitle.setTypeface(avenirBlack);
 		
@@ -166,7 +174,8 @@ public class MainActivity extends FragmentActivity {
 		return true;
 	}*/
 	
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item)
+    {
 
         if (mMenuToggle.onOptionsItemSelected(item)) 
         {

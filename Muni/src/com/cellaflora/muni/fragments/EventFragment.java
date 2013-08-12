@@ -42,14 +42,14 @@ public class EventFragment extends Fragment
     public static final int EVENT_TYPE_UPCOMING = 0;
     public static final int EVENT_TYPE_PAST = 1;
     public static final String SAVED_EVENTS_PATH = "muni_saved_events";
-    public static final int EVENTS_REPLACE_INTERVAL = 1; //In minutes!
+    public static final int EVENTS_REPLACE_INTERVAL = 60; //In minutes!
 
 
     View view;
     ListView eventList;
     EventListAdapter adapter;
     ArrayList<Event> events;
-    Button upcomingEventsSelector, pastEventsSelector;
+    //Button upcomingEventsSelector, pastEventsSelector;
     private ProgressDialog progressDialog;
     EventContentFragment ecf;
     LayoutInflater inflater;
@@ -73,8 +73,49 @@ public class EventFragment extends Fragment
             ecf = new EventContentFragment(new nestedFragmentHandler());
             getFragmentManager().beginTransaction().replace(R.id.event_content, ecf).commit();
 
-            MainActivity.actionbarTitle.setText("Events");
-            upcomingEventsSelector = (Button) view.findViewById(R.id.events_upcoming_selector);
+            MainActivity.actionbarTitle.setVisibility(View.GONE);
+            MainActivity.actionbarEventLayout.setVisibility(View.VISIBLE);
+            MainActivity.actionBarEventUpcoming.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view)
+                {
+                    if(current_event_type != EVENT_TYPE_UPCOMING)
+                    {
+                        current_event_type = EVENT_TYPE_UPCOMING;
+                        if(events == null)
+                        {
+                            loadEvents();
+                        }
+
+                        adapter.switchView(current_event_type);
+                        adapter.notifyDataSetChanged();
+                        eventList.invalidateViews();
+                        MainActivity.actionBarEventUpcoming.setTextColor(Color.parseColor("#EA4D3E"));
+                        MainActivity.actionBarEventPast.setTextColor(Color.parseColor("#ffffff"));
+                    }
+                }
+            });
+            MainActivity.actionBarEventPast.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view)
+                {
+                    if(current_event_type != EVENT_TYPE_PAST)
+                    {
+                        current_event_type = EVENT_TYPE_PAST;
+                        if(events == null)
+                        {
+                            loadEvents();
+                        }
+
+                        adapter.switchView(current_event_type);
+                        adapter.notifyDataSetChanged();
+                        eventList.invalidateViews();
+                        MainActivity.actionBarEventUpcoming.setTextColor(Color.parseColor("#ffffff"));
+                        MainActivity.actionBarEventPast.setTextColor(Color.parseColor("#EA4D3E"));
+                    }
+                }
+            });
+            /*upcomingEventsSelector = (Button) view.findViewById(R.id.events_upcoming_selector);
             pastEventsSelector = (Button) view.findViewById(R.id.events_past_selector);
 
             upcomingEventsSelector.setOnClickListener(new View.OnClickListener() {
@@ -116,7 +157,7 @@ public class EventFragment extends Fragment
                         upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_left);
                     }
                 }
-            });
+            });*/
         }
         catch(InflateException ie){}
 
@@ -127,6 +168,10 @@ public class EventFragment extends Fragment
     {
         super.onPause();
         state = eventList.onSaveInstanceState();
+        MainActivity.actionbarTitle.setVisibility(View.VISIBLE);
+        MainActivity.actionbarEventLayout.setVisibility(View.GONE);
+        MainActivity.actionBarEventUpcoming.setTextColor(Color.parseColor("#EA4D3E"));
+        MainActivity.actionBarEventPast.setTextColor(Color.parseColor("#ffffff"));
     }
 
     private Date fixDate(Date date)
@@ -268,16 +313,20 @@ public class EventFragment extends Fragment
             switch(current_event_type)
             {
                 case EVENT_TYPE_UPCOMING:
-                    upcomingEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
+                    MainActivity.actionBarEventUpcoming.setTextColor(Color.parseColor("#EA4D3E"));
+                    MainActivity.actionBarEventPast.setTextColor(Color.parseColor("#ffffff"));
+                    /*upcomingEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
                     upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_selected_left);
                     pastEventsSelector.setTextColor(Color.parseColor("#50667B"));
-                    pastEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_right);
+                    pastEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_right);*/
                     break;
                 case EVENT_TYPE_PAST:
-                    pastEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
+                    MainActivity.actionBarEventUpcoming.setTextColor(Color.parseColor("#ffffff"));
+                    MainActivity.actionBarEventPast.setTextColor(Color.parseColor("#EA4D3E"));
+                    /*pastEventsSelector.setTextColor(Color.parseColor("#F5FDFF"));
                     pastEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_selected_right);
                     upcomingEventsSelector.setTextColor(Color.parseColor("#50667B"));
-                    upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_left);
+                    upcomingEventsSelector.setBackgroundResource(R.drawable.rounded_rectangle_button_unselected_left);*/
                     break;
             }
         }

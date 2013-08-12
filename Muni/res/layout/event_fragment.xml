@@ -3,7 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical" >
-    <LinearLayout
+    <!--LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:background="#333B46"
@@ -33,7 +33,7 @@
                 android:textStyle="bold"
                 android:layout_toRightOf="@id/events_upcoming_selector"
                 android:text="Past Events"/>
-        </LinearLayout>
+        </LinearLayout>-->
 
     <FrameLayout
               android:id="@+id/event_content"
