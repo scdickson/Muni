@@ -11,6 +11,10 @@
 
     <ImageButton android:src="@drawable/drawer_arrow"
                  android:background="@null"
+                 android:paddingLeft="3dp"
+                 android:paddingTop="12dp"
+                 android:paddingBottom="12dp"
+                 android:paddingRight="12dp"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:scaleType="centerInside"
