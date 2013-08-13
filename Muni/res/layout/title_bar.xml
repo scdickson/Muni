@@ -6,13 +6,13 @@
                 android:layout_gravity="center"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:background="#333B46"
+                android:background="@drawable/nav_bar"
                 android:orientation="horizontal">
 
     <ImageButton android:src="@drawable/drawer_arrow"
                  android:background="@null"
                  android:layout_width="wrap_content"
-                 android:layout_height="match_parent"
+                 android:layout_height="wrap_content"
                  android:scaleType="centerInside"
                  android:layout_centerVertical="true"
                  android:id="@+id/toggle_button"

@@ -62,6 +62,7 @@ public class DocumentFragment extends Fragment
     EditText searchBar;
     TextView searchCancel;
     InputMethodManager imm;
+    loadPdf lp;
     public DocumentFolder currentDir = null;
     ArrayList<Object> searchResults;
     public ArrayList<DocumentFolder> folders;
@@ -381,7 +382,8 @@ public class DocumentFragment extends Fragment
 
         if(obj.getClass().equals(Document.class))
         {
-            new loadPdf().execute((Document) obj);
+            lp = new loadPdf();
+            lp.execute((Document) obj);
         }
         else if(obj.getClass().equals(DocumentFolder.class))
         {
@@ -410,6 +412,16 @@ public class DocumentFragment extends Fragment
         protected void onPreExecute()
         {
             super.onPreExecute();
+            pdfProgress.setCanceledOnTouchOutside(false);
+            pdfProgress.setCancelable(true);
+            pdfProgress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface)
+                {
+                    lp.cancel(true);
+                    publishProgress(0);
+                }
+            });
             pdfProgress.show();
         }
 
@@ -421,44 +433,45 @@ public class DocumentFragment extends Fragment
 
         protected Void doInBackground(Object... arg0)
         {
-            try
-            {
-                document = (Document) arg0[0];
-                URL url = new URL(document.document_url);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-                int fileLength = connection.getContentLength();
-                InputStream is = connection.getInputStream();
-
-                file = new File(Environment.getExternalStorageDirectory() + "/" + document.objectId);
-                FileOutputStream fos = new FileOutputStream(file);
-                byte data[] = new byte[1024];
-                long total = 0;
-                int bytesRead = 0;
-
-                while((bytesRead = is.read(data, 0, data.length)) >= 0)
+                try
                 {
-                    total += bytesRead;
-                    publishProgress((int) (total * 100 / fileLength));
-                    fos.write(data, 0, bytesRead);
-                    fos.flush();
+                    document = (Document) arg0[0];
+                    URL url = new URL(document.document_url);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.connect();
+                    int fileLength = connection.getContentLength();
+                    InputStream is = connection.getInputStream();
+
+                    file = new File(Environment.getExternalStorageDirectory() + "/" + document.objectId);
+                    FileOutputStream fos = new FileOutputStream(file);
+                    byte data[] = new byte[1024];
+                    long total = 0;
+                    int bytesRead = 0;
+
+                    while(((bytesRead = is.read(data, 0, data.length)) >= 0) && !isCancelled())
+                    {
+                        total += bytesRead;
+                        publishProgress((int) (total * 100 / fileLength));
+                        fos.write(data, 0, bytesRead);
+                        fos.flush();
+                    }
+
+                    fos.close();
+                    is.close();
+
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
                 }
 
-                fos.close();
-                is.close();
-
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
             return null;
         }
 
         protected void onPostExecute(Void v)
         {
             pdfProgress.dismiss();
-            if(file != null)
+            if(file != null && !isCancelled())
             {
                 Uri path = Uri.fromFile(file);
                 Intent intent = new Intent(Intent.ACTION_VIEW);

@@ -213,11 +213,13 @@ public class EventFragment extends Fragment
                         if(parse.getDate("C_Start_Time") != null)
                         {
                             tmp.start_time = fixDate(parse.getDate("C_Start_Time"));
+                            //Log.d("fatal", "Start: " + tmp.start_time.toString());
                         }
 
                         if(parse.getDate("D_End_Time") != null)
                         {
                             tmp.end_time = fixDate(parse.getDate("D_End_Time"));
+                            //Log.d("fatal", "End : " + tmp.end_time.toString());
                         }
 
                         tmp.photo_caption = parse.getString("F_Photo_Caption");
@@ -226,7 +228,7 @@ public class EventFragment extends Fragment
                         tmp.event_url = parse.getString("L_Hyperlink");
                         tmp.isAllDay = parse.getBoolean("E_Event_Is_All_Day");
 
-                        ParseFile photo = (ParseFile) parse.get("G_Photo");
+                        ParseFile photo = parse.getParseFile("G_Photo");
 
                         if(photo != null && photo.getUrl() != null)
                         {

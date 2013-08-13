@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.MuniJSONParser;
@@ -148,9 +149,16 @@ public class TwitterFragment extends Fragment
         {
             if(tweets != null)
             {
-                adapter = new TwitterListAdapter(view.getContext(), tweets);
-                twitterList = (ListView) getActivity().findViewById(R.id.twitter_list);
-                twitterList.setAdapter(adapter);
+                try
+                {
+                    adapter = new TwitterListAdapter(view.getContext(), tweets);
+                    twitterList = (ListView) getActivity().findViewById(R.id.twitter_list);
+                    twitterList.setAdapter(adapter);
+                }
+                catch(Exception e)
+                {
+                    Toast.makeText(getActivity().getApplicationContext(), "An error occured while loading tweets. Please check your Internet connection and try again later.", Toast.LENGTH_LONG).show();
+                }
             }
 
             progressDialog.dismiss();

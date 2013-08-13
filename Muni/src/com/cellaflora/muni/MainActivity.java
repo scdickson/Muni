@@ -42,8 +42,9 @@ public class MainActivity extends FragmentActivity {
     public static TextView actionbarContactReset;
     public static LinearLayout actionbarEventLayout;
     public static TextView actionBarEventUpcoming, actionBarEventPast;
-	
-	@Override
+    public static Typeface avenirBlack, myriadProRegular, myriadProSemiBold;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -58,7 +59,9 @@ public class MainActivity extends FragmentActivity {
         actionbarEventLayout = (LinearLayout) findViewById(R.id.event_selector_layout);
         actionBarEventUpcoming = (TextView) findViewById(R.id.event_selector_upcoming);
         actionBarEventPast = (TextView) findViewById(R.id.event_selector_past);
-        Typeface avenirBlack = Typeface.createFromAsset(getAssets(), "fonts/Avenir LT 95 Black.ttf");
+        avenirBlack = Typeface.createFromAsset(getAssets(), "fonts/Avenir LT 95 Black.ttf");
+        myriadProRegular = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Regular.otf");
+        myriadProSemiBold = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Semibold.otf");
         actionbarTitle.setTypeface(avenirBlack);
 		
 		//Initialize Parse
@@ -183,35 +186,35 @@ public class MainActivity extends FragmentActivity {
 		
 		switch(position)
 		{
-			case 0:
+			case 0://Home
 				currentFragment = new HomeFragment();
 				break;
-			case 1:
-                currentFragment = new NewsFragment();
+			case 1://People
+                currentFragment = new PeopleFragment();
 				break;
-			case 2:
-                currentFragment = new TwitterFragment();
-				break;
-			case 3:
-                currentFragment = new EventFragment();
-				break;
-			case 4:
-                currentFragment = new ContactFragment();
-				break;
-			case 5:
+			case 2://Notifications
                 currentFragment = new AlertFragment();
 				break;
-			case 6:
-                currentFragment = new PollingFragment();
-				break;
-			case 7:
+			case 3://Places
                 currentFragment = new PlaceFragment();
 				break;
-			case 8:
-                currentFragment = new DocumentFragment();
+			case 4://News
+                currentFragment = new NewsFragment();
 				break;
-			case 9:
-                currentFragment = new PeopleFragment();
+			case 5://Events
+                currentFragment = new EventFragment();
+				break;
+			case 6://Twitter
+                currentFragment = new TwitterFragment();
+				break;
+			case 7://Polling
+                currentFragment = new PollingFragment();
+				break;
+			case 8://Contact
+                currentFragment = new ContactFragment();
+				break;
+			case 9://Documents
+                currentFragment = new DocumentFragment();
 				break;
 		}
 

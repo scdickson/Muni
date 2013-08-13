@@ -18,8 +18,10 @@ import android.view.animation.Animation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cellaflora.muni.Event;
+import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.fragments.EventDetailFragment;
 import com.cellaflora.muni.fragments.EventFragment;
@@ -53,7 +55,7 @@ public class EventListAdapter extends BaseAdapter
     Date now;
     Activity activity;
 
-    public static final int IMAGE_BUFFER_SIZE = 20480;
+    //public static final int IMAGE_BUFFER_SIZE = 20480;
 
     public EventListAdapter(Context context, ArrayList<Event> events, int event_selector, Activity activity)
     {
@@ -64,25 +66,32 @@ public class EventListAdapter extends BaseAdapter
         this.now = c.getTime();
         this.activity = activity;
 
-        if(event_selector == EventFragment.EVENT_TYPE_UPCOMING)
+        try
         {
-            for(Event e : events)
+            if(event_selector == EventFragment.EVENT_TYPE_UPCOMING)
             {
-                if(e.start_time.after(now))
+                for(Event e : events)
                 {
-                    this.events.add(e);
+                    if(e.start_time.after(now))
+                    {
+                        this.events.add(e);
+                    }
+                }
+            }
+            else if(event_selector == EventFragment.EVENT_TYPE_PAST)
+            {
+                for(Event e : events)
+                {
+                    if(e.start_time.before(now))
+                    {
+                        this.events.add(e);
+                    }
                 }
             }
         }
-        else if(event_selector == EventFragment.EVENT_TYPE_PAST)
+        catch(Exception e)
         {
-            for(Event e : events)
-            {
-                if(e.start_time.before(now))
-                {
-                    this.events.add(e);
-                }
-            }
+            Toast.makeText(activity.getApplicationContext(), "An error occured while loading events. Please check your Internet connection and try again later.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -402,8 +411,8 @@ public class EventListAdapter extends BaseAdapter
                 file = new File(context.getFilesDir() + "/" + event.objectId + "_uncompressed");
                 compressed = new File(context.getFilesDir() + "/" + event.objectId);
                 FileOutputStream fos = new FileOutputStream(file);
-                BufferedOutputStream bos = new BufferedOutputStream(fos, IMAGE_BUFFER_SIZE);
-                byte data[] = new byte[IMAGE_BUFFER_SIZE];
+                BufferedOutputStream bos = new BufferedOutputStream(fos, MuniConstants.IMAGE_BUFFER_SIZE);
+                byte data[] = new byte[MuniConstants.IMAGE_BUFFER_SIZE];
 
                 int bytesRead = 0;
                 while((bytesRead = is.read(data, 0, data.length)) >= 0)

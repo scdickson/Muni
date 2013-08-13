@@ -1,5 +1,7 @@
 package com.cellaflora.muni;
 
+import android.graphics.Typeface;
+
 import com.google.android.gms.maps.GoogleMap;
 
 /**
@@ -33,6 +35,7 @@ public class MuniConstants
 
     //Event Fragment Constants
     public static final String SAVED_EVENTS_PATH = "muni_saved_events";
+    public static final int IMAGE_BUFFER_SIZE = 1024; //In bytes!
     public static final int EVENTS_REPLACE_INTERVAL = 60; //In minutes!
 
     //Home Fragment Constants

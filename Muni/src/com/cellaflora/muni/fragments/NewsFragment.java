@@ -50,6 +50,7 @@ public class NewsFragment extends Fragment
     ListView newsList;
     NewsListAdapter adapter;
     Parcelable state;
+    loadPdf lp;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -193,7 +194,8 @@ public class NewsFragment extends Fragment
 
     public void selectItem(int position)
     {
-        new loadPdf().execute(news.get(position));
+        lp = new loadPdf();
+        lp.execute(news.get(position));
     }
 
     private class NewsItemClickListener implements ListView.OnItemClickListener
@@ -213,6 +215,16 @@ public class NewsFragment extends Fragment
         protected void onPreExecute()
         {
             super.onPreExecute();
+            pdfProgress.setCanceledOnTouchOutside(false);
+            pdfProgress.setCancelable(true);
+            pdfProgress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface)
+                {
+                    lp.cancel(true);
+                    publishProgress(0);
+                }
+            });
             pdfProgress.show();
         }
 
@@ -239,7 +251,7 @@ public class NewsFragment extends Fragment
                 long total = 0;
                 int bytesRead = 0;
 
-                while((bytesRead = is.read(data, 0, data.length)) >= 0)
+                while(((bytesRead = is.read(data, 0, data.length)) >= 0) && !isCancelled())
                 {
                     total += bytesRead;
                     publishProgress((int) (total * 100 / fileLength));
@@ -261,7 +273,7 @@ public class NewsFragment extends Fragment
         protected void onPostExecute(Void v)
         {
             pdfProgress.dismiss();
-            if(file != null)
+            if(file != null && !isCancelled())
             {
                 Uri path = Uri.fromFile(file);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
