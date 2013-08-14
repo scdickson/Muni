@@ -165,6 +165,7 @@ public class PlaceListAdapter extends BaseAdapter
         txtGroup.setTypeface(MainActivity.myriadProRegular);
 
         imgPlace = (ImageView) itemView.findViewById(R.id.imgPlace);
+        imgPlace.setVisibility(View.GONE);
         TextView header = (TextView) itemView.findViewById(R.id.place_list_section_header);
         header.setTypeface(MainActivity.myriadProRegular);
 
@@ -192,8 +193,8 @@ public class PlaceListAdapter extends BaseAdapter
             if(tmp.category != null)
             {
                 txtGroup.setText(tmp.category);
-                int id = context.getResources().getIdentifier("com.cellaflora.muni:drawable/" +tmp.category.toLowerCase(), null, null);
-                imgPlace.setImageResource(id);
+                //int id = context.getResources().getIdentifier("com.cellaflora.muni:drawable/" +tmp.category.toLowerCase(), null, null);
+                //imgPlace.setImageResource(id);
             }
         }
         else if(content.get(position).getClass().equals(String.class))
