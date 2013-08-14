@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cellaflora.muni.Document;
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.DocumentFolder;
 
@@ -94,7 +95,9 @@ public class DocumentListAdapter extends BaseAdapter
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.document_list_row, parent, false);
         TextView txtTitle = (TextView) itemView.findViewById(R.id.document_title);
+        txtTitle.setTypeface(MainActivity.myriadProSemiBold);
         TextView txtDate = (TextView) itemView.findViewById(R.id.document_date);
+        txtDate.setTypeface(MainActivity.myriadProRegular);
         ImageView imgDocument = (ImageView) itemView.findViewById(R.id.document_type_image);
 
         Object obj = content.get(position);

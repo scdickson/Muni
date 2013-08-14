@@ -50,6 +50,7 @@ public class FullScreenImageView extends Activity
             caption = data.getStringExtra("caption");
             fullscreenimage = (ImageView) findViewById(R.id.fullscreenimage);
             fullscreencaption = (TextView) findViewById(R.id.fullscreenimage_caption);
+            fullscreencaption.setTypeface(MainActivity.myriadProRegular);
         }
     }
 

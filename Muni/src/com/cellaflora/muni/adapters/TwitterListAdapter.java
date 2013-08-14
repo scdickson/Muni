@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.Tweet;
 
@@ -62,7 +63,9 @@ public class TwitterListAdapter extends BaseAdapter
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.twitter_list_row, parent, false);
         TextView txtTweet = (TextView) itemView.findViewById(R.id.twitter_tweet);
+        txtTweet.setTypeface(MainActivity.myriadProRegular);
         TextView txtTweetTime = (TextView) itemView.findViewById(R.id.twitter_time);
+        txtTweetTime.setTypeface(MainActivity.myriadProSemiBold);
 
         Tweet t = tweets.get(position);
 

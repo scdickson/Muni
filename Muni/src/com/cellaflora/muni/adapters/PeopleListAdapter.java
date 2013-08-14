@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.Person;
 import com.cellaflora.muni.PersonGroup;
 import com.cellaflora.muni.R;
@@ -142,14 +143,14 @@ public class PeopleListAdapter extends BaseAdapter
         ImageView imgArrow;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.people_list_row, parent, false);
-        
-        //Load special font
+
         txtName = (TextView) itemView.findViewById(R.id.people_name);
+        txtName.setTypeface(MainActivity.myriadProSemiBold);
+
         txtTitle = (TextView) itemView.findViewById(R.id.people_title);
+        txtTitle.setTypeface(MainActivity.myriadProRegular);
+
         imgArrow = (ImageView) itemView.findViewById(R.id.imgArrow);
-        //Typeface avenirBlack = Typeface.createFromAsset(context.getAssets(), "fonts/Avenir LT 95 Black.ttf");
-        //txtName.setTypeface(avenirBlack);
-        //txtTitle.setTypeface(avenirBlack);
 	    
 	    //Populate menu
 

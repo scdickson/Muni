@@ -66,13 +66,23 @@ public class ContactFragment extends Fragment
 		view = inflater.inflate(R.layout.contact_fragment, container, false);
         MainActivity.actionbarTitle.setText("Contact");
         MainActivity.actionbarContactReset.setVisibility(View.VISIBLE);
+        MainActivity.actionbarContactReset.setTypeface(MainActivity.myriadProRegular);
+        TextView toField = (TextView) view.findViewById(R.id.contact_to_field);
+        toField.setTypeface(MainActivity.myriadProRegular);
+        TextView subjectLabel = (TextView) view.findViewById(R.id.contact_subject_label);
+        subjectLabel.setTypeface(MainActivity.myriadProRegular);
+        TextView disclaimer = (TextView) view.findViewById(R.id.contact_emergency_disclaimer);
+        disclaimer.setTypeface(MainActivity.myriadProRegular);
         contactGrid = (GridView) view.findViewById(R.id.contact_list_grid);
         contactListItem = (ContactListItem) view.findViewById(R.id.contact_to_view);
         photoAction = (ImageView) view.findViewById(R.id.contact_photo_action);
         txtDescription = (EditText) view.findViewById(R.id.contact_description_field);
+        txtDescription.setTypeface(MainActivity.myriadProRegular);
         txtSubject = (EditText) view.findViewById(R.id.contact_subject_field);
+        txtSubject.setTypeface(MainActivity.myriadProRegular);
         locationAction = (ImageView) view.findViewById(R.id.contact_location_action);
         sendAction = (Button) view.findViewById(R.id.contact_action_send);
+        sendAction.setTypeface(MainActivity.myriadProSemiBold);
         MainActivity.actionbarContactReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)

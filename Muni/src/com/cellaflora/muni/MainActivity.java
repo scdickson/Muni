@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class MainActivity extends FragmentActivity {
 	public static String storedWeather = null;
 	ActionBarDrawerToggle mMenuToggle;
     Fragment currentFragment = null;
+    ImageView nav_info;
     public static TextView actionbarTitle;
     public static TextView actionbarContactReset;
     public static LinearLayout actionbarEventLayout;
@@ -62,7 +64,9 @@ public class MainActivity extends FragmentActivity {
         avenirBlack = Typeface.createFromAsset(getAssets(), "fonts/Avenir LT 95 Black.ttf");
         myriadProRegular = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Regular.otf");
         myriadProSemiBold = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Semibold.otf");
-        actionbarTitle.setTypeface(avenirBlack);
+        actionbarTitle.setTypeface(myriadProSemiBold);
+        actionBarEventPast.setTypeface(MainActivity.myriadProSemiBold);
+        actionBarEventUpcoming.setTypeface(MainActivity.myriadProSemiBold);
 		
 		//Initialize Parse
 		Parse.initialize(this, MuniConstants.PARSE_APPLICATION_ID, MuniConstants.PARSE_CLIENT_KEY);
@@ -86,7 +90,6 @@ public class MainActivity extends FragmentActivity {
 		mMenuToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.drawer_arrow, R.string.app_name, R.string.app_name);
 		drawerLayout.setDrawerListener(mMenuToggle);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-	    //getActionBar().setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP|ActionBar.DISPLAY_SHOW_HOME);
 		
 		MenuListAdapter mMenuAdapter = new MenuListAdapter(this, menuDrawerItems);
         menuDrawer.setAdapter(mMenuAdapter);
@@ -94,6 +97,7 @@ public class MainActivity extends FragmentActivity {
         menuDrawer.setOnItemClickListener(drawerListener);
 
         ImageButton ib = (ImageButton) findViewById(R.id.toggle_button);
+        nav_info = (ImageView) findViewById(R.id.nav_info);
         ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
@@ -101,10 +105,12 @@ public class MainActivity extends FragmentActivity {
                 if(drawerLayout.isDrawerOpen(menuDrawer))
                 {
                     drawerLayout.closeDrawer(menuDrawer);
+                    //nav_info.setVisibility(View.GONE);
                 }
                 else
                 {
                     drawerLayout.openDrawer(menuDrawer);
+                    //nav_info.setVisibility(View.VISIBLE);
                 }
             }
         });

@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
@@ -155,10 +156,17 @@ public class PlaceListAdapter extends BaseAdapter
         View itemView = inflater.inflate(R.layout.place_list_row, parent, false);
 
         txtName = (TextView) itemView.findViewById(R.id.place_name);
+        txtName.setTypeface(MainActivity.myriadProSemiBold);
+
         txtDistance = (TextView) itemView.findViewById(R.id.place_distance);
+        txtDistance.setTypeface(MainActivity.myriadProRegular);
+
         txtGroup = (TextView) itemView.findViewById(R.id.place_group);
+        txtGroup.setTypeface(MainActivity.myriadProRegular);
+
         imgPlace = (ImageView) itemView.findViewById(R.id.imgPlace);
         TextView header = (TextView) itemView.findViewById(R.id.place_list_section_header);
+        header.setTypeface(MainActivity.myriadProRegular);
 
         if(content.get(position).getClass().equals(Place.class))
         {

@@ -103,8 +103,14 @@ public class PlaceDetailFragment extends Fragment
         }
 
         TextView txtAddress = (TextView) view.findViewById(R.id.place_detail_address);
+        txtAddress.setTypeface(MainActivity.myriadProRegular);
+
         TextView txtUrl = (TextView) view.findViewById(R.id.place_detail_url);
+        txtUrl.setTypeface(MainActivity.myriadProRegular);
+
         TextView btnMap = (TextView) view.findViewById(R.id.place_detail_map);
+        btnMap.setTypeface(MainActivity.myriadProRegular);
+
         ImageView actionCall = (ImageView) view.findViewById(R.id.place_detail_call_action);
         ImageView actionMap = (ImageView) view.findViewById(R.id.place_detail_map_action);
         ImageView actionWeb = (ImageView) view.findViewById(R.id.place_detail_web_action);

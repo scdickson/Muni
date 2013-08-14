@@ -68,7 +68,9 @@ public class PlaceFragment extends Fragment
 		view = inflater.inflate(R.layout.place_fragment, container, false);
         MainActivity.actionbarTitle.setText("Places");
         searchBar = (EditText) view.findViewById(R.id.place_search);
+        searchBar.setTypeface(MainActivity.myriadProRegular);
         searchCancel = (TextView) view.findViewById(R.id.place_search_cancel);
+        searchCancel.setTypeface(MainActivity.myriadProRegular);
         searchCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)

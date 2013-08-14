@@ -1,5 +1,6 @@
 package com.cellaflora.muni.fragments;
 
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.Person;
 import com.cellaflora.muni.R;
 
@@ -49,17 +50,20 @@ public class PeopleDetailFragment extends Fragment
         progressDialog.setMessage("Loading...");
 
         TextView name = (TextView) getActivity().findViewById(R.id.people_detail_name);
+        name.setTypeface(MainActivity.myriadProSemiBold);
 		name.setText(requested.name);
 
         if(requested.title != null)
         {
             TextView title = (TextView) getActivity().findViewById(R.id.people_detail_title);
+            title.setTypeface(MainActivity.myriadProRegular);
             title.setText(requested.title);
         }
 
         if(requested.tel_number != null)
         {
             TextView tel_number = (TextView) getActivity().findViewById(R.id.people_detail_tel_number);
+            tel_number.setTypeface(MainActivity.myriadProRegular);
             tel_number.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -107,6 +111,7 @@ public class PeopleDetailFragment extends Fragment
         if(requested.email != null)
         {
             TextView email = (TextView) getActivity().findViewById(R.id.people_detail_email);
+            email.setTypeface(MainActivity.myriadProRegular);
             email.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -125,6 +130,7 @@ public class PeopleDetailFragment extends Fragment
         if(requested.notes != null)
         {
             TextView notes = (TextView) getActivity().findViewById(R.id.people_detail_notes);
+            notes.setTypeface(MainActivity.myriadProRegular);
             notes.setText(requested.notes);
         }
 

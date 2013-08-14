@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
 
 import java.util.ArrayList;
@@ -90,6 +91,7 @@ public class ContactListAdapter extends BaseAdapter
         View itemView = inflater.inflate(R.layout.contact_list_item, parent, false);
         RelativeLayout layout = (RelativeLayout) itemView.findViewById(R.id.contact_list_item_layout);
         TextView txtName = (TextView) itemView.findViewById(R.id.contact_list_item_name);
+        txtName.setTypeface(MainActivity.myriadProRegular);
         ImageView actionCancel = (ImageView) itemView.findViewById(R.id.contact_list_item_cancel);
 
         if(contents.get(position)[0] != null)

@@ -26,6 +26,7 @@ public class ContactListItem extends RelativeLayout
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.contact_list_item, this);
         txtName = (TextView) itemView.findViewById(R.id.contact_list_item_name);
+        txtName.setTypeface(MainActivity.myriadProSemiBold);
         actionCancel = (ImageView) itemView.findViewById(R.id.contact_list_item_cancel);
     }
 

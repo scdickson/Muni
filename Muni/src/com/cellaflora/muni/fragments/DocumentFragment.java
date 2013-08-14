@@ -74,7 +74,9 @@ public class DocumentFragment extends Fragment
 		view = inflater.inflate(R.layout.document_fragment, container, false);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         searchBar = (EditText) view.findViewById(R.id.document_search);
+        searchBar.setTypeface(MainActivity.myriadProRegular);
         searchCancel = (TextView) view.findViewById(R.id.document_search_cancel);
+        searchCancel.setTypeface(MainActivity.myriadProRegular);
         searchCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)

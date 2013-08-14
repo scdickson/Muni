@@ -77,17 +77,32 @@ public class PollingPage extends Fragment
         super.onResume();
         TextView txtPoll = (TextView) view.findViewById(R.id.poll_question);
         txtPollExternal = (TextView) view.findViewById(R.id.poll_question_external);
+        txtPollExternal.setTypeface(MainActivity.myriadProSemiBold);
+
         txtOptionA = (TextView) view.findViewById(R.id.poll_option_A_text);
+        txtOptionA.setTypeface(MainActivity.myriadProRegular);
+
         txtOptionB = (TextView) view.findViewById(R.id.poll_option_B_text);
+        txtOptionB.setTypeface(MainActivity.myriadProRegular);
+
         txtOptionC = (TextView) view.findViewById(R.id.poll_option_C_text);
+        txtOptionC.setTypeface(MainActivity.myriadProRegular);
+
         btnPollA = (Button) view.findViewById(R.id.poll_option_a);
+        btnPollA.setTypeface(MainActivity.myriadProSemiBold);
+
         btnPollB = (Button) view.findViewById(R.id.poll_option_b);
+        btnPollB.setTypeface(MainActivity.myriadProSemiBold);
+
         btnPollC = (Button) view.findViewById(R.id.poll_option_c);
+        btnPollC.setTypeface(MainActivity.myriadProSemiBold);
+
         pollOptionsView = (ScrollView) view.findViewById(R.id.poll_option_view);
         pollResultsView = (LinearLayout) view.findViewById(R.id.poll_results_layout);
         points = new ArrayList<Bar>();
 
         txtPoll.setText(poll.question);
+        txtPoll.setTypeface(MainActivity.myriadProRegular);
         txtPollExternal.setText(poll.question);
 
         if(poll.completed)

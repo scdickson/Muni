@@ -61,7 +61,9 @@ public class PeopleFragment extends Fragment
 		view = inflater.inflate(R.layout.people_fragment, container, false);
         MainActivity.actionbarTitle.setText("People");
         searchBar = (EditText) view.findViewById(R.id.people_search);
+        searchBar.setTypeface(MainActivity.myriadProRegular);
         searchCancel = (TextView) view.findViewById(R.id.people_search_cancel);
+        searchCancel.setTypeface(MainActivity.myriadProRegular);
         searchCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)

@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.cellaflora.muni.Alert;
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
 
 import java.text.SimpleDateFormat;
@@ -48,7 +49,9 @@ public class AlertListAdapter extends BaseAdapter
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.alert_list_row, parent, false);
         TextView txtDate = (TextView) itemView.findViewById(R.id.alert_time);
+        txtDate.setTypeface(MainActivity.myriadProSemiBold);
         TextView txtAlert = (TextView) itemView.findViewById(R.id.alert_content);
+        txtAlert.setTypeface(MainActivity.myriadProRegular);
 
         Alert tmp = alerts.get(position);
 

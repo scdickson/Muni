@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cellaflora.muni.Event;
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.fragments.EventDetailFragment;
@@ -146,17 +147,22 @@ public class EventListAdapter extends BaseAdapter
         Event e = events.get(position);
 
         txtTitle = (TextView) itemView.findViewById(R.id.event_title);
-        txtDescription = (TextView) itemView.findViewById(R.id.event_description);
-        txtDate = (TextView) itemView.findViewById(R.id.event_time);
-        txtLocation = (TextView) itemView.findViewById(R.id.event_location);
-        txtUrl = (TextView) itemView.findViewById(R.id.event_url);
-        imgEvent = (ImageView) itemView.findViewById(R.id.event_image);
-        Typeface avenirBlack = Typeface.createFromAsset(context.getAssets(), "fonts/Avenir LT 95 Black.ttf");
+        txtTitle.setTypeface(MainActivity.myriadProSemiBold);
 
-        if(e.address != null)
-        {
-            Log.d("fatal", e.address);
-        }
+        txtDescription = (TextView) itemView.findViewById(R.id.event_description);
+        txtDescription.setTypeface(MainActivity.myriadProRegular);
+
+        txtDate = (TextView) itemView.findViewById(R.id.event_time);
+        txtDate.setTypeface(MainActivity.myriadProRegular);
+
+        txtLocation = (TextView) itemView.findViewById(R.id.event_location);
+        txtLocation.setTypeface(MainActivity.myriadProRegular);
+
+        txtUrl = (TextView) itemView.findViewById(R.id.event_url);
+        txtUrl.setTypeface(MainActivity.myriadProRegular);
+
+        imgEvent = (ImageView) itemView.findViewById(R.id.event_image);
+
 
         if(e.photo_url != null)
         {

@@ -60,7 +60,7 @@ public class AlertFragment extends Fragment
     {
             alerts = new ArrayList<Alert>();
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Alerts");
-            query.addDescendingOrder("UpdatedAt");
+            query.addDescendingOrder("updatedAt");
             query.setLimit(MuniConstants.MAX_RECENT_ALERTS);
             progressDialog.show();
             query.findInBackground(new FindCallback<ParseObject>() {

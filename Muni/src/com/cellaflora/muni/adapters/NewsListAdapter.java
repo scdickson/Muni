@@ -16,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.fragments.FullScreenImageView;
@@ -74,8 +75,14 @@ public class NewsListAdapter extends BaseAdapter
         View itemView = inflater.inflate(R.layout.news_list_row, parent, false);
 
         txtHeadline = (TextView) itemView.findViewById(R.id.news_headline);
+        txtHeadline.setTypeface(MainActivity.myriadProSemiBold);
+
         txtDate = (TextView) itemView.findViewById(R.id.news_date);
+        txtDate.setTypeface(MainActivity.myriadProRegular);
+
         txtSubheadline = (TextView) itemView.findViewById(R.id.news_sub_headline);
+        txtSubheadline.setTypeface(MainActivity.myriadProRegular);
+
         imgNews = (ImageView) itemView.findViewById(R.id.news_image);
 
         NewsObject n = news.get(position);

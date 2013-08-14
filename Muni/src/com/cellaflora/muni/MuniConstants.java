@@ -39,9 +39,8 @@ public class MuniConstants
     public static final int EVENTS_REPLACE_INTERVAL = 60; //In minutes!
 
     //Home Fragment Constants
-    public static final String WEATHER_KEY = "mg8xd4e3c3vc2tjkh2hvtcau";
-    public static final int WEATHER_ZIPCODE = 47906;
-    public static final int WEATHER_NUM_DAYS = 1;
+    public static final String WEATHER_URL = "http://weather.yahooapis.com/forecastrss?w=";
+    public static final int WOEID = 2517274;
     public static final String SAVED_WEATHER_KEY = "muni_saved_weather";
     public static final int WEATHER_REPLACE_INTERVAL = 60; //In minutes!
 

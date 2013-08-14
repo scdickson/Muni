@@ -53,44 +53,54 @@ public class HomeFragment extends Fragment
                 new loadWeather().execute(weatherBox);
             }
 
-            Typeface avenirBlack = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Avenir LT 95 Black.ttf");
-            weatherBox.setTypeface(avenirBlack);
+            weatherBox.setTypeface(MainActivity.myriadProSemiBold);
         }
         catch(Exception e)
         {
             Toast.makeText(getActivity().getApplicationContext(), "Error loading weather.", Toast.LENGTH_LONG).show();
         }
 	}
-	
+
+    private int substringIndex(String line, int start, char to)
+    {
+        int end = start;
+
+        for(int i = start; i < line.length(); i++)
+        {
+            if(line.charAt(i) == to)
+            {
+                end = i;
+                break;
+            }
+        }
+
+        return end;
+    }
+
 	private class loadWeather extends AsyncTask<TextView, Integer, Void>
 	{
-        private String weather[] = new String[2];
+        private String weather[] = new String[3];
 		TextView weatherBox;
 		
 		protected Void doInBackground(TextView... arg0) 
 		{
 			try
 			{
-				//Fetch raw data as a String
-				weatherBox = arg0[0];
-				URL url = new URL("http://api.worldweatheronline.com/free/v1/weather.ashx?q=" + MuniConstants.WEATHER_ZIPCODE + "&format=json&num_of_days=" + MuniConstants.WEATHER_NUM_DAYS + "&key=" + MuniConstants.WEATHER_KEY);
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				String data[] = in.readLine().split(", ");
-				
-				for(String element : data)
-				{
-					if(element.contains("temp_F")) //Could also allow Celsius in settings or something
-					{
-						//Parse temperature
-						weather[0] = element.substring(element.indexOf(" ") + 2, element.length() - 1) + (char) 0x00B0;
-					}
-                    else if(element.contains("weatherDesc"))
+                weatherBox = arg0[0];
+                URL url = new URL(MuniConstants.WEATHER_URL + MuniConstants.WOEID);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                while((line = in.readLine()) != null)
+                {
+                    if(line.contains("yweather:condition"))
                     {
-                        weather[1] = element.substring(element.indexOf("\"value\": ") + 10, element.length() - 5);
+                        weather[0] = line.substring(line.indexOf("temp=\"") + 6, substringIndex(line, line.indexOf("temp=\"") + 6, '"')) + (char) 0x00B0;
+                        weather[1] = line.substring(line.indexOf("text=\"") + 6, substringIndex(line, line.indexOf("text=\"") + 6, '"'));
+                        weather[2] = line.substring(line.indexOf("code=\"") + 6, substringIndex(line, line.indexOf("code=\"") + 6, '"'));
                         break;
                     }
-				}
+                }
 			}
 			catch(Exception e){}
 			return null;

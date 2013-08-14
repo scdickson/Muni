@@ -69,18 +69,30 @@ public class EventDetailFragment extends Fragment
     {
         super.onResume();
         txtTitle = (TextView) view.findViewById(R.id.event_title_detail);
+        txtTitle.setTypeface(MainActivity.myriadProSemiBold);
+
         txtDescription = (TextView) view.findViewById(R.id.event_description_detail);
+        txtDescription.setTypeface(MainActivity.myriadProRegular);
+
         txtDate = (TextView) view.findViewById(R.id.event_time_detail);
+        txtDate.setTypeface(MainActivity.myriadProRegular);
+
         txtLocation = (TextView) view.findViewById(R.id.event_location_detail);
+        txtLocation.setTypeface(MainActivity.myriadProRegular);
+
         callAction = (ImageView) view.findViewById(R.id.event_call_action);
         webAction = (ImageView) view.findViewById(R.id.event_web_action);
         mapAction = (ImageView) view.findViewById(R.id.event_map_action);
+
         txtAddress = (TextView) view.findViewById(R.id.event_address_detail);
+        txtAddress.setTypeface(MainActivity.myriadProRegular);
+
         imgEvent = (ImageView) view.findViewById(R.id.event_image_detail);
 
         calIntent = new Intent(Intent.ACTION_INSERT);
         calIntent.setType("vnd.android.cursor.item/event");
         btnAdd = (Button) view.findViewById(R.id.event_calendar_add);
+        btnAdd.setTypeface(MainActivity.myriadProSemiBold);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
