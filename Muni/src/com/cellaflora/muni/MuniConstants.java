@@ -35,6 +35,7 @@ public class MuniConstants
 
     //Event Fragment Constants
     public static final String SAVED_EVENTS_PATH = "muni_saved_events";
+    public static final String SAVED_EVENTS_RECOMMENDED_PATH = "muni_saved_events_recommended";
     public static final int IMAGE_BUFFER_SIZE = 1024; //In bytes!
     public static final int EVENTS_REPLACE_INTERVAL = 60; //In minutes!
 

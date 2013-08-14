@@ -1,5 +1,7 @@
 package com.cellaflora.muni;
 
+import com.parse.ParseObject;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
@@ -21,4 +23,7 @@ public class Event implements Serializable
     public String event_url;
     public String description;
     public boolean isAllDay;
+    public int recommends;
+    public boolean didRecommend = false;
+    public ParseObject parse;
 }

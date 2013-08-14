@@ -47,6 +47,7 @@ public class EventFragment extends Fragment
     ListView eventList;
     EventListAdapter adapter;
     ArrayList<Event> events;
+    public static ArrayList<String> recommendedEvents;
     //Button upcomingEventsSelector, pastEventsSelector;
     private ProgressDialog progressDialog;
     EventContentFragment ecf;
@@ -224,6 +225,8 @@ public class EventFragment extends Fragment
 
                         tmp.photo_caption = parse.getString("F_Photo_Caption");
                         tmp.location = parse.getString("H1_Location_Title");
+                        tmp.recommends = parse.getNumber("NumRecommendations").intValue();
+                        tmp.parse = parse;
 
                         tmp.event_url = parse.getString("L_Hyperlink");
                         tmp.isAllDay = parse.getBoolean("E_Event_Is_All_Day");
@@ -272,6 +275,15 @@ public class EventFragment extends Fragment
 
                 progressDialog.dismiss();
 
+                try
+                {
+                    recommendedEvents =(ArrayList<String>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_RECOMMENDED_PATH);
+                }
+                catch(Exception ex)
+                {
+                    recommendedEvents = new ArrayList<String>();
+                }
+
                 adapter = new EventListAdapter(view.getContext(), events, current_event_type, getActivity());
                 eventList = (ListView) getActivity().findViewById(R.id.event_list);
                 eventList.setAdapter(adapter);
@@ -296,6 +308,15 @@ public class EventFragment extends Fragment
                 if((f.lastModified() + (MuniConstants.EVENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                 {
                     events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_PATH);
+
+                    try
+                    {
+                        recommendedEvents =(ArrayList<String>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_RECOMMENDED_PATH);
+                    }
+                    catch(Exception ex)
+                    {
+                        recommendedEvents = new ArrayList<String>();
+                    }
                 }
                 else
                 {

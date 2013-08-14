@@ -2,6 +2,7 @@ package com.cellaflora.muni.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,11 +22,15 @@ import android.widget.TextView;
 
 import com.cellaflora.muni.Event;
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -39,7 +44,7 @@ public class EventDetailFragment extends Fragment
 {
     View view;
     Event event;
-    TextView txtTitle, txtDescription, txtDate, txtLocation, txtUrl, txtAddress;
+    TextView txtTitle, txtDescription, txtDate, txtLocation, txtUrl, txtAddress, txtRecommendNumber, txtRecommendAction;
     ImageView imgEvent, mapAction, callAction, webAction;
     View mapDivider, callDivider;
     Button btnAdd;
@@ -48,6 +53,15 @@ public class EventDetailFragment extends Fragment
     public EventDetailFragment(Event event)
     {
         this.event = event;
+
+        for(String objectId : EventFragment.recommendedEvents)
+        {
+            if(event.objectId.equals(objectId))
+            {
+                event.didRecommend = true;
+                break;
+            }
+        }
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -63,6 +77,17 @@ public class EventDetailFragment extends Fragment
         {
             startActivity(calIntent);
         }
+    }
+
+    public void onPause()
+    {
+        super.onPause();
+
+        try
+        {
+            PersistenceManager.writeObject(view.getContext(), MuniConstants.SAVED_EVENTS_RECOMMENDED_PATH, EventFragment.recommendedEvents);
+        }
+        catch(Exception e){}
     }
 
     public void onResume()
@@ -87,6 +112,43 @@ public class EventDetailFragment extends Fragment
         txtAddress = (TextView) view.findViewById(R.id.event_address_detail);
         txtAddress.setTypeface(MainActivity.myriadProRegular);
 
+        txtRecommendNumber = (TextView) view.findViewById(R.id.event_detail_recommend_number);
+        txtRecommendNumber.setTypeface(MainActivity.myriadProSemiBold);
+
+        txtRecommendAction = (TextView) view.findViewById(R.id.event_detail_recommend_action);
+        txtRecommendAction.setTypeface(MainActivity.myriadProRegular);
+
+        if(event.didRecommend)
+        {
+            txtRecommendAction.setTextColor(Color.parseColor("#EC4B43"));
+        }
+
+        txtRecommendAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(!event.didRecommend)
+                {
+                    event.didRecommend = true;
+                    EventFragment.recommendedEvents.add(event.objectId);
+                    txtRecommendAction.setTextColor(Color.parseColor("#EC4B43"));
+                    event.parse.increment("NumRecommendations");
+                    event.parse.saveInBackground();
+                    event.recommends++;
+                    if(event.recommends >= 1000)
+                    {
+                        txtRecommendNumber.setTextSize(20);
+                        double roundOff = Math.round(((double) event.recommends / 1000.0) * 100.0) / 100.0;
+                        txtRecommendNumber.setText(roundOff + "k");
+                    }
+                    else
+                    {
+                        txtRecommendNumber.setText(event.recommends + "");
+                    }
+                }
+            }
+        });
+
         imgEvent = (ImageView) view.findViewById(R.id.event_image_detail);
 
         calIntent = new Intent(Intent.ACTION_INSERT);
@@ -99,6 +161,20 @@ public class EventDetailFragment extends Fragment
                 startCalendarIntent();
             }
         });
+
+        if(event.recommends >= 0)
+        {
+            if(event.recommends >= 1000)
+            {
+                txtRecommendNumber.setTextSize(20);
+                double roundOff = Math.round(((double) event.recommends / 1000.0) * 100.0) / 100.0;
+                txtRecommendNumber.setText(roundOff + "k");
+            }
+            else
+            {
+                txtRecommendNumber.setText(event.recommends + "");
+            }
+        }
 
         if(event.photo_url != null)
         {
@@ -230,7 +306,7 @@ public class EventDetailFragment extends Fragment
                         endFormat = "EEE, MMMM d, h:mm a z";
                         SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
                         SimpleDateFormat end = new SimpleDateFormat(endFormat, Locale.US);
-                        txtDate.setText(start.format(event.start_time) + " - " + end.format(event.end_time));
+                        txtDate.setText(start.format(event.start_time) + " -\n" + end.format(event.end_time));
                     }
                     else if(event.start_time.getDate() == event.end_time.getDate())
                     {
@@ -265,7 +341,10 @@ public class EventDetailFragment extends Fragment
 
         if(event.associated_place != null)
         {
-            txtAddress.setText(event.associated_place.street_address + "\n" + event.associated_place.city + " " + event.associated_place.state + " " + event.associated_place.zip_code);
+            if(event.associated_place.street_address != null)
+            {
+                txtAddress.setText(event.associated_place.street_address + "\n" + event.associated_place.city + " " + event.associated_place.state + " " + event.associated_place.zip_code);
+            }
 
             if(event.location == null)
             {

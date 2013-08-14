@@ -259,7 +259,7 @@ public class EventListAdapter extends BaseAdapter
                         endFormat = "EEE, MMMM d, h:mm a z";
                         SimpleDateFormat start = new SimpleDateFormat(startFormat, Locale.US);
                         SimpleDateFormat end = new SimpleDateFormat(endFormat, Locale.US);
-                        txtDate.setText(start.format(e.start_time) + " - " + end.format(e.end_time));
+                        txtDate.setText(start.format(e.start_time) + " -\n" + end.format(e.end_time));
                     }
                     else if(e.start_time.getDate() == e.end_time.getDate())
                     {
