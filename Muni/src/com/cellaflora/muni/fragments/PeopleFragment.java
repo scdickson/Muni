@@ -234,9 +234,9 @@ public class PeopleFragment extends Fragment
                             tmp.url = file.getUrl();
                         }
 
-                        if(tmp.group_a == null)
+                        if(tmp.group_a == null || tmp.group_a.isEmpty())
                             tmp.group_a = " ";
-                        if(tmp.group_b == null)
+                        if(tmp.group_b == null || tmp.group_b.isEmpty())
                             tmp.group_b = " ";
 
                         people.add(tmp);
