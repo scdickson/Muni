@@ -143,32 +143,69 @@ public class PeopleDetailFragment extends Fragment
         if(requested.url != null)
         {
             ImageView photo = (ImageView) getActivity().findViewById(R.id.people_detail_image);
-            new loadImageFromParse().execute(photo);
+
+            File f = new File(view.getContext().getFilesDir() + "/" + requested.objectId);
+            if(f != null && f.exists())
+            {
+                try
+                {
+                    photo.setImageBitmap(null);
+                    new loadImage().execute(photo, f);
+                }
+                catch(Exception ex)
+                {
+                    new loadImageFromParse().execute(photo);
+                }
+            }
+            else
+            {
+                new loadImageFromParse().execute(photo);
+            }
         }
 
 	}
 
-    private class loadWeather extends AsyncTask<ImageView, Integer, Void>
+    private class loadImage extends AsyncTask<Object, Integer, Void>
     {
         ImageView photo;
         Bitmap image;
+        File f;
 
-        protected void onPreExecute()
-        {
-            progressDialog.show();
-        }
-
-        protected Void doInBackground(ImageView... arg0)
+        protected Void doInBackground(Object... arg0)
         {
             try
             {
-                photo = arg0[0];
-                URL url = new URL(requested.url);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                image = BitmapFactory.decodeStream(input);
+                photo = (ImageView) arg0[0];
+                f = (File) arg0[1];
+                image = BitmapFactory.decodeStream(new FileInputStream(f));
+            }
+            catch(OutOfMemoryError ome)
+            {
+                try
+                {
+                    photo = (ImageView) arg0[0];
+                    f = (File) arg0[1];
+
+                    BitmapFactory.Options o = new BitmapFactory.Options();
+                    o.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+                    final int REQUIRED_SIZE=80;
+
+                    int width_tmp=o.outWidth, height_tmp=o.outHeight;
+                    int scale=1;
+                    while(true){
+                        if(width_tmp/2<120 || height_tmp/2<147)
+                            break;
+                        width_tmp/=2;
+                        height_tmp/=2;
+                        scale*=2;
+                    }
+
+                    BitmapFactory.Options o2 = new BitmapFactory.Options();
+                    o2.inSampleSize=scale;
+                    image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+                }
+                catch(Exception ex){}
             }
             catch(Exception e)
             {
@@ -179,7 +216,6 @@ public class PeopleDetailFragment extends Fragment
 
         protected void onPostExecute(Void v)
         {
-            progressDialog.dismiss();
             if(image != null)
             {
                 photo.setImageBitmap(image);
@@ -188,13 +224,15 @@ public class PeopleDetailFragment extends Fragment
                     public void onClick(View view)
                     {
                         Intent fullscreenimage = new Intent(getActivity(), FullScreenImageView.class);
-                        fullscreenimage.putExtra("raw_image", image);
+                        fullscreenimage.putExtra("image", f.getAbsolutePath() + "_uncompressed");
                         getActivity().startActivity(fullscreenimage);
                     }
                 });
             }
         }
     }
+
+
 
     private class loadImageFromParse extends AsyncTask<Object, Integer, Void>
     {
@@ -260,8 +298,7 @@ public class PeopleDetailFragment extends Fragment
         {
             if(image != null)
             {
-                if(image != null)
-                {
+
                     photo.setImageBitmap(image);
                     photo.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -272,7 +309,7 @@ public class PeopleDetailFragment extends Fragment
                             getActivity().startActivity(fullscreenimage);
                         }
                     });
-                }
+
             }
         }
     }
