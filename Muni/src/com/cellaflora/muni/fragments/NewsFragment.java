@@ -24,6 +24,7 @@ import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.PersistenceManager;
+import com.cellaflora.muni.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.NewsListAdapter;
 import com.parse.FindCallback;
@@ -48,7 +49,7 @@ public class NewsFragment extends Fragment
     View view;
     ArrayList<NewsObject> news;
     private ProgressDialog progressDialog, pdfProgress;
-    ListView newsList;
+    PullToRefreshListView newsList;
     NewsListAdapter adapter;
     Parcelable state;
     loadPdf lp;
@@ -95,7 +96,7 @@ public class NewsFragment extends Fragment
         news = new ArrayList<NewsObject>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("News");
         query.addDescendingOrder("E_Date");
-        progressDialog.show();
+
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -139,10 +140,20 @@ public class NewsFragment extends Fragment
                     catch(Exception ex){}
                 }
 
-                progressDialog.dismiss();
+                if(progressDialog.isShowing())
+                {
+                    progressDialog.dismiss();
+                }
 
                 adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-                newsList = (ListView) getActivity().findViewById(R.id.news_list);
+                newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
+                newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadNews();
+                    }
+                });
+                newsList.onRefreshComplete();
                 newsList.setAdapter(adapter);
                 newsList.setOnItemClickListener(new NewsItemClickListener());
             }
@@ -168,8 +179,14 @@ public class NewsFragment extends Fragment
         if(state != null)
         {
             adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-            newsList = (ListView) getActivity().findViewById(R.id.news_list);
+            newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
             newsList.setAdapter(adapter);
+            newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadNews();
+                }
+            });
             newsList.setOnItemClickListener(new NewsItemClickListener());
             newsList.onRestoreInstanceState(state);
         }
@@ -184,18 +201,25 @@ public class NewsFragment extends Fragment
                     {
                         news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
                         adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-                        newsList = (ListView) getActivity().findViewById(R.id.news_list);
+                        newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
+                        newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadNews();
+                            }
+                        });
                         newsList.setAdapter(adapter);
                         newsList.setOnItemClickListener(new NewsItemClickListener());
                     }
                     else
                     {
+                        progressDialog.show();
                         loadNews();
                     }
                 }
                 catch(Exception e)
                 {
-                    e.printStackTrace();
+                    progressDialog.show();
                     loadNews();
                 }
             }
@@ -205,7 +229,13 @@ public class NewsFragment extends Fragment
                 {
                         news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
                         adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-                        newsList = (ListView) getActivity().findViewById(R.id.news_list);
+                        newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
+                        newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadNews();
+                            }
+                        });
                         newsList.setAdapter(adapter);
                         newsList.setOnItemClickListener(new NewsItemClickListener());
                 }

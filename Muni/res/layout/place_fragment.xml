@@ -33,7 +33,7 @@
                 android:text="Cancel"/>
     </LinearLayout>
 
-    <ListView
+    <com.cellaflora.muni.PullToRefreshListView
             android:id="@+id/place_list"
             android:background="#fff"
             android:layout_width="fill_parent"

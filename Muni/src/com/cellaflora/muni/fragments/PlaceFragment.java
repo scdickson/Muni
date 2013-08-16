@@ -34,6 +34,7 @@ import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.PersonGroup;
 import com.cellaflora.muni.Place;
+import com.cellaflora.muni.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.PeopleListAdapter;
 import com.cellaflora.muni.adapters.PlaceListAdapter;
@@ -52,7 +53,7 @@ public class PlaceFragment extends Fragment
     View view;
     ArrayList<Place> places = new ArrayList<Place>();
     ArrayList<Object> searchResults;
-    ListView placeList;
+    PullToRefreshListView placeList;
     PlaceListAdapter adapter;
     private ProgressDialog progressDialog;
     Parcelable state;
@@ -162,7 +163,7 @@ public class PlaceFragment extends Fragment
     public void loadPlaces()
     {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Places");
-        progressDialog.show();
+
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -202,9 +203,19 @@ public class PlaceFragment extends Fragment
                 }
                 catch(Exception ex){}
 
-                progressDialog.dismiss();
+                if(progressDialog.isShowing())
+                {
+                    progressDialog.dismiss();
+                }
                 adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                placeList = (ListView) getActivity().findViewById(R.id.place_list);
+                placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
+                placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadPlaces();
+                    }
+                });
+                placeList.onRefreshComplete();
                 placeList.setAdapter(adapter);
                 placeList.setOnItemClickListener(new PlaceItemClickListener());
                 //placeList.startAnimation(in);
@@ -223,8 +234,14 @@ public class PlaceFragment extends Fragment
         if(state != null)
         {
             adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-            placeList = (ListView) getActivity().findViewById(R.id.place_list);
+            placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
             placeList.setAdapter(adapter);
+            placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadPlaces();
+                }
+            });
             placeList.setOnItemClickListener(new PlaceItemClickListener());
             placeList.onRestoreInstanceState(state);
         }
@@ -239,7 +256,13 @@ public class PlaceFragment extends Fragment
                     {
                         places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
                         adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                        placeList = (ListView) getActivity().findViewById(R.id.place_list);
+                        placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
+                        placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadPlaces();
+                            }
+                        });
                         placeList.setAdapter(adapter);
                         placeList.setOnItemClickListener(new PlaceItemClickListener());
                     }
@@ -260,7 +283,13 @@ public class PlaceFragment extends Fragment
                 {
                         places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
                         adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                        placeList = (ListView) getActivity().findViewById(R.id.place_list);
+                        placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
+                        placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadPlaces();
+                            }
+                        });
                         placeList.setAdapter(adapter);
                         placeList.setOnItemClickListener(new PlaceItemClickListener());
                 }

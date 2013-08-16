@@ -36,6 +36,7 @@ import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.PersistenceManager;
+import com.cellaflora.muni.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.DocumentListAdapter;
 import com.parse.FindCallback;
@@ -59,7 +60,7 @@ public class DocumentFragment extends Fragment
 {
     View view;
     ProgressDialog progressDialog, pdfProgress;
-    ListView documentList;
+    PullToRefreshListView documentList;
     Parcelable state;
     EditText searchBar;
     TextView searchCancel;
@@ -226,7 +227,7 @@ public class DocumentFragment extends Fragment
         documents = new ArrayList<Document>();
         ParseQuery<ParseObject> folder_query = ParseQuery.getQuery("Doc_Folders");
         folder_query.include("Parent_Folder");
-        progressDialog.show();
+
         folder_query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -294,11 +295,21 @@ public class DocumentFragment extends Fragment
                             }
                             catch(Exception ex){}
                             adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                            documentList = (ListView) getActivity().findViewById(R.id.document_list);
+                            documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
                             documentList.setAdapter(adapter);
                             documentList.setOnItemClickListener(new DocumentItemClickListener());
+                            documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                                @Override
+                                public void onRefresh() {
+                                    loadDocuments();
+                                }
+                            });
                             documentList.requestFocus();
-                            progressDialog.dismiss();
+                            documentList.onRefreshComplete();
+                            if(progressDialog.isShowing())
+                            {
+                                progressDialog.dismiss();
+                            }
                         }
                     });
                 }
@@ -335,9 +346,15 @@ public class DocumentFragment extends Fragment
             else
             {
                 adapter = new DocumentListAdapter(view.getContext(), folders, currentDir);
-                documentList = (ListView) getActivity().findViewById(R.id.document_list);
+                documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
                 documentList.setAdapter(adapter);
                 documentList.setOnItemClickListener(new DocumentItemClickListener());
+                documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadDocuments();
+                    }
+                });
                 documentList.onRestoreInstanceState(state);
                 documentList.requestFocus();
             }
@@ -354,19 +371,26 @@ public class DocumentFragment extends Fragment
                         folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
                         documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
                         adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                        documentList = (ListView) getActivity().findViewById(R.id.document_list);
+                        documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
                         documentList.setAdapter(adapter);
                         documentList.setOnItemClickListener(new DocumentItemClickListener());
+                        documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadDocuments();
+                            }
+                        });
                         documentList.requestFocus();
                     }
                     else
                     {
+                        progressDialog.show();
                         loadDocuments();
                     }
                 }
                 catch(Exception e)
                 {
-                    e.printStackTrace();
+                    progressDialog.show();
                     loadDocuments();
                 }
             }
@@ -377,9 +401,15 @@ public class DocumentFragment extends Fragment
                         folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
                         documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
                         adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                        documentList = (ListView) getActivity().findViewById(R.id.document_list);
+                        documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
                         documentList.setAdapter(adapter);
                         documentList.setOnItemClickListener(new DocumentItemClickListener());
+                        documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadDocuments();
+                            }
+                        });
                         documentList.requestFocus();
                 }
                 catch(Exception e)

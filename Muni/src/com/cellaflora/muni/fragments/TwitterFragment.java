@@ -18,6 +18,7 @@ import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.MuniJSONParser;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.NetworkManager;
+import com.cellaflora.muni.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.Tweet;
 import com.cellaflora.muni.adapters.TwitterListAdapter;
@@ -42,7 +43,7 @@ public class TwitterFragment extends Fragment
     View view;
     Twitter twitter;
     Handler handler;
-    ListView twitterList;
+    PullToRefreshListView twitterList;
     TwitterListAdapter adapter;
     private ProgressDialog progressDialog;
     NetworkManager networkManager;
@@ -122,6 +123,7 @@ public class TwitterFragment extends Fragment
     {
         public void handleMessage(Message msg)
         {
+            progressDialog.show();
             new loadTwitter().execute();
         }
     }
@@ -129,11 +131,6 @@ public class TwitterFragment extends Fragment
     private class loadTwitter extends AsyncTask<Object, Integer, Void>
     {
         ArrayList<Tweet> tweets;
-
-        protected void onPreExecute()
-        {
-            progressDialog.show();
-        }
 
         protected Void doInBackground(Object... arg0)
         {
@@ -163,7 +160,15 @@ public class TwitterFragment extends Fragment
                 try
                 {
                     adapter = new TwitterListAdapter(view.getContext(), tweets);
-                    twitterList = (ListView) getActivity().findViewById(R.id.twitter_list);
+                    twitterList = (PullToRefreshListView) getActivity().findViewById(R.id.twitter_list);
+                    twitterList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                        @Override
+                        public void onRefresh()
+                        {
+                            new loadTwitter().execute();
+                        }
+                    });
+                    twitterList.onRefreshComplete();
                     twitterList.setAdapter(adapter);
                 }
                 catch(Exception e)
@@ -172,7 +177,10 @@ public class TwitterFragment extends Fragment
                 }
             }
 
-            progressDialog.dismiss();
+            if(progressDialog.isShowing())
+            {
+                progressDialog.dismiss();
+            }
         }
     }
 }

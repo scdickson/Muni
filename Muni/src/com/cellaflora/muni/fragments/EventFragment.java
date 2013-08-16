@@ -23,6 +23,7 @@ import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Place;
+import com.cellaflora.muni.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.EventListAdapter;
 import com.parse.FindCallback;
@@ -45,7 +46,7 @@ public class EventFragment extends Fragment
     public static final int EVENT_TYPE_PAST = 1;
 
     View view;
-    ListView eventList;
+    PullToRefreshListView eventList;
     EventListAdapter adapter;
     ArrayList<Event> events;
     public static ArrayList<String> recommendedEvents;
@@ -207,7 +208,6 @@ public class EventFragment extends Fragment
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
         query.addDescendingOrder("C_Start_Time");
         query.include("O_Location");
-        progressDialog.show();
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -294,7 +294,14 @@ public class EventFragment extends Fragment
                 }
 
                 adapter = new EventListAdapter(view.getContext(), events, current_event_type, getActivity());
-                eventList = (ListView) getActivity().findViewById(R.id.event_list);
+                eventList = (PullToRefreshListView) getActivity().findViewById(R.id.event_list);
+                eventList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadEvents();
+                    }
+                });
+                eventList.onRefreshComplete();
                 eventList.setAdapter(adapter);
                 eventList.setOnItemClickListener(new EventItemClickListener());
             }
@@ -332,12 +339,13 @@ public class EventFragment extends Fragment
                     }
                     else
                     {
+                        progressDialog.show();
                         loadEvents();
                     }
                 }
                 catch(Exception e)
                 {
-                    e.printStackTrace();
+                    progressDialog.show();
                     loadEvents();
                 }
             }
@@ -444,7 +452,13 @@ public class EventFragment extends Fragment
         public void handleMessage(Message msg)
         {
             adapter = new EventListAdapter(view.getContext(), events, current_event_type, getActivity());
-            eventList = (ListView) getActivity().findViewById(R.id.event_list);
+            eventList = (PullToRefreshListView) getActivity().findViewById(R.id.event_list);
+            eventList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadEvents();
+                }
+            });
             eventList.setAdapter(adapter);
             eventList.setOnItemClickListener(new EventItemClickListener());
 

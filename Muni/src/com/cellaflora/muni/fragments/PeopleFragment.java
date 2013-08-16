@@ -34,6 +34,7 @@ import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.PersistenceManager;
+import com.cellaflora.muni.PullToRefreshListView;
 import com.cellaflora.muni.adapters.PeopleListAdapter;
 import com.cellaflora.muni.Person;
 import com.cellaflora.muni.PersonGroup;
@@ -46,7 +47,7 @@ public class PeopleFragment extends Fragment
     ArrayList<PersonGroup> groups = null;
 	ArrayList<Person> people = null;
     public PeopleListAdapter adapter = null;
-    public ListView peopleList = null;
+    public PullToRefreshListView peopleList = null;
     private ProgressDialog progressDialog;
     Parcelable state;
     ArrayList<Object> searchResults;
@@ -210,7 +211,7 @@ public class PeopleFragment extends Fragment
         groups = new ArrayList<PersonGroup>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("People");
-        progressDialog.show();
+
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -253,9 +254,20 @@ public class PeopleFragment extends Fragment
                         ex.printStackTrace();
                     }
 
-                    progressDialog.dismiss();
+                    if(progressDialog.isShowing())
+                    {
+                        progressDialog.dismiss();
+                    }
+
                     adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                    peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                    peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                    peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                        @Override
+                        public void onRefresh() {
+                            loadPeople();
+                        }
+                    });
+                    peopleList.onRefreshComplete();
                     peopleList.setAdapter(adapter);
                     peopleList.setOnItemClickListener(new PeopleItemClickListener());
 
@@ -267,10 +279,20 @@ public class PeopleFragment extends Fragment
                     try
                     {
                         groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
-                        progressDialog.dismiss();
+                        if(progressDialog.isShowing())
+                        {
+                            progressDialog.dismiss();
+                        }
                         adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                        peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                        peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
                         peopleList.setAdapter(adapter);
+                        peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadPeople();
+                            }
+                        });
+                        peopleList.onRefreshComplete();
                         peopleList.setOnItemClickListener(new PeopleItemClickListener());
                     }
                     catch(Exception ex)
@@ -304,8 +326,14 @@ public class PeopleFragment extends Fragment
                 {
                     searchBar.setHint("Search in " + groupB);
                 }
-                peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
                 peopleList.setAdapter(adapter);
+                peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadPeople();
+                    }
+                });
                 peopleList.setOnItemClickListener(new PeopleItemClickListener());
                 peopleList.onRestoreInstanceState(state);
         }
@@ -321,17 +349,25 @@ public class PeopleFragment extends Fragment
                         groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
                         people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
                         adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                        peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                        peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                        peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadPeople();
+                            }
+                        });
                         peopleList.setAdapter(adapter);
                         peopleList.setOnItemClickListener(new PeopleItemClickListener());
                     }
                     else
                     {
+                        progressDialog.show();
                         loadPeople();
                     }
                 }
                 catch(Exception e)
                 {
+                    progressDialog.show();
                     loadPeople();
                 }
             }
@@ -342,7 +378,13 @@ public class PeopleFragment extends Fragment
                         groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
                         people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
                         adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                        peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                        peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                        peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadPeople();
+                            }
+                        });
                         peopleList.setAdapter(adapter);
                         peopleList.setOnItemClickListener(new PeopleItemClickListener());
                 }

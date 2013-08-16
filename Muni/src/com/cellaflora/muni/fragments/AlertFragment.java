@@ -16,6 +16,7 @@ import com.cellaflora.muni.Alert;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.NetworkManager;
+import com.cellaflora.muni.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.AlertListAdapter;
 import com.parse.FindCallback;
@@ -32,7 +33,7 @@ public class AlertFragment extends Fragment
 {
     View view;
     AlertListAdapter adapter;
-    ListView alertList;
+    PullToRefreshListView alertList;
     ArrayList<Alert> alerts;
     ProgressDialog progressDialog;
     NetworkManager networkManager;
@@ -69,7 +70,6 @@ public class AlertFragment extends Fragment
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Alerts");
             query.addDescendingOrder("updatedAt");
             query.setLimit(MuniConstants.MAX_RECENT_ALERTS);
-            progressDialog.show();
             query.findInBackground(new FindCallback<ParseObject>() {
                 public void done(List<ParseObject> result, ParseException e)
                 {
@@ -84,11 +84,20 @@ public class AlertFragment extends Fragment
                             alerts.add(tmp);
                         }
 
-                        progressDialog.dismiss();
+                        if(progressDialog.isShowing())
+                        {
+                            progressDialog.dismiss();
+                        }
                         adapter = new AlertListAdapter(view.getContext(), alerts);
-                        alertList = (ListView) getActivity().findViewById(R.id.alert_list);
+                        alertList = (PullToRefreshListView) getActivity().findViewById(R.id.alert_list);
+                        alertList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                loadNotifications();
+                            }
+                        });
                         alertList.setAdapter(adapter);
-
+                        alertList.onRefreshComplete();
                     }
                 }
             });
@@ -104,6 +113,7 @@ public class AlertFragment extends Fragment
 
         if(networkManager.isNetworkConnected())
         {
+            progressDialog.show();
             loadNotifications();
         }
         else
