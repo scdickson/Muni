@@ -297,7 +297,7 @@ public class NewsListAdapter extends BaseAdapter
                     public void onClick(View view)
                     {
                         Intent fullscreenimage = new Intent(activity, FullScreenImageView.class);
-                        fullscreenimage.putExtra("image", file.getAbsolutePath());
+                        fullscreenimage.putExtra("image", file.getAbsolutePath() + "_uncompressed");
                         fullscreenimage.putExtra("caption", n.photo_caption);
                         activity.startActivity(fullscreenimage);
                     }

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.MuniJSONParser;
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.Tweet;
 import com.cellaflora.muni.adapters.TwitterListAdapter;
@@ -44,59 +45,69 @@ public class TwitterFragment extends Fragment
     ListView twitterList;
     TwitterListAdapter adapter;
     private ProgressDialog progressDialog;
+    NetworkManager networkManager;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
         view = inflater.inflate(R.layout.twitter_fragment, container, false);
+        networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         handler = new twitterLogInHandler();
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         MainActivity.actionbarTitle.setTextSize(25);
         MainActivity.actionbarTitle.setText(Html.fromHtml("<font color=\"#EC4B43\">@</font>" + MuniConstants.TWITTER_NAME));
         ParseUser currentUser = ParseUser.getCurrentUser();
 
-        if(currentUser != null)
+        if(networkManager.isNetworkConnected())
         {
-            twitter = ParseTwitterUtils.getTwitter();
-            handler.sendEmptyMessage(0);
+            if(currentUser != null)
+            {
+                twitter = ParseTwitterUtils.getTwitter();
+                handler.sendEmptyMessage(0);
+            }
+            else
+            {
+                ParseTwitterUtils.logIn(view.getContext(), new LogInCallback()
+                {
+                    @Override
+                    public void done(ParseUser user, ParseException err)
+                    {
+                        if (user == null)
+                        {
+                            HomeFragment fragment = new HomeFragment();
+                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                            fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
+                            fragmentTransaction.replace(R.id.container, fragment);
+                            fragmentTransaction.addToBackStack(null);
+                            fragmentTransaction.commit();
+
+                        } else if (user.isNew())
+                        {
+                            if (!ParseTwitterUtils.isLinked(user))
+                            {
+                                ParseTwitterUtils.link(user, view.getContext(), new SaveCallback()
+                                {
+                                    @Override
+                                    public void done(ParseException ex)
+                                    {}
+                                });
+                            }
+                            twitter = ParseTwitterUtils.getTwitter();
+                            handler.sendEmptyMessage(0);
+                        } else
+                        {
+                            twitter = ParseTwitterUtils.getTwitter();
+                            handler.sendEmptyMessage(0);
+                        }
+                    }
+                });
+            }
         }
         else
         {
-            ParseTwitterUtils.logIn(view.getContext(), new LogInCallback()
-            {
-                @Override
-                public void done(ParseUser user, ParseException err)
-                {
-                    if (user == null)
-                    {
-                        HomeFragment fragment = new HomeFragment();
-                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                        fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
-                        fragmentTransaction.replace(R.id.container, fragment);
-                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
-
-                    } else if (user.isNew())
-                    {
-                        if (!ParseTwitterUtils.isLinked(user))
-                        {
-                            ParseTwitterUtils.link(user, view.getContext(), new SaveCallback()
-                            {
-                                @Override
-                                public void done(ParseException ex)
-                                {}
-                            });
-                        }
-                        twitter = ParseTwitterUtils.getTwitter();
-                        handler.sendEmptyMessage(0);
-                    } else
-                    {
-                        twitter = ParseTwitterUtils.getTwitter();
-                        handler.sendEmptyMessage(0);
-                    }
-                }
-            });
+            networkManager.showNoCacheErrorDialog();
         }
 		return view;
 	}

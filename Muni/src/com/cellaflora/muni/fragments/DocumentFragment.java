@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.cellaflora.muni.Document;
 import com.cellaflora.muni.DocumentFolder;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.R;
@@ -68,10 +70,12 @@ public class DocumentFragment extends Fragment
     public ArrayList<DocumentFolder> folders;
     public ArrayList<Document> documents;
     public DocumentListAdapter adapter;
+    NetworkManager networkManager;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.document_fragment, container, false);
+        networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         searchBar = (EditText) view.findViewById(R.id.document_search);
         searchBar.setTypeface(MainActivity.myriadProRegular);
@@ -167,7 +171,11 @@ public class DocumentFragment extends Fragment
     public void onPause()
     {
         super.onPause();
-        state = documentList.onSaveInstanceState();
+
+        if(documentList != null)
+        {
+            state = documentList.onSaveInstanceState();
+        }
     }
 
     private Date fixDate(Date date)
@@ -303,6 +311,7 @@ public class DocumentFragment extends Fragment
         super.onResume();
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
         pdfProgress = new ProgressDialog(view.getContext());
         pdfProgress.setTitle("");
@@ -335,28 +344,48 @@ public class DocumentFragment extends Fragment
         }
         else
         {
-            try
+            if(networkManager.isNetworkConnected())
             {
-                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_DOCUMENTS_PATH);
-                if((f.lastModified() + (MuniConstants.DOCUMENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                try
                 {
-                    folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
-                    documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
-                    adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                    documentList = (ListView) getActivity().findViewById(R.id.document_list);
-                    documentList.setAdapter(adapter);
-                    documentList.setOnItemClickListener(new DocumentItemClickListener());
-                    documentList.requestFocus();
+                    File f = getActivity().getFileStreamPath(MuniConstants.SAVED_DOCUMENTS_PATH);
+                    if((f.lastModified() + (MuniConstants.DOCUMENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                    {
+                        folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
+                        documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
+                        adapter = new DocumentListAdapter(view.getContext(), folders, null);
+                        documentList = (ListView) getActivity().findViewById(R.id.document_list);
+                        documentList.setAdapter(adapter);
+                        documentList.setOnItemClickListener(new DocumentItemClickListener());
+                        documentList.requestFocus();
+                    }
+                    else
+                    {
+                        loadDocuments();
+                    }
                 }
-                else
+                catch(Exception e)
                 {
+                    e.printStackTrace();
                     loadDocuments();
                 }
             }
-            catch(Exception e)
+            else
             {
-                e.printStackTrace();
-                loadDocuments();
+                try
+                {
+                        folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
+                        documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
+                        adapter = new DocumentListAdapter(view.getContext(), folders, null);
+                        documentList = (ListView) getActivity().findViewById(R.id.document_list);
+                        documentList.setAdapter(adapter);
+                        documentList.setOnItemClickListener(new DocumentItemClickListener());
+                        documentList.requestFocus();
+                }
+                catch(Exception e)
+                {
+                    networkManager.showNoCacheErrorDialog();
+                }
             }
         }
     }

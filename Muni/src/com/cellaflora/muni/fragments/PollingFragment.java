@@ -15,6 +15,7 @@ import com.cellaflora.muni.CirclePageIndicator;
 import com.cellaflora.muni.LinePageIndicator;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Poll;
 import com.cellaflora.muni.PollingPageAdapter;
@@ -32,10 +33,12 @@ public class PollingFragment extends Fragment
     public static ArrayList<Poll> polls;
     public static ArrayList<String[]> completedPolls;
     private ProgressDialog progressDialog;
+    NetworkManager networkManager;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         view = inflater.inflate(R.layout.polling_fragment, container, false);
+        networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         MainActivity.actionbarTitle.setText("Polls");
         return view;
     }
@@ -107,8 +110,17 @@ public class PollingFragment extends Fragment
         super.onResume();
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
-        loadPolls();
+
+        if(networkManager.isNetworkConnected())
+        {
+            loadPolls();
+        }
+        else
+        {
+            networkManager.showNoCacheErrorDialog();
+        }
     }
 
     private PagerAdapter buildAdapter()

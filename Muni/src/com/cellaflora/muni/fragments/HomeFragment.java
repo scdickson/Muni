@@ -20,19 +20,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class HomeFragment extends Fragment
 {
-	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View view = inflater.inflate(R.layout.home_fragment, container, false);
         MainActivity.actionbarTitle.setText("");
 		return view;
 	}
-	
+
+    public int setWeatherIcon(int code)
+    {
+        int id = -1;
+
+        for(int group = 0; group < MuniConstants.WEATHER_CODES.length; group++)
+        {
+            for(int value = 0; value < MuniConstants.WEATHER_CODES[group].length; value++)
+            {
+                if(code == MuniConstants.WEATHER_CODES[group][value])
+                {
+                    id = getActivity().getResources().getIdentifier("com.cellaflora.muni:drawable/group_" + (group + 1), null, null);
+                    break;
+                }
+            }
+        }
+
+        return id;
+    }
+
 	public void onResume()
 	{
 		super.onResume();
@@ -41,16 +60,18 @@ public class HomeFragment extends Fragment
         {
             //Load weather asynchronously and set custom font
             TextView weatherBox = (TextView) getView().findViewById(R.id.weather_box);
+            ImageView weatherImage = (ImageView) getView().findViewById(R.id.weather_image);
 
             File f = new File(getActivity().getFilesDir(), MuniConstants.SAVED_WEATHER_KEY);
             if((f.lastModified() + (MuniConstants.WEATHER_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
             {
                 String weather[] = (String[])(PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_WEATHER_KEY));
                 weatherBox.setText(weather[0]);
+                weatherImage.setImageResource(setWeatherIcon(Integer.parseInt(weather[2])));
             }
             else
             {
-                new loadWeather().execute(weatherBox);
+                new loadWeather().execute(weatherBox, weatherImage);
             }
 
             weatherBox.setTypeface(MainActivity.myriadProSemiBold);
@@ -77,16 +98,19 @@ public class HomeFragment extends Fragment
         return end;
     }
 
-	private class loadWeather extends AsyncTask<TextView, Integer, Void>
+	private class loadWeather extends AsyncTask<Object, Integer, Void>
 	{
         private String weather[] = new String[3];
 		TextView weatherBox;
+        ImageView weatherImage;
 		
-		protected Void doInBackground(TextView... arg0) 
+		protected Void doInBackground(Object... arg0)
 		{
 			try
 			{
-                weatherBox = arg0[0];
+                weatherBox = (TextView) arg0[0];
+                weatherImage = (ImageView) arg0[1];
+
                 URL url = new URL(MuniConstants.WEATHER_URL + MuniConstants.WOEID);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -108,15 +132,16 @@ public class HomeFragment extends Fragment
 		
 		protected void onPostExecute(Void v) 
 		{
-			if(weather[0] != null)
+			if(weather != null)
 			{
-				//Kind of a cool fade in animation for the weather
-				final Animation in = new AlphaAnimation(0.0f, 1.0f);
-			    in.setDuration(1200);
-			    weatherBox.setText(weather[0]);
-			    weatherBox.startAnimation(in);
-                try
+				try
                 {
+                    final Animation in = new AlphaAnimation(0.0f, 1.0f);
+                    in.setDuration(1200);
+                    weatherBox.setText(weather[0]);
+                    weatherImage.setImageResource(setWeatherIcon(Integer.parseInt(weather[2])));
+                    weatherImage.startAnimation(in);
+                    weatherBox.startAnimation(in);
                     PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_WEATHER_KEY, weather);
                 }
                 catch(Exception e){}
@@ -131,7 +156,7 @@ public class HomeFragment extends Fragment
                }
                catch(Exception e)
                {
-                   Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
+                   //Toast.makeText(getActivity().getApplicationContext(), "Error loading content--Please check your network connection.", Toast.LENGTH_LONG).show();
                }
             }
 		}

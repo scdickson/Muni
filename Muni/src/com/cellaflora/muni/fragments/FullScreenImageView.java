@@ -1,26 +1,22 @@
 package com.cellaflora.muni.fragments;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.support.v4.app.FragmentActivity;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
+import com.cellaflora.muni.TouchImageView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,19 +24,24 @@ import java.io.FileInputStream;
 /**
  * Created by sdickson on 8/6/13.
  */
-public class FullScreenImageView extends Activity
+public class FullScreenImageView extends FragmentActivity
 {
     String caption, image_path;
-    ImageView fullscreenimage;
-    TextView fullscreencaption;
+    Bitmap raw_image;
+    RelativeLayout fullscreenimagelayout;
+    TouchImageView fullscreenimage;
+    TextView fullscreencaption, fullscreenshare;
     ProgressDialog progressDialog;
+    FullScreenImageView fsiv;
 
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fullscreenimageview);
+        fsiv = this;
         Intent data = this.getIntent();
         progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
 
@@ -48,9 +49,30 @@ public class FullScreenImageView extends Activity
         {
             image_path = data.getStringExtra("image");
             caption = data.getStringExtra("caption");
-            fullscreenimage = (ImageView) findViewById(R.id.fullscreenimage);
+            //raw_image = data.getParcelableExtra("raw_image");
+            fullscreenimagelayout = (RelativeLayout) findViewById(R.id.fullscreenimage_layout);
+            fullscreenimage = (TouchImageView) findViewById(R.id.fullscreenimage);
             fullscreencaption = (TextView) findViewById(R.id.fullscreenimage_caption);
             fullscreencaption.setTypeface(MainActivity.myriadProRegular);
+            fullscreenshare = (TextView) findViewById(R.id.fullscreenimage_share);
+            fullscreenshare.setTypeface(MainActivity.myriadProSemiBold);
+            fullscreenshare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view)
+                {
+                    try
+                    {
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("image/png");
+
+                        share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(image_path)));
+                        share.putExtra(Intent.EXTRA_TEXT, "Image from Muni");
+
+                        startActivity(Intent.createChooser(share, "Share Image"));
+                    }
+                    catch(Exception e){}
+                }
+            });
         }
     }
 
@@ -112,6 +134,7 @@ public class FullScreenImageView extends Activity
                     BitmapFactory.Options o2 = new BitmapFactory.Options();
                     o2.inSampleSize=scale;
                     image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+                    raw_image = image;
             }
             catch(Exception e)
             {}

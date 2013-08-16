@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.NewsObject;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.R;
@@ -51,10 +52,12 @@ public class NewsFragment extends Fragment
     NewsListAdapter adapter;
     Parcelable state;
     loadPdf lp;
+    NetworkManager networkManager;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.news_fragment, container, false);
+        networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         MainActivity.actionbarTitle.setText("News");
 		return view;
 	}
@@ -80,7 +83,11 @@ public class NewsFragment extends Fragment
     public void onPause()
     {
         super.onPause();
-        state = newsList.onSaveInstanceState();
+
+        if(newsList != null)
+        {
+            state = newsList.onSaveInstanceState();
+        }
     }
 
     public void loadNews()
@@ -149,7 +156,7 @@ public class NewsFragment extends Fragment
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
-
+        progressDialog.setCancelable(false);
         pdfProgress = new ProgressDialog(view.getContext());
         pdfProgress.setTitle("");
         pdfProgress.setMessage("Loading PDF...");
@@ -168,26 +175,44 @@ public class NewsFragment extends Fragment
         }
         else
         {
-            try
+            if(networkManager.isNetworkConnected())
             {
-                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_NEWS_PATH);
-                if((f.lastModified() + (MuniConstants.NEWS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                try
                 {
-                    news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
-                    adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-                    newsList = (ListView) getActivity().findViewById(R.id.news_list);
-                    newsList.setAdapter(adapter);
-                    newsList.setOnItemClickListener(new NewsItemClickListener());
+                    File f = getActivity().getFileStreamPath(MuniConstants.SAVED_NEWS_PATH);
+                    if((f.lastModified() + (MuniConstants.NEWS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                    {
+                        news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
+                        adapter = new NewsListAdapter(view.getContext(), news, getActivity());
+                        newsList = (ListView) getActivity().findViewById(R.id.news_list);
+                        newsList.setAdapter(adapter);
+                        newsList.setOnItemClickListener(new NewsItemClickListener());
+                    }
+                    else
+                    {
+                        loadNews();
+                    }
                 }
-                else
+                catch(Exception e)
                 {
+                    e.printStackTrace();
                     loadNews();
                 }
             }
-            catch(Exception e)
+            else
             {
-                e.printStackTrace();
-                loadNews();
+                try
+                {
+                        news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
+                        adapter = new NewsListAdapter(view.getContext(), news, getActivity());
+                        newsList = (ListView) getActivity().findViewById(R.id.news_list);
+                        newsList.setAdapter(adapter);
+                        newsList.setOnItemClickListener(new NewsItemClickListener());
+                }
+                catch(Exception e)
+                {
+                    networkManager.showNoCacheErrorDialog();
+                }
             }
         }
     }

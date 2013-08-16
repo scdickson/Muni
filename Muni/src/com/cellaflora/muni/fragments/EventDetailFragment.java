@@ -43,6 +43,7 @@ import java.util.TimeZone;
 public class EventDetailFragment extends Fragment
 {
     View view;
+    File file;
     Event event;
     TextView txtTitle, txtDescription, txtDate, txtLocation, txtUrl, txtAddress, txtRecommendNumber, txtRecommendAction;
     ImageView imgEvent, mapAction, callAction, webAction;
@@ -180,19 +181,27 @@ public class EventDetailFragment extends Fragment
         {
             try
             {
-                File f = new File(getActivity().getFilesDir() + "/" + event.objectId);
-                Bitmap image = BitmapFactory.decodeStream(new FileInputStream(f));
+                file = new File(getActivity().getFilesDir() + "/" + event.objectId);
+                Bitmap image = BitmapFactory.decodeStream(new FileInputStream(file));
                 imgEvent.setImageBitmap(image);
+                imgEvent.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent fullscreenimage = new Intent(getActivity(), FullScreenImageView.class);
+                        fullscreenimage.putExtra("image", file.getAbsolutePath() + "_uncompressed");
+                        getActivity().startActivity(fullscreenimage);
+                    }
+                });
             }
             catch(OutOfMemoryError ome)
             {
                 try
                 {
-                    File f = new File(getActivity().getFilesDir() + "/" + event.objectId);
+                    file = new File(getActivity().getFilesDir() + "/" + event.objectId);
 
                     BitmapFactory.Options o = new BitmapFactory.Options();
                     o.inJustDecodeBounds = true;
-                    BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+                    BitmapFactory.decodeStream(new FileInputStream(file),null,o);
                     final int REQUIRED_SIZE=80;
 
                     int width_tmp=o.outWidth, height_tmp=o.outHeight;
@@ -207,8 +216,16 @@ public class EventDetailFragment extends Fragment
 
                     BitmapFactory.Options o2 = new BitmapFactory.Options();
                     o2.inSampleSize=scale;
-                    Bitmap image = BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+                    Bitmap image = BitmapFactory.decodeStream(new FileInputStream(file), null, o2);
                     imgEvent.setImageBitmap(image);
+                    imgEvent.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent fullscreenimage = new Intent(getActivity(), FullScreenImageView.class);
+                            fullscreenimage.putExtra("image", file.getAbsolutePath() + "_uncompressed");
+                            getActivity().startActivity(fullscreenimage);
+                        }
+                    });
                 }
                 catch(Exception ex){}
             }
@@ -217,6 +234,8 @@ public class EventDetailFragment extends Fragment
                 e.printStackTrace();
                 imgEvent.setVisibility(View.GONE);
             }
+
+
         }
         else
         {

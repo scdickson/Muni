@@ -40,6 +40,7 @@ public class MainActivity extends FragmentActivity {
 	ActionBarDrawerToggle mMenuToggle;
     Fragment currentFragment = null;
     ImageView nav_info;
+    public static NetworkManager networkManager;
     public static TextView actionbarTitle;
     public static TextView actionbarContactReset;
     public static LinearLayout actionbarEventLayout;
@@ -51,7 +52,7 @@ public class MainActivity extends FragmentActivity {
 	{
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_front_page);
-
+        networkManager = new NetworkManager(getApplicationContext(), this);
         ActionBar actionBar = getActionBar();
         actionBar.setCustomView(R.layout.title_bar);
         actionBar.setDisplayShowHomeEnabled(false);

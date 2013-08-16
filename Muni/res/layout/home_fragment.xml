@@ -2,34 +2,49 @@
 <RelativeLayout
     	xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/front_page"
-        android:layout_width="match_parent"
-    	android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
     	android:orientation="vertical">
-        
-            
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/weather_layout"
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content">
+        <ImageView
+                android:id="@+id/weather_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="30dp"
+                android:id="@+id/weather_box"
+                android:paddingLeft="8dp"
+                android:background="#eef0f2"
+                android:textColor="#333b46"
+                android:layout_gravity="center_horizontal"
+                android:textSize="40sp"
+                android:text=""
+                />
+    </LinearLayout>
+
          <ImageView
             android:padding="10dp"
             android:id="@+id/home_imageview"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_above="@id/weather_layout"
         	android:layout_height="wrap_content"
-        	android:layout_centerInParent="true"
+            android:layout_marginBottom="5dp"
         	android:src="@drawable/wlaf_home"
-        	android:scaleType="fitStart"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+        	android:scaleType="centerInside"
         	android:visibility="visible"
             />
-         
-         
-        <TextView
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:paddingBottom="30dp"
-        android:id="@+id/weather_box"
-        android:background="#eef0f2"  
-        android:textColor="#333b46"
-        android:layout_centerInParent="true"
-        android:textSize="50sp"
-        android:text=""
-        />
+
         
     </RelativeLayout>

@@ -20,6 +20,7 @@ import android.widget.ListView;
 import com.cellaflora.muni.Event;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
@@ -54,6 +55,7 @@ public class EventFragment extends Fragment
     LayoutInflater inflater;
     ViewGroup container;
     Parcelable state;
+    NetworkManager networkManager;
     private int current_event_type = EVENT_TYPE_UPCOMING;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -69,10 +71,12 @@ public class EventFragment extends Fragment
         try
         {
             view = inflater.inflate(R.layout.event_fragment, container, false);
+            networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
             ecf = new EventContentFragment(new nestedFragmentHandler());
             getFragmentManager().beginTransaction().replace(R.id.event_content, ecf).commit();
 
             MainActivity.actionbarTitle.setVisibility(View.GONE);
+            MainActivity.actionbarTitle.setText("");
             MainActivity.actionbarEventLayout.setVisibility(View.VISIBLE);
             MainActivity.actionBarEventUpcoming.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -166,7 +170,12 @@ public class EventFragment extends Fragment
     public void onPause()
     {
         super.onPause();
-        state = eventList.onSaveInstanceState();
+
+        if(eventList != null)
+        {
+            state = eventList.onSaveInstanceState();
+        }
+
         MainActivity.actionbarTitle.setVisibility(View.VISIBLE);
         MainActivity.actionbarEventLayout.setVisibility(View.GONE);
         MainActivity.actionBarEventUpcoming.setTextColor(Color.parseColor("#EA4D3E"));
@@ -298,35 +307,58 @@ public class EventFragment extends Fragment
 
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
 
         if(events == null)
         {
-            try
+            if(networkManager.isNetworkConnected())
             {
-                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_EVENTS_PATH);
-                if((f.lastModified() + (MuniConstants.EVENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                try
                 {
-                    events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_PATH);
+                    File f = getActivity().getFileStreamPath(MuniConstants.SAVED_EVENTS_PATH);
+                    if((f.lastModified() + (MuniConstants.EVENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                    {
+                        events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_PATH);
 
-                    try
-                    {
-                        recommendedEvents =(ArrayList<String>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_RECOMMENDED_PATH);
+                        try
+                        {
+                            recommendedEvents =(ArrayList<String>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_RECOMMENDED_PATH);
+                        }
+                        catch(Exception ex)
+                        {
+                            recommendedEvents = new ArrayList<String>();
+                        }
                     }
-                    catch(Exception ex)
+                    else
                     {
-                        recommendedEvents = new ArrayList<String>();
+                        loadEvents();
                     }
                 }
-                else
+                catch(Exception e)
                 {
+                    e.printStackTrace();
                     loadEvents();
                 }
             }
-            catch(Exception e)
+            else
             {
-                e.printStackTrace();
-                loadEvents();
+                try
+                {
+                        events = (ArrayList<Event>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_PATH);
+                        try
+                        {
+                            recommendedEvents =(ArrayList<String>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_EVENTS_RECOMMENDED_PATH);
+                        }
+                        catch(Exception ex)
+                        {
+                            recommendedEvents = new ArrayList<String>();
+                        }
+                }
+                catch(Exception e)
+                {
+                    networkManager.showNoCacheErrorDialog();
+                }
             }
         }
         else

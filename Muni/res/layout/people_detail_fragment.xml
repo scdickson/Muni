@@ -21,12 +21,8 @@
     
         <ImageView
             android:adjustViewBounds="true"
-            android:layout_width="wrap_content"
-   			android:layout_height="wrap_content"
-            android:maxHeight="147dp"
-            android:minHeight="147dp"
-            android:maxWidth="120dp"
-            android:minWidth="120dp"
+            android:layout_width="120dp"
+   			android:layout_height="147dp"
    			android:src="@drawable/placeholder"
    			android:id="@+id/people_detail_image"/>
 

@@ -78,6 +78,7 @@
 <LinearLayout
     android:id="@+id/poll_results_layout"
     android:visibility="gone"
+    android:layout_below="@id/poll_question_external"
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent">

@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.PersonGroup;
 import com.cellaflora.muni.Place;
@@ -62,10 +63,12 @@ public class PlaceFragment extends Fragment
     LocationListener locationListener;
     String provider;
     Location currentLocation;
+    NetworkManager networkManager;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.place_fragment, container, false);
+        networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         MainActivity.actionbarTitle.setText("Places");
         searchBar = (EditText) view.findViewById(R.id.place_search);
         searchBar.setTypeface(MainActivity.myriadProRegular);
@@ -149,7 +152,11 @@ public class PlaceFragment extends Fragment
     public void onPause()
     {
         super.onPause();
-        state = placeList.onSaveInstanceState();
+
+        if(placeList != null)
+        {
+            state = placeList.onSaveInstanceState();
+        }
     }
 
     public void loadPlaces()
@@ -223,26 +230,44 @@ public class PlaceFragment extends Fragment
         }
         else
         {
-            try
+            if(networkManager.isNetworkConnected())
             {
-                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_PLACES_PATH);
-                if((f.lastModified() + (MuniConstants.PLACES_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                try
                 {
-                    places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
-                    adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                    placeList = (ListView) getActivity().findViewById(R.id.place_list);
-                    placeList.setAdapter(adapter);
-                    placeList.setOnItemClickListener(new PlaceItemClickListener());
+                    File f = getActivity().getFileStreamPath(MuniConstants.SAVED_PLACES_PATH);
+                    if((f.lastModified() + (MuniConstants.PLACES_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                    {
+                        places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
+                        adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
+                        placeList = (ListView) getActivity().findViewById(R.id.place_list);
+                        placeList.setAdapter(adapter);
+                        placeList.setOnItemClickListener(new PlaceItemClickListener());
+                    }
+                    else
+                    {
+                        loadPlaces();
+                    }
                 }
-                else
+                catch(Exception e)
                 {
+                    e.printStackTrace();
                     loadPlaces();
                 }
             }
-            catch(Exception e)
+            else
             {
-                e.printStackTrace();
-                loadPlaces();
+                try
+                {
+                        places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
+                        adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
+                        placeList = (ListView) getActivity().findViewById(R.id.place_list);
+                        placeList.setAdapter(adapter);
+                        placeList.setOnItemClickListener(new PlaceItemClickListener());
+                }
+                catch(Exception e)
+                {
+                    networkManager.showNoCacheErrorDialog();
+                }
             }
         }
     }

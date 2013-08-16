@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.NetworkManager;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.adapters.PeopleListAdapter;
 import com.cellaflora.muni.Person;
@@ -55,10 +56,12 @@ public class PeopleFragment extends Fragment
     InputMethodManager imm;
     public String groupA = " ";
     public String groupB = null;
+    NetworkManager networkManager;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.people_fragment, container, false);
+        networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         MainActivity.actionbarTitle.setText("People");
         searchBar = (EditText) view.findViewById(R.id.people_search);
         searchBar.setTypeface(MainActivity.myriadProRegular);
@@ -194,7 +197,11 @@ public class PeopleFragment extends Fragment
     public void onPause()
     {
         super.onPause();
-        state = peopleList.onSaveInstanceState();
+
+        if(peopleList != null)
+        {
+            state = peopleList.onSaveInstanceState();
+        }
     }
 
     public void loadPeople()
@@ -304,26 +311,45 @@ public class PeopleFragment extends Fragment
         }
         else
         {
-            try
+            if(networkManager.isNetworkConnected())
             {
-                File f = getActivity().getFileStreamPath(MuniConstants.SAVED_PEOPLE_PATH);
-                if((f.lastModified() + (MuniConstants.PEOPLE_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                try
                 {
-                    groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
-                    people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
-                    adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                    peopleList = (ListView) getActivity().findViewById(R.id.people_list);
-                    peopleList.setAdapter(adapter);
-                    peopleList.setOnItemClickListener(new PeopleItemClickListener());
+                    File f = getActivity().getFileStreamPath(MuniConstants.SAVED_PEOPLE_PATH);
+                    if((f.lastModified() + (MuniConstants.PEOPLE_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
+                    {
+                        groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
+                        people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
+                        adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                        peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                        peopleList.setAdapter(adapter);
+                        peopleList.setOnItemClickListener(new PeopleItemClickListener());
+                    }
+                    else
+                    {
+                        loadPeople();
+                    }
                 }
-                else
+                catch(Exception e)
                 {
                     loadPeople();
                 }
             }
-            catch(Exception e)
+            else
             {
-                loadPeople();
+                try
+                {
+                        groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
+                        people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
+                        adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                        peopleList = (ListView) getActivity().findViewById(R.id.people_list);
+                        peopleList.setAdapter(adapter);
+                        peopleList.setOnItemClickListener(new PeopleItemClickListener());
+                }
+                catch(Exception e)
+                {
+                    networkManager.showNoCacheErrorDialog();
+                }
             }
         }
 
