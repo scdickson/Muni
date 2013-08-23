@@ -18,6 +18,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -51,8 +52,16 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getActionBar().hide();
         setContentView(R.layout.activity_front_page);
-        networkManager = new NetworkManager(getApplicationContext(), this);
+
+        //Load initial fragment
+        HomeFragment homeFragment = new HomeFragment();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        tx.add(R.id.container, homeFragment);
+        tx.commit();
+
         ActionBar actionBar = getActionBar();
         actionBar.setCustomView(R.layout.title_bar);
         actionBar.setDisplayShowHomeEnabled(false);
@@ -62,37 +71,28 @@ public class MainActivity extends FragmentActivity {
         actionbarEventLayout = (LinearLayout) findViewById(R.id.event_selector_layout);
         actionBarEventUpcoming = (TextView) findViewById(R.id.event_selector_upcoming);
         actionBarEventPast = (TextView) findViewById(R.id.event_selector_past);
-        avenirBlack = Typeface.createFromAsset(getAssets(), "fonts/Avenir LT 95 Black.ttf");
         myriadProRegular = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Regular.otf");
         myriadProSemiBold = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Semibold.otf");
         actionbarTitle.setTypeface(myriadProSemiBold);
-        actionBarEventPast.setTypeface(MainActivity.myriadProSemiBold);
-        actionBarEventUpcoming.setTypeface(MainActivity.myriadProSemiBold);
+
+        networkManager = new NetworkManager(getApplicationContext(), this);
 		
 		//Initialize Parse
 		Parse.initialize(this, MuniConstants.PARSE_APPLICATION_ID, MuniConstants.PARSE_CLIENT_KEY);
 		ParseAnalytics.trackAppOpened(getIntent());
         PushService.setDefaultPushCallback(this, MainActivity.class);
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+        ParseInstallation.getCurrentInstallation().saveEventually();
         ParseTwitterUtils.initialize(MuniConstants.TWITTER_CONSUMER_KEY, MuniConstants.TWITTER_CONSUMER_SECRET);
-		
-		//Load initial fragment
-		HomeFragment homeFragment = new HomeFragment();
-		FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        tx.add(R.id.container, homeFragment);
-        tx.commit();
         
 		//Set up menu drawer
-		menuDrawerItems = getResources().getStringArray(R.array.menuItems);
 		menuDrawer = (ListView) findViewById(R.id.left_drawer);
-		menuDrawerItems = getResources().getStringArray(R.array.menuItems);
 		drawerLayout = (DrawerLayout) findViewById(R.id.nav_drawer);
 		
 		mMenuToggle = new ActionBarDrawerToggle(this, drawerLayout, R.drawable.drawer_arrow, R.string.app_name, R.string.app_name);
 		drawerLayout.setDrawerListener(mMenuToggle);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		MenuListAdapter mMenuAdapter = new MenuListAdapter(this, menuDrawerItems);
+		MenuListAdapter mMenuAdapter = new MenuListAdapter(this, MuniConstants.MENU_DRAWER_ITEMS);
         menuDrawer.setAdapter(mMenuAdapter);
         DrawerItemClickListener drawerListener = new DrawerItemClickListener();
         menuDrawer.setOnItemClickListener(drawerListener);
@@ -106,16 +106,24 @@ public class MainActivity extends FragmentActivity {
                 if(drawerLayout.isDrawerOpen(menuDrawer))
                 {
                     drawerLayout.closeDrawer(menuDrawer);
-                    //nav_info.setVisibility(View.GONE);
                 }
                 else
                 {
                     drawerLayout.openDrawer(menuDrawer);
-                    //nav_info.setVisibility(View.VISIBLE);
                 }
             }
         });
 	}
+
+    public void onResume()
+    {
+        super.onResume();
+
+        if(!getActionBar().isShowing())
+        {
+            getActionBar().show();
+        }
+    }
 
     private long getDirSize()
     {

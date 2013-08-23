@@ -2,7 +2,6 @@ package com.cellaflora.muni.fragments;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,8 +9,6 @@ import java.net.URL;
 import com.cellaflora.muni.*;
 
 import android.support.v4.app.Fragment;
-import android.content.Context;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,10 +23,17 @@ import android.widget.Toast;
 
 public class HomeFragment extends Fragment
 {
+    View view;
+    TextView weatherBox;
+    ImageView weatherImage;
+
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.home_fragment, container, false);
+		view = inflater.inflate(R.layout.home_fragment, container, false);
         MainActivity.actionbarTitle.setText("");
+        weatherBox = (TextView) view.findViewById(R.id.weather_box);
+        weatherBox.setTypeface(MainActivity.myriadProSemiBold);
+        weatherImage = (ImageView) view.findViewById(R.id.weather_image);
 		return view;
 	}
 
@@ -59,8 +63,6 @@ public class HomeFragment extends Fragment
         try
         {
             //Load weather asynchronously and set custom font
-            TextView weatherBox = (TextView) getView().findViewById(R.id.weather_box);
-            ImageView weatherImage = (ImageView) getView().findViewById(R.id.weather_image);
 
             File f = new File(getActivity().getFilesDir(), MuniConstants.SAVED_WEATHER_KEY);
             if((f.lastModified() + (MuniConstants.WEATHER_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
@@ -73,8 +75,6 @@ public class HomeFragment extends Fragment
             {
                 new loadWeather().execute(weatherBox, weatherImage);
             }
-
-            weatherBox.setTypeface(MainActivity.myriadProSemiBold);
         }
         catch(Exception e)
         {

@@ -26,6 +26,10 @@ import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.PersistenceManager;
 import com.cellaflora.muni.Place;
 import com.cellaflora.muni.R;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +38,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -50,6 +55,7 @@ public class EventDetailFragment extends Fragment
     View mapDivider, callDivider;
     Button btnAdd;
     Intent calIntent;
+    ParseObject counter = null;
 
     public EventDetailFragment(Event event)
     {
@@ -94,6 +100,41 @@ public class EventDetailFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        txtRecommendNumber = (TextView) view.findViewById(R.id.event_detail_recommend_number);
+
+        if(event.counterId != null && !event.counterId.isEmpty())
+        {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("EventsCounters");
+            query.whereEqualTo("objectId", event.counterId);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> result, ParseException e)
+                {
+                    if(e == null)
+                    {
+                        for(ParseObject parse : result)
+                        {
+                            counter = parse;
+                            event.recommends = parse.getInt("Count");
+                        }
+
+                        if(txtRecommendNumber != null)
+                        {
+                            if(event.recommends >= 1000)
+                            {
+                                txtRecommendNumber.setTextSize(20);
+                                double roundOff = Math.round(((double) event.recommends / 1000.0) * 100.0) / 100.0;
+                                txtRecommendNumber.setText(roundOff + "k");
+                            }
+                            else
+                            {
+                                txtRecommendNumber.setText(event.recommends + "");
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         txtTitle = (TextView) view.findViewById(R.id.event_title_detail);
         txtTitle.setTypeface(MainActivity.myriadProSemiBold);
 
@@ -113,7 +154,6 @@ public class EventDetailFragment extends Fragment
         txtAddress = (TextView) view.findViewById(R.id.event_address_detail);
         txtAddress.setTypeface(MainActivity.myriadProRegular);
 
-        txtRecommendNumber = (TextView) view.findViewById(R.id.event_detail_recommend_number);
         txtRecommendNumber.setTypeface(MainActivity.myriadProSemiBold);
 
         txtRecommendAction = (TextView) view.findViewById(R.id.event_detail_recommend_action);
@@ -133,8 +173,9 @@ public class EventDetailFragment extends Fragment
                     event.didRecommend = true;
                     EventFragment.recommendedEvents.add(event.objectId);
                     txtRecommendAction.setTextColor(Color.parseColor("#EC4B43"));
-                    event.parse.increment("NumRecommendations");
-                    event.parse.saveInBackground();
+                    counter.increment("Count");
+                    counter.saveEventually();
+                    
                     event.recommends++;
                     if(event.recommends >= 1000)
                     {
@@ -412,6 +453,11 @@ public class EventDetailFragment extends Fragment
                         alertDialog.show();
                     }
                 });
+            }
+            else
+            {
+
+                //callAction.setImageResource(view.getContext().getResources().getIdentifier("com.cellaflora.muni:drawable/", null, null));
             }
         }
         else

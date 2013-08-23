@@ -15,5 +15,6 @@ public class NewsObject implements Serializable
     public String sub_headline;
     public String news_url;
     public String photo_caption;
+    public String counterId;
     public Date date;
 }

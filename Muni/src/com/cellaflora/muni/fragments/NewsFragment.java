@@ -96,7 +96,7 @@ public class NewsFragment extends Fragment
         news = new ArrayList<NewsObject>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("News");
         query.addDescendingOrder("E_Date");
-
+        query.include("H_Counter_Obj");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -128,6 +128,12 @@ public class NewsFragment extends Fragment
                         if(document != null && document.getUrl() != null)
                         {
                             tmp.document_url = document.getUrl();
+                        }
+
+                        ParseObject counter = parse.getParseObject("H_Counter_Obj");
+                        if(counter != null && counter.getObjectId() != null)
+                        {
+                            tmp.counterId = counter.getObjectId();
                         }
 
                         news.add(tmp);
@@ -258,6 +264,25 @@ public class NewsFragment extends Fragment
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id)
         {
+            if(news.get(position).counterId != null && !news.get(position).counterId.isEmpty())
+            {
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("NewsCounters");
+                query.whereEqualTo("objectId", news.get(position).counterId);
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    public void done(List<ParseObject> result, ParseException e)
+                    {
+                        if(e == null)
+                        {
+                            for(ParseObject parse : result)
+                            {
+                                parse.increment("Count");
+                                parse.saveEventually();
+                            }
+                        }
+                    }
+                });
+            }
+
             selectItem(position);
         }
     }

@@ -11,12 +11,14 @@ public class MuniConstants
 {
     //Main Activity Constants
     public static final int MAX_CACHE_SIZE = 30; //In Megabytes!
-    public static final int CACHE_DECREASE_AMOUNT = 7; //In Megabytes!
+    public static final int CACHE_DECREASE_AMOUNT = 10; //In Megabytes!
     public static final String PARSE_APPLICATION_ID = "ACXaa1A1Vo759kga9aYlMYGiUJABaKpphndbeFhn";
     public static final String PARSE_CLIENT_KEY = "7VthvZjSwbXzMV3h4hXOmnazhYYTn7CICKAGd7cJ";
     public static final String TWITTER_CONSUMER_KEY = "N6X3G2gj4RJNO6c5B1xlA";
     public static final String TWITTER_CONSUMER_SECRET = "zU2eCl3vnZsRcwhDpCgIj4AFORGq6gVXiiApTNo0Q";
-    public static final int CONNECTION_LOST_REMINDER = 1; //In minutes!
+    public static final int CONNECTION_LOST_REMINDER = 10; //In minutes!
+    public static final String[] MENU_DRAWER_ITEMS = {"Home", "People", "Notifications", "Places",
+            "News", "Events", "Twitter", "Polling", "Contact", "Documents"};
 
     //Alert Fragment Constants
     public static final int MAX_RECENT_ALERTS = 40;

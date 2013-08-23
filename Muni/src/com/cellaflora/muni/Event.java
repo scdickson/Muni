@@ -25,5 +25,5 @@ public class Event implements Serializable
     public boolean isAllDay;
     public int recommends;
     public boolean didRecommend = false;
-    public ParseObject parse;
+    public String counterId;
 }

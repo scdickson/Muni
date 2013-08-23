@@ -1,6 +1,7 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -328,16 +329,30 @@ public class ContactFragment extends Fragment
                                 intent.putExtra(Intent.EXTRA_TEXT, content);
                                 intent.setType("plain/text");
 
-                                startActivity(intent);
-                                resetForm();
+                                try
+                                {
+                                    startActivity(intent);
+                                    resetForm();
+                                }
+                                catch(ActivityNotFoundException anfe)
+                                {
+                                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+                                    alertDialog.setTitle("Send Message");
+                                    alertDialog.setMessage("It appears you do not have a email client installed. An application capable of sending email is required to use this feature.");
+                                    alertDialog.setButton("Okay", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                                    alertDialog.show();
+                                }
+
 
                             }
                         })
                         .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id)
                             {
-                                // if this button is clicked, just close
-                                // the dialog box and do nothing
                                 dialog.cancel();
                             }
                         });

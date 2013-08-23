@@ -77,6 +77,8 @@ public class EventFragment extends Fragment
             getFragmentManager().beginTransaction().replace(R.id.event_content, ecf).commit();
 
             MainActivity.actionbarTitle.setVisibility(View.GONE);
+            MainActivity.actionBarEventPast.setTypeface(MainActivity.myriadProSemiBold);
+            MainActivity.actionBarEventUpcoming.setTypeface(MainActivity.myriadProSemiBold);
             MainActivity.actionbarTitle.setText("");
             MainActivity.actionbarEventLayout.setVisibility(View.VISIBLE);
             MainActivity.actionBarEventUpcoming.setOnClickListener(new View.OnClickListener() {
@@ -208,6 +210,7 @@ public class EventFragment extends Fragment
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Events");
         query.addDescendingOrder("C_Start_Time");
         query.include("O_Location");
+        query.include("P_Counter_Obj");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -234,8 +237,6 @@ public class EventFragment extends Fragment
 
                         tmp.photo_caption = parse.getString("F_Photo_Caption");
                         tmp.location = parse.getString("H1_Location_Title");
-                        tmp.recommends = parse.getNumber("NumRecommendations").intValue();
-                        tmp.parse = parse;
 
                         tmp.event_url = parse.getString("L_Hyperlink");
                         tmp.isAllDay = parse.getBoolean("E_Event_Is_All_Day");
@@ -267,6 +268,13 @@ public class EventFragment extends Fragment
                             {
                                 ex.printStackTrace();
                             }
+                        }
+
+                        ParseObject counter = parse.getParseObject("P_Counter_Obj");
+                        if(counter != null && counter.getObjectId() != null)
+                        {
+                            tmp.counterId = counter.getObjectId();
+                            tmp.recommends = counter.getInt("Count");
                         }
 
                         events.add(tmp);
