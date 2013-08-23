@@ -45,7 +45,9 @@ public class MainActivity extends FragmentActivity {
     public static TextView actionbarTitle;
     public static TextView actionbarContactReset;
     public static LinearLayout actionbarEventLayout;
+    public static LinearLayout actionbarDocumentLayout;
     public static TextView actionBarEventUpcoming, actionBarEventPast;
+    public static TextView actionBarDocumentBrowse, actionBarDocumentRecent;
     public static Typeface avenirBlack, myriadProRegular, myriadProSemiBold;
 
     @Override
@@ -69,8 +71,11 @@ public class MainActivity extends FragmentActivity {
         actionbarTitle = (TextView) findViewById(R.id.actionbar_title);
         actionbarContactReset = (TextView) findViewById(R.id.contact_action_reset);
         actionbarEventLayout = (LinearLayout) findViewById(R.id.event_selector_layout);
+        actionbarDocumentLayout = (LinearLayout) findViewById(R.id.document_selector_layout);
         actionBarEventUpcoming = (TextView) findViewById(R.id.event_selector_upcoming);
         actionBarEventPast = (TextView) findViewById(R.id.event_selector_past);
+        actionBarDocumentBrowse = (TextView) findViewById(R.id.document_selector_browse);
+        actionBarDocumentRecent = (TextView) findViewById(R.id.document_selector_recent);
         myriadProRegular = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Regular.otf");
         myriadProSemiBold = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Semibold.otf");
         actionbarTitle.setTypeface(myriadProSemiBold);

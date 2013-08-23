@@ -69,6 +69,46 @@
                 android:layout_width="0dp"/>
 
         </LinearLayout>
+
+    <LinearLayout
+            android:padding="5dp"
+            android:orientation="horizontal"
+            android:id="@+id/document_selector_layout"
+            android:layout_toRightOf="@id/toggle_button"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:visibility="gone">
+        <TextView
+                android:id="@+id/document_selector_browse"
+                android:text="Browse"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#EA4D3E"/>
+        <View
+                android:layout_width="2dp"
+                android:gravity="center"
+                android:layout_marginRight="15dp"
+                android:layout_height="fill_parent"
+                android:background="#ffffff"/>
+        <TextView
+                android:id="@+id/document_selector_recent"
+                android:text="Recent"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#ffffff"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"/>
+
+    </LinearLayout>
+
     <TextView
         android:padding="5dp"
         android:layout_centerHorizontal="true"

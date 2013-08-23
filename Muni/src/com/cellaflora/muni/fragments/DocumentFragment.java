@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -58,6 +59,9 @@ import java.util.TimeZone;
 
 public class DocumentFragment extends Fragment
 {
+    public static final int DOCUMENT_TYPE_BROWSE = 0;
+    public static final int DOCUMENT_TYPE_RECENT = 1;
+
     View view;
     ProgressDialog progressDialog, pdfProgress;
     PullToRefreshListView documentList;
@@ -66,10 +70,11 @@ public class DocumentFragment extends Fragment
     TextView searchCancel;
     InputMethodManager imm;
     loadPdf lp;
+    int current_document_type = 0;
     public DocumentFolder currentDir = null;
     ArrayList<Object> searchResults;
     public ArrayList<DocumentFolder> folders;
-    public ArrayList<Document> documents;
+    public ArrayList<Object> documents;
     public DocumentListAdapter adapter;
     NetworkManager networkManager;
 
@@ -87,7 +92,15 @@ public class DocumentFragment extends Fragment
             public void onClick(View view)
             {
                 adapter.clearContent();
-                changeFolder(currentDir);
+                if(current_document_type == DOCUMENT_TYPE_BROWSE)
+                {
+                    changeFolder(currentDir);
+                }
+                else if(current_document_type == DOCUMENT_TYPE_RECENT)
+                {
+                    adapter.setContent(documents, MuniConstants.MAX_RECENT_DOCUMENTS);
+                }
+
                 adapter.notifyDataSetChanged();
                 documentList.invalidateViews();
                 imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -114,8 +127,9 @@ public class DocumentFragment extends Fragment
 
                     if(currentDir == null)
                     {
-                        for(Document document : documents)
+                        for(Object obj : documents)
                         {
+                            Document document = (Document) obj;
                             if(document.title.toUpperCase().contains(cs.toString().toUpperCase()))
                             {
                                 searchResults.add(document);
@@ -154,7 +168,16 @@ public class DocumentFragment extends Fragment
                 {
                     searchCancel.setVisibility(View.GONE);
                     adapter.clearContent();
-                    changeFolder(currentDir);
+
+                    if(current_document_type == DOCUMENT_TYPE_BROWSE)
+                    {
+                        changeFolder(currentDir);
+                    }
+                    else if(current_document_type == DOCUMENT_TYPE_RECENT)
+                    {
+                        adapter.setContent(documents, MuniConstants.MAX_RECENT_DOCUMENTS);
+                    }
+
                     adapter.notifyDataSetChanged();
                     documentList.invalidateViews();
                 }
@@ -165,7 +188,53 @@ public class DocumentFragment extends Fragment
             {
             }
         });
-        MainActivity.actionbarTitle.setText("Documents");
+
+        MainActivity.actionbarTitle.setVisibility(View.GONE);
+        MainActivity.actionBarDocumentBrowse.setTypeface(MainActivity.myriadProSemiBold);
+        MainActivity.actionBarDocumentRecent.setTypeface(MainActivity.myriadProSemiBold);
+        MainActivity.actionbarTitle.setText("");
+        MainActivity.actionbarDocumentLayout.setVisibility(View.VISIBLE);
+        MainActivity.actionBarDocumentBrowse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(current_document_type != DOCUMENT_TYPE_BROWSE)
+                {
+                    current_document_type = DOCUMENT_TYPE_BROWSE;
+                    if(documents == null)
+                    {
+                        loadDocuments();
+                    }
+
+                    adapter.clearContent();
+                    changeFolder(currentDir);
+                    adapter.notifyDataSetChanged();
+                    documentList.invalidateViews();
+                    MainActivity.actionBarDocumentBrowse.setTextColor(Color.parseColor("#EA4D3E"));
+                    MainActivity.actionBarDocumentRecent.setTextColor(Color.parseColor("#ffffff"));
+                }
+            }
+        });
+        MainActivity.actionBarDocumentRecent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(current_document_type != DOCUMENT_TYPE_RECENT)
+                {
+                    current_document_type = DOCUMENT_TYPE_RECENT;
+                    if(documents == null)
+                    {
+                        loadDocuments();
+                    }
+
+                    adapter.setContent(documents, MuniConstants.MAX_RECENT_DOCUMENTS);
+                    adapter.notifyDataSetChanged();
+                    documentList.invalidateViews();
+                    MainActivity.actionBarDocumentBrowse.setTextColor(Color.parseColor("#ffffff"));
+                    MainActivity.actionBarDocumentRecent.setTextColor(Color.parseColor("#EA4D3E"));
+                }
+            }
+        });
 		return view;
 	}
 
@@ -177,6 +246,11 @@ public class DocumentFragment extends Fragment
         {
             state = documentList.onSaveInstanceState();
         }
+
+        MainActivity.actionbarTitle.setVisibility(View.VISIBLE);
+        MainActivity.actionbarDocumentLayout.setVisibility(View.GONE);
+        MainActivity.actionBarDocumentBrowse.setTextColor(Color.parseColor("#EA4D3E"));
+        MainActivity.actionBarDocumentRecent.setTextColor(Color.parseColor("#ffffff"));
     }
 
     private Date fixDate(Date date)
@@ -224,10 +298,10 @@ public class DocumentFragment extends Fragment
     public void loadDocuments()
     {
         folders = new ArrayList<DocumentFolder>();
-        documents = new ArrayList<Document>();
+        documents = new ArrayList<Object>();
         ParseQuery<ParseObject> folder_query = ParseQuery.getQuery("Doc_Folders");
+        folder_query.addDescendingOrder("updatedAt");
         folder_query.include("Parent_Folder");
-
         folder_query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {
@@ -258,6 +332,7 @@ public class DocumentFragment extends Fragment
                     }
 
                     ParseQuery<ParseObject> file_query = ParseQuery.getQuery("Doc_Files");
+                    file_query.addDescendingOrder("updatedAt");
                     file_query.include("Folder");
                     file_query.findInBackground(new FindCallback<ParseObject>() {
                         public void done(List<ParseObject> result, ParseException e)
@@ -294,21 +369,34 @@ public class DocumentFragment extends Fragment
                                 PersistenceManager.writeObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH, documents);
                             }
                             catch(Exception ex){}
-                            adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                            documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
-                            documentList.setAdapter(adapter);
-                            documentList.setOnItemClickListener(new DocumentItemClickListener());
-                            documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
-                                @Override
-                                public void onRefresh() {
-                                    loadDocuments();
-                                }
-                            });
-                            documentList.requestFocus();
-                            documentList.onRefreshComplete();
-                            if(progressDialog.isShowing())
+
+                            if(current_document_type == DOCUMENT_TYPE_BROWSE)
                             {
-                                progressDialog.dismiss();
+                                adapter = new DocumentListAdapter(view.getContext(), folders, null);
+                                documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
+                                documentList.setAdapter(adapter);
+                                documentList.setOnItemClickListener(new DocumentItemClickListener());
+                                documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+                                    @Override
+                                    public void onRefresh() {
+                                        loadDocuments();
+                                    }
+                                });
+                                documentList.requestFocus();
+                                documentList.onRefreshComplete();
+                                if(progressDialog.isShowing())
+                                {
+                                    progressDialog.dismiss();
+                                }
+                            }
+                            else if(current_document_type == DOCUMENT_TYPE_RECENT)
+                            {
+                                if(adapter != null && documentList != null)
+                                {
+                                    adapter.setContent(documents, MuniConstants.MAX_RECENT_DOCUMENTS);
+                                    adapter.notifyDataSetChanged();
+                                    documentList.invalidateViews();
+                                }
                             }
                         }
                     });
@@ -369,7 +457,7 @@ public class DocumentFragment extends Fragment
                     if((f.lastModified() + (MuniConstants.DOCUMENTS_REPLACE_INTERVAL * 60 * 1000)) >= System.currentTimeMillis())
                     {
                         folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
-                        documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
+                        documents = (ArrayList<Object>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
                         adapter = new DocumentListAdapter(view.getContext(), folders, null);
                         documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
                         documentList.setAdapter(adapter);
@@ -399,7 +487,7 @@ public class DocumentFragment extends Fragment
                 try
                 {
                         folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
-                        documents = (ArrayList<Document>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
+                        documents = (ArrayList<Object>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
                         adapter = new DocumentListAdapter(view.getContext(), folders, null);
                         documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
                         documentList.setAdapter(adapter);

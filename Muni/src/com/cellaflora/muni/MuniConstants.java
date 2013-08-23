@@ -34,6 +34,7 @@ public class MuniConstants
     //Document Fragment Constants
     public static final String SAVED_DOCUMENTS_PATH = "muni_saved_docs";
     public static final String SAVED_DOCUMENT_FILE_PATH = "muni_saved_doc_files";
+    public static final int MAX_RECENT_DOCUMENTS = 30;
     public static final int DOCUMENTS_REPLACE_INTERVAL = 60; //In minutes!
 
     //Event Fragment Constants

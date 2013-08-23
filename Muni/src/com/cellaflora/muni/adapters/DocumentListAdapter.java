@@ -47,6 +47,21 @@ public class DocumentListAdapter extends BaseAdapter
         this.content = content;
     }
 
+    public void setContent(ArrayList<Object> content, int max)
+    {
+        clearContent();
+        int current = 0;
+
+        for(Object obj : content)
+        {
+            if(current < max)
+            {
+                this.content.add(obj);
+                current++;
+            }
+        }
+    }
+
     public void loadDirectory(DocumentFolder currentDir)
     {
         this.currentDir = currentDir;
