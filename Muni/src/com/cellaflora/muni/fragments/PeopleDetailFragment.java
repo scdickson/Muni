@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.BufferedOutputStream;
@@ -45,6 +46,7 @@ public class PeopleDetailFragment extends Fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.people_detail_fragment, container, false);
+        MainActivity.actionbarTitle.setText(requested.name);
 		return view;
 	}
 	
@@ -69,8 +71,9 @@ public class PeopleDetailFragment extends Fragment
         if(requested.tel_number != null)
         {
             TextView tel_number = (TextView) getActivity().findViewById(R.id.people_detail_tel_number);
+            ImageView tel_action = (ImageView) getActivity().findViewById(R.id.people_detail_tel_number_action);
             tel_number.setTypeface(MainActivity.myriadProRegular);
-            tel_number.setOnClickListener(
+            tel_action.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view)
@@ -113,12 +116,18 @@ public class PeopleDetailFragment extends Fragment
             );
             tel_number.setText(requested.tel_number);
         }
+        else
+        {
+            RelativeLayout telLayout = (RelativeLayout) getActivity().findViewById(R.id.people_detail_tel_number_layout);
+            telLayout.setVisibility(View.GONE);
+        }
 
         if(requested.email != null)
         {
             TextView email = (TextView) getActivity().findViewById(R.id.people_detail_email);
+            ImageView email_action = (ImageView) getActivity().findViewById(R.id.people_detail_email_action);
             email.setTypeface(MainActivity.myriadProRegular);
-            email.setOnClickListener(
+            email_action.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -131,6 +140,11 @@ public class PeopleDetailFragment extends Fragment
                     }
             );
             email.setText(requested.email);
+        }
+        else
+        {
+            RelativeLayout emailLayout = (RelativeLayout) getActivity().findViewById(R.id.people_detail_email_layout);
+            emailLayout.setVisibility(View.GONE);
         }
 
         if(requested.notes != null)
