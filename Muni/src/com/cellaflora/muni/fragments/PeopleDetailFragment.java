@@ -2,11 +2,10 @@ package com.cellaflora.muni.fragments;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
-import com.cellaflora.muni.Person;
+import com.cellaflora.muni.objects.Person;
 import com.cellaflora.muni.R;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -16,7 +15,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

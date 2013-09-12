@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.cellaflora.muni.Alert;
+import com.cellaflora.muni.objects.Alert;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
 

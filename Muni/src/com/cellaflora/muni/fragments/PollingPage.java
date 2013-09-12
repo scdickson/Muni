@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
-import com.cellaflora.muni.Poll;
+import com.cellaflora.muni.objects.Poll;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.graph.Bar;
 import com.cellaflora.muni.graph.BarGraph;

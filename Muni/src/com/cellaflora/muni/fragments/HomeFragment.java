@@ -11,7 +11,6 @@ import com.cellaflora.muni.*;
 import android.support.v4.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,8 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import support.PersistenceManager;
 
 public class HomeFragment extends Fragment
 {

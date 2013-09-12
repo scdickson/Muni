@@ -16,7 +16,7 @@ import android.support.v4.app.FragmentActivity;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
-import com.cellaflora.muni.TouchImageView;
+import support.TouchImageView;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -62,7 +62,7 @@
             </intent-filter>
         </reciever>
         <receiver
-                android:name="com.cellaflora.muni.NetworkChangeReciever"
+                android:name="support.NetworkChangeReciever"
                 android:label="NetworkChangeReceiver" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
-import com.cellaflora.muni.Person;
-import com.cellaflora.muni.PersonGroup;
+import com.cellaflora.muni.objects.Person;
+import com.cellaflora.muni.objects.PersonGroup;
 import com.cellaflora.muni.R;
 
 public class PeopleListAdapter extends BaseAdapter

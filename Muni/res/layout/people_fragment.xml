@@ -38,7 +38,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_below="@id/people_top_layout">
-    <com.cellaflora.muni.PullToRefreshListView
+    <support.PullToRefreshListView
         android:id="@+id/people_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>

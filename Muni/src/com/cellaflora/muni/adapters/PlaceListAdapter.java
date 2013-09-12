@@ -2,7 +2,6 @@ package com.cellaflora.muni.adapters;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +11,13 @@ import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
-import com.cellaflora.muni.Place;
+import com.cellaflora.muni.objects.Place;
 import com.cellaflora.muni.R;
-import com.cellaflora.muni.fragments.PlaceFragment;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.TreeSet;
 
 /**
  * Created by sdickson on 7/3/13.

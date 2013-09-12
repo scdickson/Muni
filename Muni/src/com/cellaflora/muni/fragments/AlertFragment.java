@@ -1,22 +1,17 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
-import com.cellaflora.muni.Alert;
+import com.cellaflora.muni.objects.Alert;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
-import com.cellaflora.muni.NetworkManager;
-import com.cellaflora.muni.PullToRefreshListView;
+import support.NetworkManager;
+import support.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.AlertListAdapter;
 import com.parse.FindCallback;

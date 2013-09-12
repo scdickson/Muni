@@ -1,11 +1,7 @@
 package com.cellaflora.muni.fragments;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import android.content.Context;
@@ -16,28 +12,23 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
-import com.cellaflora.muni.NetworkManager;
-import com.cellaflora.muni.PersistenceManager;
-import com.cellaflora.muni.PullToRefreshListView;
+import support.NetworkManager;
+import support.PersistenceManager;
+import support.PullToRefreshListView;
 import com.cellaflora.muni.adapters.PeopleListAdapter;
-import com.cellaflora.muni.Person;
-import com.cellaflora.muni.PersonGroup;
+import com.cellaflora.muni.objects.Person;
+import com.cellaflora.muni.objects.PersonGroup;
 import com.cellaflora.muni.R;
 import com.parse.*;
 

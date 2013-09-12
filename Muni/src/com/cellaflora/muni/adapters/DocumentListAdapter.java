@@ -8,10 +8,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cellaflora.muni.Document;
+import com.cellaflora.muni.objects.Document;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
-import com.cellaflora.muni.DocumentFolder;
+import com.cellaflora.muni.objects.DocumentFolder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

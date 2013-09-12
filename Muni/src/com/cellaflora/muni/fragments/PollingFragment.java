@@ -1,24 +1,21 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cellaflora.muni.CirclePageIndicator;
-import com.cellaflora.muni.LinePageIndicator;
+import support.CirclePageIndicator;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
-import com.cellaflora.muni.NetworkManager;
-import com.cellaflora.muni.PersistenceManager;
-import com.cellaflora.muni.Poll;
-import com.cellaflora.muni.PollingPageAdapter;
+import support.NetworkManager;
+import support.PersistenceManager;
+import com.cellaflora.muni.objects.Poll;
+import com.cellaflora.muni.adapters.PollingPageAdapter;
 import com.cellaflora.muni.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;

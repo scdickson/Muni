@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +12,11 @@ import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
-import com.cellaflora.muni.Tweet;
+import com.cellaflora.muni.objects.Tweet;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by sdickson on 8/8/13.

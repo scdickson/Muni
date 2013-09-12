@@ -1,6 +1,7 @@
 package com.cellaflora.muni.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +17,19 @@ import java.util.ArrayList;
 
 public class MenuListAdapter extends BaseAdapter
 {
+    public static int COLOR_SELECTED, COLOR_UNSELECTED;
+
 	Context context;
     String menuDrawerItems[];
     LayoutInflater inflater;
+    int selectedIndex = 0;
     
 	public MenuListAdapter(Context context, String[] menuDrawerItems)
 	{
         this.context = context;
         this.menuDrawerItems = menuDrawerItems;
+        COLOR_SELECTED = Color.parseColor("#E94D3E");
+        COLOR_UNSELECTED = Color.parseColor("#ffffff");
     }
  
     public int getCount() 
@@ -40,16 +46,20 @@ public class MenuListAdapter extends BaseAdapter
     {
         return position;
     }
+
+    public void setSelected(int index)
+    {
+        selectedIndex = index;
+        notifyDataSetChanged();
+    }
  
     public View getView(int position, View convertView, ViewGroup parent) 
     {
     	TextView txtNav;
-        ImageView imgNav;
-        ImageView imgInfo;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.drawer_list_item, parent, false);
         txtNav = (TextView) itemView.findViewById(R.id.nav_item);
-        imgNav = (ImageView) itemView.findViewById(R.id.nav_image);
+        ImageView imgNav = (ImageView) itemView.findViewById(R.id.nav_image);
 
             //Load special font
             txtNav.setTypeface(MainActivity.myriadProSemiBold);
@@ -59,34 +69,124 @@ public class MenuListAdapter extends BaseAdapter
             switch(position)
             {
                 case 0://Home
-                    stringRsc = "com.cellaflora.muni:drawable/home";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/home_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/home";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 1://People
-                    stringRsc = "com.cellaflora.muni:drawable/users";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/users_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/users";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 2://Notifications
-                    stringRsc = "com.cellaflora.muni:drawable/alerts";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/alerts_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/alerts";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 3://Places
-                    stringRsc = "com.cellaflora.muni:drawable/map";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/map_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/map";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 4://News
-                    stringRsc = "com.cellaflora.muni:drawable/news";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/news_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/news";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 5://Events
-                    stringRsc = "com.cellaflora.muni:drawable/calendar";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/calendar_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/calendar";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 6://Twitter
-                    stringRsc = "com.cellaflora.muni:drawable/twitter";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/twitter_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/twitter";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 7://Polling
-                    stringRsc = "com.cellaflora.muni:drawable/polling";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/polling_enabled";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/polling";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 8://Contact
-                    stringRsc = "com.cellaflora.muni:drawable/mail";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/mail_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/mail";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
                 case 9://Documents
-                    stringRsc = "com.cellaflora.muni:drawable/document";
+                    if(position == selectedIndex)
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/document_selected";
+                        txtNav.setTextColor(COLOR_SELECTED);
+                    }
+                    else
+                    {
+                        stringRsc = "com.cellaflora.muni:drawable/document";
+                        txtNav.setTextColor(COLOR_UNSELECTED);
+                    }
                     break;
             }
 

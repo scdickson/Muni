@@ -5,11 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,16 +16,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cellaflora.muni.Event;
+import com.cellaflora.muni.objects.Event;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
 import com.cellaflora.muni.R;
-import com.cellaflora.muni.fragments.EventDetailFragment;
 import com.cellaflora.muni.fragments.EventFragment;
 import com.cellaflora.muni.fragments.FullScreenImageView;
 
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * Created by sdickson on 7/25/13.

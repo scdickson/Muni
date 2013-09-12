@@ -2,7 +2,6 @@ package com.cellaflora.muni.fragments;
 
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -17,14 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
-import com.cellaflora.muni.NetworkManager;
-import com.cellaflora.muni.NewsObject;
-import com.cellaflora.muni.PersistenceManager;
-import com.cellaflora.muni.PullToRefreshListView;
+import support.NetworkManager;
+import com.cellaflora.muni.objects.NewsObject;
+import support.PersistenceManager;
+import support.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.NewsListAdapter;
 import com.parse.FindCallback;
@@ -33,7 +31,6 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;

@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     
-    <com.cellaflora.muni.PullToRefreshListView
+    <support.PullToRefreshListView
         android:id="@+id/alert_list"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>

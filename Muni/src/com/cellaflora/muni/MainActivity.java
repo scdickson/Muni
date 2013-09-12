@@ -2,6 +2,7 @@ package com.cellaflora.muni;
 
 import com.cellaflora.muni.adapters.MenuListAdapter;
 import com.cellaflora.muni.fragments.*;
+import com.cellaflora.muni.objects.DocumentFolder;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseInstallation;
@@ -31,16 +32,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import support.NetworkManager;
+import support.fileComparator;
+
 
 public class MainActivity extends FragmentActivity {
-	
-	private String[] menuDrawerItems;
+
 	private ListView menuDrawer;
 	private DrawerLayout drawerLayout;
-	public static String storedWeather = null;
 	ActionBarDrawerToggle mMenuToggle;
     Fragment currentFragment = null;
     ImageView nav_info;
+    MenuListAdapter mMenuAdapter;
     public static NetworkManager networkManager;
     public static TextView actionbarTitle;
     public static TextView actionbarContactReset;
@@ -48,7 +51,7 @@ public class MainActivity extends FragmentActivity {
     public static LinearLayout actionbarDocumentLayout;
     public static TextView actionBarEventUpcoming, actionBarEventPast;
     public static TextView actionBarDocumentBrowse, actionBarDocumentRecent;
-    public static Typeface avenirBlack, myriadProRegular, myriadProSemiBold;
+    public static Typeface myriadProRegular, myriadProSemiBold;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -97,7 +100,7 @@ public class MainActivity extends FragmentActivity {
 		drawerLayout.setDrawerListener(mMenuToggle);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		MenuListAdapter mMenuAdapter = new MenuListAdapter(this, MuniConstants.MENU_DRAWER_ITEMS);
+		mMenuAdapter = new MenuListAdapter(this, MuniConstants.MENU_DRAWER_ITEMS);
         menuDrawer.setAdapter(mMenuAdapter);
         DrawerItemClickListener drawerListener = new DrawerItemClickListener();
         menuDrawer.setOnItemClickListener(drawerListener);
@@ -203,6 +206,7 @@ public class MainActivity extends FragmentActivity {
 	{
 		//Fragment fragment = null;
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        mMenuAdapter.setSelected(position);
 		
 		switch(position)
 		{
