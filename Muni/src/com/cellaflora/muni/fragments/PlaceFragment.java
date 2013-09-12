@@ -152,7 +152,7 @@ public class PlaceFragment extends Fragment
     public void loadPlaces()
     {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Places");
-
+        query.addAscendingOrder("A_Name");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {

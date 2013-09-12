@@ -24,93 +24,28 @@ import java.util.Comparator;
  */
 public class PlaceListAdapter extends BaseAdapter
 {
-    Comparator<Place> PlaceComparator = new Comparator<Place>()
-    {
-
-        public int compare(Place p1, Place p2) {
-
-            String p1Name = p1.category;
-            String p2Name = p2.category;
-
-            return p1Name.compareToIgnoreCase(p2Name);
-        }
-    };
-
     LayoutInflater inflater;
     Context context;
-    ArrayList<Object> content = new ArrayList<Object>();
     ArrayList<Place> places;
+    ArrayList<Object> content;
     Location currentLocation;
 
     public PlaceListAdapter(Context context, ArrayList<Place> places, Location currentLocation)
     {
+        content = new ArrayList<Object>();
         this.context = context;
         this.places = places;
         this.currentLocation = currentLocation;
-
-        Collections.sort(places, PlaceComparator);
-
-        Place previous = null;
-        boolean addSeparator = false;
-
-        for(int i = 0; i < places.size(); i++)
-        {
-            if(previous != null)
-            {
-                if(!places.get(i).category.equalsIgnoreCase(previous.category))
-                {
-                    addSeparator = true;
-                }
-            }
-            else
-            {
-                addSeparator = true;
-            }
-
-            if(addSeparator)
-            {
-                content.add(places.get(i).category);
-                addSeparator = false;
-            }
-
-            content.add(places.get(i));
-            previous = places.get(i);
-
-
-        }
+        reloadPlaces();
     }
 
     public void reloadPlaces()
     {
+        clearContent();
 
-
-        Collections.sort(places, PlaceComparator);
-
-        Place previous = null;
-        boolean addSeparator = false;
-
-        for(int i = 0; i < places.size(); i++)
+        for(Place place : places)
         {
-            if(previous != null)
-            {
-                if(!places.get(i).category.equalsIgnoreCase(previous.category))
-                {
-                    addSeparator = true;
-                }
-            }
-            else
-            {
-                addSeparator = true;
-            }
-
-            if(addSeparator)
-            {
-                content.add(places.get(i).category);
-                addSeparator = false;
-            }
-
-            content.add(places.get(i));
-            previous = places.get(i);
+            content.add(place);
         }
     }
 
@@ -166,8 +101,8 @@ public class PlaceListAdapter extends BaseAdapter
         TextView header = (TextView) itemView.findViewById(R.id.place_list_section_header);
         header.setTypeface(MainActivity.myriadProRegular);
 
-        if(content.get(position).getClass().equals(Place.class))
-        {
+        //if(content.get(position).getClass().equals(Place.class))
+        //{
             Place tmp = (Place) content.get(position);
 
             txtName.setText(tmp.name);
@@ -193,8 +128,8 @@ public class PlaceListAdapter extends BaseAdapter
                 //int id = context.getResources().getIdentifier("com.cellaflora.muni:drawable/" +tmp.category.toLowerCase(), null, null);
                 //imgPlace.setImageResource(id);
             }
-        }
-        else if(content.get(position).getClass().equals(String.class))
+        //}
+        /*else if(content.get(position).getClass().equals(String.class))
         {
             header.setText(content.get(position).toString());
             header.setVisibility(View.VISIBLE);
@@ -202,7 +137,7 @@ public class PlaceListAdapter extends BaseAdapter
             txtDistance.setVisibility(View.GONE);
             txtGroup.setVisibility(View.GONE);
             imgPlace.setVisibility(View.GONE);
-        }
+        }*/
 
 
         return itemView;

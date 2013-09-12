@@ -92,11 +92,14 @@ public class PlaceDetailFragment extends Fragment
             }
         }
 
+        TextView txtName = (TextView) view.findViewById(R.id.place_detail_name);
+        txtName.setTypeface(MainActivity.myriadProRegular);
+
         TextView txtAddress = (TextView) view.findViewById(R.id.place_detail_address);
         txtAddress.setTypeface(MainActivity.myriadProRegular);
 
-        TextView txtUrl = (TextView) view.findViewById(R.id.place_detail_url);
-        txtUrl.setTypeface(MainActivity.myriadProRegular);
+        TextView txtNotes = (TextView) view.findViewById(R.id.place_detail_notes);
+        txtNotes.setTypeface(MainActivity.myriadProRegular);
 
         TextView btnMap = (TextView) view.findViewById(R.id.place_detail_map);
         btnMap.setTypeface(MainActivity.myriadProRegular);
@@ -106,6 +109,14 @@ public class PlaceDetailFragment extends Fragment
         ImageView actionWeb = (ImageView) view.findViewById(R.id.place_detail_web_action);
         RelativeLayout addressLayout = (RelativeLayout) view.findViewById(R.id.place_detail_address_layout);
 
+        if(place.name != null)
+        {
+            txtName.setText(place.name);
+        }
+        else
+        {
+            txtName.setVisibility(View.GONE);
+        }
 
         if(place.tel_number != null)
         {
@@ -181,31 +192,25 @@ public class PlaceDetailFragment extends Fragment
             addressLayout.setVisibility(View.GONE);
         }
 
+        if(place.notes != null)
+        {
+            txtNotes.setText(place.notes);
+        }
+        else
+        {
+            txtNotes.setVisibility(View.GONE);
+        }
+
         if(place.web_url != null)
         {
-            //txtUrl.setText(Html.fromHtml("<u>" + place.web_url + "</u>"));
-            final String url = place.web_url;
-            txtUrl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    view.getContext().startActivity(intent);
-                }
-            });
-
             actionWeb.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
+                    intent.setData(Uri.parse(place.web_url));
                     view.getContext().startActivity(intent);
                 }
             });
-        }
-        else
-        {
-            txtUrl.setVisibility(View.GONE);
         }
 
     }
