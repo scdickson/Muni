@@ -119,7 +119,7 @@
         <TextView
                 android:layout_marginTop="5dp"
                 android:padding="10dp"
-                android:textSize="15sp"
+                android:textSize="20sp"
                 android:textColor="#A1A2A4"
                 android:id="@+id/place_detail_notes"
                 android:layout_height="wrap_content"

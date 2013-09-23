@@ -11,7 +11,7 @@
             android:layout_height="wrap_content">
         <EditText
                 android:id="@+id/people_search"
-                android:hint="Search all people"
+                android:hint="Search all members"
                 android:layout_width="0dp"
                 android:inputType="text"
                 android:layout_height="wrap_content"

@@ -131,7 +131,7 @@ public class DocumentListAdapter extends BaseAdapter
 
             if(document.date != null)
             {
-                String dateFormat = "EEEE, MMMM d";
+                String dateFormat = "M/dd/yy";
                 SimpleDateFormat start = new SimpleDateFormat(dateFormat, Locale.US);
                 txtDate.setText(start.format(document.date));
             }
@@ -156,9 +156,25 @@ public class DocumentListAdapter extends BaseAdapter
                 }
                 else
                 {
-                    String dateFormat = "EEEE, MMMM d";
-                    SimpleDateFormat start = new SimpleDateFormat(dateFormat, Locale.US);
-                    txtDate.setText(start.format(folder.date));
+                    if(folder.folders.size() > 0)
+                    {
+                        String suffix = " folder";
+                        if(folder.folders.size() > 1)
+                            suffix += "s";
+
+                        txtDate.setText(folder.folders.size() + suffix);
+                    }
+                    else
+                    {
+                        if(folder.documents.size() > 0)
+                        {
+                            String suffix = " file";
+                            if(folder.documents.size() > 1)
+                                suffix += "s";
+
+                            txtDate.setText(folder.documents.size() + suffix);
+                        }
+                    }
                 }
             }
         }

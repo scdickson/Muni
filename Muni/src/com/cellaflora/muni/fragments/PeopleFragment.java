@@ -159,22 +159,30 @@ public class PeopleFragment extends Fragment
             if(person.group_a.equalsIgnoreCase(group.groupName))
             {
                 found_a = true;
-                boolean found_b = false;
-                for(PersonGroup subGroup : group.subGroup)
-                {
-                    if(person.group_b.equalsIgnoreCase(subGroup.groupName))
-                    {
-                        subGroup.people.add(person);
-                        found_b = true;
-                        break;
-                    }
-                }
 
-                if(!found_b)
+                if(person.group_b.equals(" "))
                 {
-                    PersonGroup tmp = new PersonGroup(person.group_b);
-                    tmp.people.add(person);
-                    group.subGroup.add(tmp);
+                    group.people.add(person);
+                }
+                else
+                {
+                    boolean found_b = false;
+                    for(PersonGroup subGroup : group.subGroup)
+                    {
+                        if(person.group_b.equalsIgnoreCase(subGroup.groupName))
+                        {
+                            subGroup.people.add(person);
+                            found_b = true;
+                            break;
+                        }
+                    }
+
+                    if(!found_b)
+                    {
+                        PersonGroup tmp = new PersonGroup(person.group_b);
+                        tmp.people.add(person);
+                        group.subGroup.add(tmp);
+                    }
                 }
             }
         }
@@ -184,6 +192,7 @@ public class PeopleFragment extends Fragment
             groups.add(new PersonGroup(person.group_a));
             populateGroup(person);
         }
+
     }
 
     public void onPause()
@@ -202,7 +211,7 @@ public class PeopleFragment extends Fragment
         groups = new ArrayList<PersonGroup>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("People");
-
+        query.addAscendingOrder("D_Firstname");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> result, ParseException e)
             {

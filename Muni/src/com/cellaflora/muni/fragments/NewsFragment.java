@@ -114,8 +114,8 @@ public class NewsFragment extends Fragment
                         tmp.photo_caption = parse.getString("D_Photo_Caption");
                         tmp.news_url = parse.getString("G_Hyperlink");
 
-                        ParseFile photo = (ParseFile) parse.get("C_Photo");
-                        ParseFile document = (ParseFile) parse.get("F_Document");
+                        ParseFile photo = parse.getParseFile("C_Photo");
+                        ParseFile document = parse.getParseFile("F_Document");
 
                         if(photo != null && photo.getUrl() != null)
                         {

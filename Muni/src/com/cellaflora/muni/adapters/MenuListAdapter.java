@@ -155,7 +155,7 @@ public class MenuListAdapter extends BaseAdapter
                 case 7://Polling
                     if(position == selectedIndex)
                     {
-                        stringRsc = "com.cellaflora.muni:drawable/polling_enabled";
+                        stringRsc = "com.cellaflora.muni:drawable/polling_selected";
                         txtNav.setTextColor(COLOR_SELECTED);
                     }
                     else

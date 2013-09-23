@@ -52,6 +52,7 @@ public class EventFragment extends Fragment
     LayoutInflater inflater;
     ViewGroup container;
     Parcelable state;
+    View footerView;
     NetworkManager networkManager;
     private int current_event_type = EVENT_TYPE_UPCOMING;
 
@@ -307,6 +308,8 @@ public class EventFragment extends Fragment
                 });
                 eventList.onRefreshComplete();
                 eventList.setAdapter(adapter);
+                footerView = view.getLayoutInflater().inflate(R.layout.footer_layout, lister1, false);
+                eventList.addFooterView(footerView);
                 eventList.setOnItemClickListener(new EventItemClickListener());
             }
         });

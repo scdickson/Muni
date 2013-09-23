@@ -90,10 +90,11 @@
                     android:layout_toRightOf="@id/people_detail_tel_number_image_layout"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center_horizontal"
                     android:layout_marginLeft="15dp"
                     android:textSize="20sp"
                     android:textColor="#848687"
-                    android:layout_centerHorizontal="true"
                     android:id="@+id/people_detail_tel_number"/>
         </RelativeLayout>
 
@@ -128,9 +129,10 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:textSize="20sp"
+                android:layout_centerInParent="true"
+                android:gravity="center_horizontal"
                 android:layout_marginLeft="15dp"
                 android:textColor="#848687"
-                android:layout_centerHorizontal="true"
                 android:id="@+id/people_detail_email"/>
         </RelativeLayout>
     </RelativeLayout>

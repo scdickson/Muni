@@ -22,8 +22,7 @@
         android:choiceMode="singleChoice"
         android:divider="#252A32"
         android:dividerHeight="2dp"
-        android:background="#2E353F"
-            />
+        android:background="#2E353F"/>
 
 
     
