@@ -210,6 +210,7 @@ public class ContactFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        MainActivity.mMenuAdapter.setSelected(8);
     }
 
     public void addToField(String name)

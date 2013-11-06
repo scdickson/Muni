@@ -20,9 +20,11 @@
                 android:layout_marginLeft="10dp"
                 android:adjustViewBounds="true"
                 android:id="@+id/news_image"
+                android:padding="1dp"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:src="@drawable/loading"
+                android:background="@drawable/custom_imageview"
                 android:scaleType="centerCrop"
                 android:layout_alignParentRight="true"/>
 
@@ -46,7 +48,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@id/event_image"
                 android:textSize="12sp"
-                android:textColor="#999999"/>
+                android:textColor="#E94D3E"/>
     </RelativeLayout>
 
     <TextView
@@ -54,6 +56,7 @@
         android:paddingLeft="10dp"
         android:layout_height="wrap_content"
         android:textSize="14sp"
+        android:textColor="#999999"
         android:id="@+id/news_sub_headline"
             />
 

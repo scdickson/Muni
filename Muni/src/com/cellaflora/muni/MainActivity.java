@@ -43,10 +43,11 @@ public class MainActivity extends FragmentActivity {
 	ActionBarDrawerToggle mMenuToggle;
     Fragment currentFragment = null;
     ImageView nav_info;
-    MenuListAdapter mMenuAdapter;
+    public static MenuListAdapter mMenuAdapter;
     public static NetworkManager networkManager;
     public static TextView actionbarTitle;
     public static TextView actionbarContactReset;
+    public static TextView actionbarPlacesSort;
     public static LinearLayout actionbarEventLayout;
     public static LinearLayout actionbarDocumentLayout;
     public static TextView actionBarEventUpcoming, actionBarEventPast;
@@ -79,6 +80,7 @@ public class MainActivity extends FragmentActivity {
         actionBarEventPast = (TextView) findViewById(R.id.event_selector_past);
         actionBarDocumentBrowse = (TextView) findViewById(R.id.document_selector_browse);
         actionBarDocumentRecent = (TextView) findViewById(R.id.document_selector_recent);
+        actionbarPlacesSort = (TextView) findViewById(R.id.places_action_sort);
         myriadProRegular = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Regular.otf");
         myriadProSemiBold = Typeface.createFromAsset(getAssets(), "fonts/MyriadPro-Semibold.otf");
         actionbarTitle.setTypeface(myriadProSemiBold);

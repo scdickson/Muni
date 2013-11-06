@@ -115,6 +115,7 @@ public class TwitterFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        MainActivity.mMenuAdapter.setSelected(6);
 
     }
 

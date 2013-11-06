@@ -13,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.cellaflora.muni.objects.Event;
 import com.cellaflora.muni.MainActivity;
@@ -54,6 +56,8 @@ public class EventFragment extends Fragment
     Parcelable state;
     View footerView;
     NetworkManager networkManager;
+    public static TextView noEvents;
+    public static FrameLayout eventsFrame;
     private int current_event_type = EVENT_TYPE_UPCOMING;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -69,6 +73,9 @@ public class EventFragment extends Fragment
         try
         {
             view = inflater.inflate(R.layout.event_fragment, container, false);
+            noEvents = (TextView) view.findViewById(R.id.events_none);
+            noEvents.setTypeface(MainActivity.myriadProSemiBold);
+            eventsFrame = (FrameLayout) view.findViewById(R.id.event_content);
             networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
             ecf = new EventContentFragment(new nestedFragmentHandler());
             getFragmentManager().beginTransaction().replace(R.id.event_content, ecf).commit();
@@ -308,8 +315,8 @@ public class EventFragment extends Fragment
                 });
                 eventList.onRefreshComplete();
                 eventList.setAdapter(adapter);
-                footerView = view.getLayoutInflater().inflate(R.layout.footer_layout, lister1, false);
-                eventList.addFooterView(footerView);
+                //footerView = view.getLayoutInflater().inflate(R.layout.footer_layout, lister1, false);
+                //eventList.addFooterView(footerView);
                 eventList.setOnItemClickListener(new EventItemClickListener());
             }
         });
@@ -318,7 +325,7 @@ public class EventFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-
+        MainActivity.mMenuAdapter.setSelected(5);
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setCancelable(false);
@@ -398,6 +405,8 @@ public class EventFragment extends Fragment
                     break;
             }
         }
+
+
 
     }
 

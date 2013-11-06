@@ -1,12 +1,14 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.AlertDialog;
+import android.location.Location;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +36,12 @@ public class PlaceDetailFragment extends Fragment
     View view;
     Place place;
     GoogleMap map;
+    Location currentLocation = null;
 
-    public PlaceDetailFragment(Place place)
+    public PlaceDetailFragment(Place place, Location currentLocation)
     {
         this.place = place;
+        this.currentLocation = currentLocation;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -167,7 +171,13 @@ public class PlaceDetailFragment extends Fragment
 
                 String geopoint[] = place.geo_point.split(", ");
                 LatLng coords = new LatLng(Double.parseDouble(geopoint[0]), Double.parseDouble(geopoint[1]));
-                String uri = "geo:" + coords.latitude + "," + coords.longitude + "?z=16";
+                String uri = "geo:" + coords.latitude + "," + coords.longitude + "?q=" + place.name;
+
+                if(currentLocation != null)
+                {
+                        uri = "http://maps.google.com/maps?saddr="+currentLocation.getLatitude()+","+currentLocation.getLongitude()+"&daddr="+coords.latitude+","+coords.longitude+"&q=" + place.name +"&mode=driving";
+                }
+
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 view.getContext().startActivity(intent);
             }
@@ -179,8 +189,8 @@ public class PlaceDetailFragment extends Fragment
                 {
                     String geopoint[] = place.geo_point.split(", ");
                     LatLng coords = new LatLng(Double.parseDouble(geopoint[0]), Double.parseDouble(geopoint[1]));
-                    String uri = "geo:" + coords.latitude + "," + coords.longitude + "?z=16";
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    String url = "geo:" + coords.latitude + "," + coords.longitude + "?q=" + place.name;
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     view.getContext().startActivity(intent);
                 }
             });

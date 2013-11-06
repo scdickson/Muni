@@ -17,8 +17,13 @@ public class MuniConstants
     public static final String TWITTER_CONSUMER_KEY = "N6X3G2gj4RJNO6c5B1xlA";
     public static final String TWITTER_CONSUMER_SECRET = "zU2eCl3vnZsRcwhDpCgIj4AFORGq6gVXiiApTNo0Q";
     public static final int CONNECTION_LOST_REMINDER = 10; //In minutes!
-    public static final String[] MENU_DRAWER_ITEMS = {"Home", "People", "Notifications", "Places",
+    public static final String[] MENU_DRAWER_ITEMS = {"Home", "Directory", "Notifications", "Places",
             "News", "Events", "Twitter", "Polling", "Contact", "Documents"};
+
+    //Constants for About Animation
+    public static final String CELLAFLORA_IMAGE_LINK = "http://www.cellaflora.com";
+    public static final int ABOUT_FADE_DELAY = 750; //In milliseconds!
+    public static final int ABOUT_HOLD_DELAY = 2000; //In milliseconds!
 
     //Alert Fragment Constants
     public static final int MAX_RECENT_ALERTS = 40;

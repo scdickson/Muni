@@ -70,10 +70,13 @@ public class DocumentFragment extends Fragment
     public ArrayList<Object> documents;
     public DocumentListAdapter adapter;
     NetworkManager networkManager;
+    TextView noDocuments;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.document_fragment, container, false);
+        noDocuments = (TextView) view.findViewById(R.id.documents_none);
+        noDocuments.setTypeface(MainActivity.myriadProSemiBold);
         networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         searchBar = (EditText) view.findViewById(R.id.document_search);
@@ -401,6 +404,7 @@ public class DocumentFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        MainActivity.mMenuAdapter.setSelected(9);
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setCancelable(false);
@@ -498,6 +502,17 @@ public class DocumentFragment extends Fragment
                     networkManager.showNoCacheErrorDialog();
                 }
             }
+        }
+
+        if(documents.size() <= 0)
+        {
+            noDocuments.setVisibility(View.VISIBLE);
+            documentList.setVisibility(View.GONE);
+        }
+        else
+        {
+            noDocuments.setVisibility(View.GONE);
+            documentList.setVisibility(View.VISIBLE);
         }
     }
 

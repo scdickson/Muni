@@ -9,6 +9,15 @@
         android:id="@+id/alert_list"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
+
+    <TextView
+            android:visibility="gone"
+            android:id="@+id/alerts_none"
+            android:gravity="center"
+            android:text="No Notifications"
+            android:textSize="20dp"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
     
 
 </LinearLayout>

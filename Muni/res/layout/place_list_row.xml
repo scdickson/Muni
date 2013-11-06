@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
+                android:background="#EFF0F2"
                 android:layout_height="wrap_content"
                 android:padding="10dp">
     <TextView
@@ -53,6 +54,14 @@
               android:gravity="center_vertical"
               android:textSize="14sp"
               android:textColor="#e84d3d"/>
+
+    <ImageView
+        android:src="@drawable/arrow_list"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
 
 
 </RelativeLayout>

@@ -122,6 +122,19 @@
         android:id="@+id/contact_action_reset"
         android:visibility="gone"/>
 
+    <TextView
+            android:padding="5dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Sort"
+            android:textColor="#EA4D3E"
+            android:textSize="20sp"
+            android:id="@+id/places_action_sort"
+            android:visibility="gone"/>
+
 
 
 </RelativeLayout>

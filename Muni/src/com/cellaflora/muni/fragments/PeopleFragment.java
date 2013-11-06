@@ -49,12 +49,15 @@ public class PeopleFragment extends Fragment
     public String groupA = " ";
     public String groupB = null;
     NetworkManager networkManager;
+    TextView noPeople;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.people_fragment, container, false);
         networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
-        MainActivity.actionbarTitle.setText("People");
+        MainActivity.actionbarTitle.setText("Directory");
+        noPeople = (TextView) view.findViewById(R.id.people_none);
+        noPeople.setTypeface(MainActivity.myriadProSemiBold);
         searchBar = (EditText) view.findViewById(R.id.people_search);
         searchBar.setTypeface(MainActivity.myriadProRegular);
         searchCancel = (TextView) view.findViewById(R.id.people_search_cancel);
@@ -154,6 +157,7 @@ public class PeopleFragment extends Fragment
     public void populateGroup(Person person)
     {
         boolean found_a = false;
+
         for(PersonGroup group : groups)
         {
             if(person.group_a.equalsIgnoreCase(group.groupName))
@@ -307,6 +311,7 @@ public class PeopleFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
+        MainActivity.mMenuAdapter.setSelected(1);
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
@@ -393,6 +398,17 @@ public class PeopleFragment extends Fragment
                     networkManager.showNoCacheErrorDialog();
                 }
             }
+        }
+
+        if(people.size() <= 0)
+        {
+            noPeople.setVisibility(View.VISIBLE);
+            peopleList.setVisibility(View.GONE);
+        }
+        else
+        {
+            noPeople.setVisibility(View.GONE);
+            peopleList.setVisibility(View.VISIBLE);
         }
 
 	}

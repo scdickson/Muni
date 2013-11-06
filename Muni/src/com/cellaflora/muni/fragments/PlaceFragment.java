@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import com.cellaflora.muni.MuniConstants;
 import support.NetworkManager;
 import support.PersistenceManager;
 import com.cellaflora.muni.objects.Place;
+
+import support.PlacesSortOptionDialog;
 import support.PullToRefreshListView;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.adapters.PlaceListAdapter;
@@ -35,13 +38,16 @@ import com.parse.ParseQuery;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PlaceFragment extends Fragment
 {
     View view;
-    ArrayList<Place> places = new ArrayList<Place>();
-    ArrayList<Object> searchResults;
+    PlaceFragment placeFragment;
+    ArrayList<Place> places;
+    ArrayList<Place> searchResults;
     PullToRefreshListView placeList;
     PlaceListAdapter adapter;
     private ProgressDialog progressDialog;
@@ -54,12 +60,25 @@ public class PlaceFragment extends Fragment
     String provider;
     Location currentLocation;
     NetworkManager networkManager;
+    TextView noPlaces;
+    public int SORT_TYPE = PlacesSortOptionDialog.NAME_REQUEST_CODE;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.place_fragment, container, false);
+        noPlaces = (TextView) view.findViewById(R.id.places_none);
+        noPlaces.setTypeface(MainActivity.myriadProSemiBold);
+        placeFragment = this;
         networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         MainActivity.actionbarTitle.setText("Places");
+        MainActivity.actionbarPlacesSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                PlacesSortOptionDialog sortDialog = new PlacesSortOptionDialog(placeFragment);
+                sortDialog.show(getFragmentManager(), null);
+            }
+        });
         searchBar = (EditText) view.findViewById(R.id.place_search);
         searchBar.setTypeface(MainActivity.myriadProRegular);
         searchCancel = (TextView) view.findViewById(R.id.place_search_cancel);
@@ -88,7 +107,7 @@ public class PlaceFragment extends Fragment
             @Override
             public void onTextChanged(CharSequence cs, int i, int i2, int i3)
             {
-                searchResults = new ArrayList<Object>();
+                searchResults = new ArrayList<Place>();
 
                 if(cs != null && !cs.toString().isEmpty())
                 {
@@ -142,6 +161,7 @@ public class PlaceFragment extends Fragment
     public void onPause()
     {
         super.onPause();
+        MainActivity.actionbarPlacesSort.setVisibility(View.GONE);
 
         if(placeList != null)
         {
@@ -151,6 +171,7 @@ public class PlaceFragment extends Fragment
 
     public void loadPlaces()
     {
+        places = new ArrayList<Place>();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Places");
         query.addAscendingOrder("A_Name");
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -176,6 +197,11 @@ public class PlaceFragment extends Fragment
                         tmp.web_url = parse.getString("H_Website");
                         tmp.geo_point = parse.getParseGeoPoint("I_GeoPoint").getLatitude() + ", " + parse.getParseGeoPoint("I_GeoPoint").getLongitude();
                         tmp.notes = parse.getString("J_Notes");
+
+                        if(currentLocation != null)
+                        {
+                            tmp.distance = getDistance(tmp);
+                        }
                         places.add(tmp);
                     }
                 }
@@ -196,6 +222,19 @@ public class PlaceFragment extends Fragment
                 {
                     progressDialog.dismiss();
                 }
+
+                switch(SORT_TYPE)
+                {
+                    case PlacesSortOptionDialog.NAME_REQUEST_CODE:
+                        Log.d("fatal", "SORT NAME");
+                        Collections.sort(places, new PlaceNameComparable());
+                        break;
+                    case PlacesSortOptionDialog.DISTANCE_REQUEST_CODE:
+                        Log.d("fatal", "SORT DISTANCE");
+                        Collections.sort(places, new PlaceDistanceComparable());
+                        break;
+                }
+
                 adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
                 placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
                 placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
@@ -212,10 +251,19 @@ public class PlaceFragment extends Fragment
         });
     }
 
+    public double getDistance(Place tmp)
+    {
+        String locationData[] = tmp.geo_point.split(", ");
+        float result[] = new float[5];
+        Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.parseDouble(locationData[0]), Double.parseDouble(locationData[1]), result);
+        return (result[0] / MuniConstants.METERS_PER_MILE);
+    }
+
     public void onResume()
     {
         super.onResume();
-
+        MainActivity.mMenuAdapter.setSelected(3);
+        MainActivity.actionbarPlacesSort.setVisibility(View.VISIBLE);
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
@@ -288,6 +336,17 @@ public class PlaceFragment extends Fragment
                 }
             }
         }
+
+        if(places.size() <= 0)
+        {
+            noPlaces.setVisibility(View.VISIBLE);
+            placeList.setVisibility(View.GONE);
+        }
+        else
+        {
+            noPlaces.setVisibility(View.GONE);
+            placeList.setVisibility(View.VISIBLE);
+        }
     }
 
     private class CoarseLocationListener implements LocationListener
@@ -297,6 +356,7 @@ public class PlaceFragment extends Fragment
         {
             if (location != null && adapter != null)
             {
+                currentLocation = location;
                 adapter.setCurrentLocation(location);
                 adapter.notifyDataSetChanged();
                 placeList.invalidateViews();
@@ -309,11 +369,32 @@ public class PlaceFragment extends Fragment
 
     }
 
+    public void sortDialogCallback(boolean callback, int code)
+    {
+        if(callback)
+        {
+            SORT_TYPE = code;
+
+            if(code == PlacesSortOptionDialog.NAME_REQUEST_CODE)
+            {
+                Collections.sort(places, new PlaceNameComparable());
+            }
+            else if(code == PlacesSortOptionDialog.DISTANCE_REQUEST_CODE)
+            {
+                Collections.sort(places, new PlaceDistanceComparable());
+            }
+
+            adapter.setContent(places);
+            adapter.notifyDataSetChanged();
+            placeList.invalidateViews();
+        }
+    }
+
     public void selectItem(int position)
     {
         if(((Place) adapter.getItem(position)) != null)
         {
-            PlaceDetailFragment fragment = new PlaceDetailFragment(((Place) adapter.getItem(position)));
+            PlaceDetailFragment fragment = new PlaceDetailFragment(((Place) adapter.getItem(position)), currentLocation);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
             fragmentTransaction.replace(R.id.container, fragment);
@@ -328,6 +409,34 @@ public class PlaceFragment extends Fragment
         public void onItemClick(AdapterView parent, View view, int position, long id)
         {
             selectItem(position);
+        }
+    }
+
+    private class PlaceNameComparable implements Comparator<Place>
+    {
+        public int compare(Place p1, Place p2)
+        {
+            return p1.name.compareTo(p2.name);
+        }
+    }
+
+    private class PlaceDistanceComparable implements Comparator<Place>
+    {
+        public int compare(Place p1, Place p2)
+        {
+            if(p1.distance != 0 && p2.distance != 0)
+            {
+                if(p1.distance < p2.distance)
+                {
+                    return -1;
+                }
+                else if(p1.distance > p2.distance)
+                {
+                    return 1;
+                }
+            }
+
+            return 0;
         }
     }
 }

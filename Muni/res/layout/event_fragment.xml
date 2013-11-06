@@ -42,5 +42,14 @@
               android:layout_alignParentBottom="true"
             />
 
+    <TextView
+            android:visibility="gone"
+            android:id="@+id/events_none"
+            android:gravity="center"
+            android:text="No Events"
+            android:textSize="20dp"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
 
 </LinearLayout>

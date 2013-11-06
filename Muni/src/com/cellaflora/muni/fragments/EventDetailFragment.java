@@ -408,7 +408,7 @@ public class EventDetailFragment extends Fragment
                     @Override
                     public void onClick(View view)
                     {
-                        PlaceDetailFragment fragment = new PlaceDetailFragment(event.associated_place);
+                        PlaceDetailFragment fragment = new PlaceDetailFragment(event.associated_place, null);
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                         fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
                         fragmentTransaction.replace(R.id.container, fragment);
@@ -508,7 +508,7 @@ public class EventDetailFragment extends Fragment
                 mapAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        PlaceDetailFragment fragment = new PlaceDetailFragment(event.associated_place);
+                        PlaceDetailFragment fragment = new PlaceDetailFragment(event.associated_place, null);
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                         fragmentTransaction.setCustomAnimations(R.animator.slide_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
                         fragmentTransaction.replace(R.id.container, fragment);

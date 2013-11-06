@@ -201,6 +201,7 @@ public class NewsListAdapter extends BaseAdapter
                 //final Animation in = new AlphaAnimation(0.0f, 1.0f);
                 //in.setDuration(100);
                 photo.setImageBitmap(image);
+                //photo.setPadding(image.getWidth(),image.getHeight(),image.getWidth(),image.getHeight());
                 //photo.startAnimation(in);
 
                 photo.setOnClickListener(new View.OnClickListener()
@@ -288,6 +289,7 @@ public class NewsListAdapter extends BaseAdapter
                 final Animation in = new AlphaAnimation(0.0f, 1.0f);
                 in.setDuration(1000);
                 photo.setImageBitmap(image);
+                //photo.setPadding(image.getWidth(),image.getHeight(),image.getWidth(),image.getHeight());
                 photo.startAnimation(in);
 
                 photo.setOnClickListener(new View.OnClickListener()

@@ -20,6 +20,7 @@ public class Place implements Serializable
     public String web_url;
     public String geo_point;
     public String notes;
+    public double distance;
 
     public Place(String name)
     {

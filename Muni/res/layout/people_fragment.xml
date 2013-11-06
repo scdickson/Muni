@@ -44,4 +44,13 @@
         android:layout_height="fill_parent"/>
     </LinearLayout>
 
+    <TextView
+            android:visibility="gone"
+            android:id="@+id/people_none"
+            android:gravity="center"
+            android:text="No People"
+            android:textSize="20dp"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
 </RelativeLayout>

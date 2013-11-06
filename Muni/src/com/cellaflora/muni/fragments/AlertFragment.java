@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.cellaflora.muni.objects.Alert;
 import com.cellaflora.muni.MainActivity;
@@ -32,13 +33,16 @@ public class AlertFragment extends Fragment
     ArrayList<Alert> alerts;
     ProgressDialog progressDialog;
     NetworkManager networkManager;
+    TextView noAlerts;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.alert_fragment, container, false);
         MainActivity.actionbarTitle.setText("Notifications");
         networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
-		return view;
+		noAlerts = (TextView) view.findViewById(R.id.alerts_none);
+        noAlerts.setTypeface(MainActivity.myriadProSemiBold);
+        return view;
 	}
 
     private Date fixDate(Date date)
@@ -101,6 +105,7 @@ public class AlertFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        MainActivity.mMenuAdapter.setSelected(2);
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
@@ -114,6 +119,17 @@ public class AlertFragment extends Fragment
         else
         {
             networkManager.showNoCacheErrorDialog();
+        }
+
+        if(alerts.size() <= 0)
+        {
+            noAlerts.setVisibility(View.VISIBLE);
+            alertList.setVisibility(View.GONE);
+        }
+        else
+        {
+            noAlerts.setVisibility(View.GONE);
+            alertList.setVisibility(View.VISIBLE);
         }
 
     }

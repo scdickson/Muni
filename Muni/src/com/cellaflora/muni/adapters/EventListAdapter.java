@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ public class EventListAdapter extends BaseAdapter
     Calendar c;
     Date now;
     Activity activity;
+    int event_selector = EventFragment.EVENT_TYPE_UPCOMING;
 
     //public static final int IMAGE_BUFFER_SIZE = 20480;
 
@@ -91,6 +93,7 @@ public class EventListAdapter extends BaseAdapter
 
     public void switchView(int event_selector)
     {
+        this.event_selector = event_selector;
         this.events = null;
         this.events = new ArrayList<Event>();
 
@@ -118,6 +121,26 @@ public class EventListAdapter extends BaseAdapter
 
     public int getCount()
     {
+        if(events.size() <= 0)
+        {
+            if(event_selector == EventFragment.EVENT_TYPE_UPCOMING)
+            {
+                EventFragment.noEvents.setText("No Upcoming Events");
+            }
+            else
+            {
+                EventFragment.noEvents.setText("No Past Events");
+            }
+
+            EventFragment.noEvents.setVisibility(View.VISIBLE);
+            EventFragment.eventsFrame.setVisibility(View.GONE);
+        }
+        else
+        {
+            EventFragment.noEvents.setVisibility(View.GONE);
+            EventFragment.eventsFrame.setVisibility(View.VISIBLE);
+        }
+
         return events.size();
     }
 

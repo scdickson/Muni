@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
@@ -51,12 +52,15 @@ public class NewsFragment extends Fragment
     Parcelable state;
     loadPdf lp;
     NetworkManager networkManager;
+    TextView noNews;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.news_fragment, container, false);
         networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         MainActivity.actionbarTitle.setText("News");
+        noNews = (TextView) view.findViewById(R.id.news_none);
+        noNews.setTypeface(MainActivity.myriadProSemiBold);
 		return view;
 	}
 
@@ -166,7 +170,7 @@ public class NewsFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-
+        MainActivity.mMenuAdapter.setSelected(4);
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setMessage("Loading...");
@@ -247,6 +251,17 @@ public class NewsFragment extends Fragment
                     networkManager.showNoCacheErrorDialog();
                 }
             }
+        }
+
+        if(news.size() <= 0)
+        {
+            noNews.setVisibility(View.VISIBLE);
+            newsList.setVisibility(View.GONE);
+        }
+        else
+        {
+            noNews.setVisibility(View.GONE);
+            newsList.setVisibility(View.VISIBLE);
         }
     }
 

@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import support.CirclePageIndicator;
 import com.cellaflora.muni.MainActivity;
@@ -31,12 +32,17 @@ public class PollingFragment extends Fragment
     public static ArrayList<String[]> completedPolls;
     private ProgressDialog progressDialog;
     NetworkManager networkManager;
+    TextView noPolls;
+    ViewPager pollPager;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         view = inflater.inflate(R.layout.polling_fragment, container, false);
         networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
         MainActivity.actionbarTitle.setText("Polls");
+        pollPager = (ViewPager) view.findViewById(R.id.poll_pager);
+        noPolls = (TextView) view.findViewById(R.id.polls_none);
+        noPolls.setTypeface(MainActivity.myriadProSemiBold);
         return view;
     }
 
@@ -105,6 +111,7 @@ public class PollingFragment extends Fragment
     public void onResume()
     {
         super.onResume();
+        MainActivity.mMenuAdapter.setSelected(7);
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setTitle("");
         progressDialog.setCancelable(false);
@@ -117,6 +124,18 @@ public class PollingFragment extends Fragment
         else
         {
             networkManager.showNoCacheErrorDialog();
+        }
+
+        if(polls.size() <= 0)
+        {
+            noPolls.setVisibility(View.VISIBLE);
+            pollPager.setVisibility(View.GONE);
+
+        }
+        else
+        {
+            noPolls.setVisibility(View.GONE);
+            pollPager.setVisibility(View.VISIBLE);
         }
     }
 

@@ -67,6 +67,7 @@ public class PeopleListAdapter extends BaseAdapter
                     content.add(group.groupName);
                 }
             }
+          
         }
         else if(level == 1)
         {

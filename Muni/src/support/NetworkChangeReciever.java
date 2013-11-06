@@ -25,7 +25,7 @@ public class NetworkChangeReciever extends BroadcastReceiver
                 return;
             }
         }
-        MainActivity.networkManager.showNetworkErrorDialog();
+        //MainActivity.networkManager.showNetworkErrorDialog();
         return;
     }
 
