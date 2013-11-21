@@ -61,6 +61,7 @@ public class NewsFragment extends Fragment
         MainActivity.actionbarTitle.setText("News");
         noNews = (TextView) view.findViewById(R.id.news_none);
         noNews.setTypeface(MainActivity.myriadProSemiBold);
+        newsList = (PullToRefreshListView) view.findViewById(R.id.news_list);
 		return view;
 	}
 
@@ -153,7 +154,7 @@ public class NewsFragment extends Fragment
                 }
 
                 adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-                newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
+                newsList = (PullToRefreshListView) view.findViewById(R.id.news_list);
                 newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
@@ -186,7 +187,7 @@ public class NewsFragment extends Fragment
         if(state != null)
         {
             adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-            newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
+            newsList = (PullToRefreshListView) view.findViewById(R.id.news_list);
             newsList.setAdapter(adapter);
             newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                 @Override
@@ -208,7 +209,7 @@ public class NewsFragment extends Fragment
                     {
                         news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
                         adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-                        newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
+                        newsList = (PullToRefreshListView) view.findViewById(R.id.news_list);
                         newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
@@ -236,7 +237,7 @@ public class NewsFragment extends Fragment
                 {
                         news = (ArrayList<NewsObject>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_NEWS_PATH);
                         adapter = new NewsListAdapter(view.getContext(), news, getActivity());
-                        newsList = (PullToRefreshListView) getActivity().findViewById(R.id.news_list);
+                        newsList = (PullToRefreshListView) view.findViewById(R.id.news_list);
                         newsList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
@@ -253,16 +254,20 @@ public class NewsFragment extends Fragment
             }
         }
 
-        if(news.size() <= 0)
+        try
         {
-            noNews.setVisibility(View.VISIBLE);
-            newsList.setVisibility(View.GONE);
+            if(news.isEmpty())
+            {
+                noNews.setVisibility(View.VISIBLE);
+                newsList.setVisibility(View.GONE);
+            }
+            else
+            {
+                noNews.setVisibility(View.GONE);
+                newsList.setVisibility(View.VISIBLE);
+            }
         }
-        else
-        {
-            noNews.setVisibility(View.GONE);
-            newsList.setVisibility(View.VISIBLE);
-        }
+        catch(Exception e){}
     }
 
     public void selectItem(int position)
@@ -368,7 +373,7 @@ public class NewsFragment extends Fragment
             if(file != null && !isCancelled())
             {
                 Uri path = Uri.fromFile(file);
-                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage("com.adobe.reader");
                 intent.setDataAndType(path, "application/pdf");
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

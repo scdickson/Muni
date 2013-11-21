@@ -66,6 +66,7 @@ public class PlaceFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.place_fragment, container, false);
+        placeList = (PullToRefreshListView) view.findViewById(R.id.place_list);
         noPlaces = (TextView) view.findViewById(R.id.places_none);
         noPlaces.setTypeface(MainActivity.myriadProSemiBold);
         placeFragment = this;
@@ -236,7 +237,7 @@ public class PlaceFragment extends Fragment
                 }
 
                 adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
+                placeList = (PullToRefreshListView) view.findViewById(R.id.place_list);
                 placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
@@ -271,7 +272,7 @@ public class PlaceFragment extends Fragment
         if(state != null)
         {
             adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-            placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
+            placeList = (PullToRefreshListView) view.findViewById(R.id.place_list);
             placeList.setAdapter(adapter);
             placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                 @Override
@@ -293,7 +294,7 @@ public class PlaceFragment extends Fragment
                     {
                         places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
                         adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                        placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
+                        placeList = (PullToRefreshListView) view.findViewById(R.id.place_list);
                         placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
@@ -320,7 +321,7 @@ public class PlaceFragment extends Fragment
                 {
                         places = (ArrayList<Place>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PLACES_PATH);
                         adapter = new PlaceListAdapter(view.getContext(), places, currentLocation);
-                        placeList = (PullToRefreshListView) getActivity().findViewById(R.id.place_list);
+                        placeList = (PullToRefreshListView) view.findViewById(R.id.place_list);
                         placeList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
@@ -337,16 +338,20 @@ public class PlaceFragment extends Fragment
             }
         }
 
-        if(places.size() <= 0)
+        try
         {
-            noPlaces.setVisibility(View.VISIBLE);
-            placeList.setVisibility(View.GONE);
+            if(places.isEmpty())
+            {
+                noPlaces.setVisibility(View.VISIBLE);
+                placeList.setVisibility(View.GONE);
+            }
+            else
+            {
+                noPlaces.setVisibility(View.GONE);
+                placeList.setVisibility(View.VISIBLE);
+            }
         }
-        else
-        {
-            noPlaces.setVisibility(View.GONE);
-            placeList.setVisibility(View.VISIBLE);
-        }
+        catch(Exception e){}
     }
 
     private class CoarseLocationListener implements LocationListener

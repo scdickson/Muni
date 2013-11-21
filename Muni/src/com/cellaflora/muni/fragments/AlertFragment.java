@@ -88,7 +88,7 @@ public class AlertFragment extends Fragment
                             progressDialog.dismiss();
                         }
                         adapter = new AlertListAdapter(view.getContext(), alerts);
-                        alertList = (PullToRefreshListView) getActivity().findViewById(R.id.alert_list);
+                        alertList = (PullToRefreshListView) view.findViewById(R.id.alert_list);
                         alertList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
@@ -115,22 +115,28 @@ public class AlertFragment extends Fragment
         {
             progressDialog.show();
             loadNotifications();
+
+            try
+            {
+                if(alerts.isEmpty())
+                {
+                    noAlerts.setVisibility(View.VISIBLE);
+                    alertList.setVisibility(View.GONE);
+                }
+                else
+                {
+                    noAlerts.setVisibility(View.GONE);
+                    alertList.setVisibility(View.VISIBLE);
+                }
+            }
+            catch(Exception e){}
         }
         else
         {
             networkManager.showNoCacheErrorDialog();
         }
 
-        if(alerts.size() <= 0)
-        {
-            noAlerts.setVisibility(View.VISIBLE);
-            alertList.setVisibility(View.GONE);
-        }
-        else
-        {
-            noAlerts.setVisibility(View.GONE);
-            alertList.setVisibility(View.VISIBLE);
-        }
+
 
     }
 }

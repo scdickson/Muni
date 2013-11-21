@@ -58,6 +58,7 @@ public class PeopleFragment extends Fragment
         MainActivity.actionbarTitle.setText("Directory");
         noPeople = (TextView) view.findViewById(R.id.people_none);
         noPeople.setTypeface(MainActivity.myriadProSemiBold);
+        peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
         searchBar = (EditText) view.findViewById(R.id.people_search);
         searchBar.setTypeface(MainActivity.myriadProRegular);
         searchCancel = (TextView) view.findViewById(R.id.people_search_cancel);
@@ -264,7 +265,7 @@ public class PeopleFragment extends Fragment
                     }
 
                     adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                    peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                    peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                     peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                         @Override
                         public void onRefresh() {
@@ -288,7 +289,7 @@ public class PeopleFragment extends Fragment
                             progressDialog.dismiss();
                         }
                         adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                        peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                        peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                         peopleList.setAdapter(adapter);
                         peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
@@ -331,7 +332,7 @@ public class PeopleFragment extends Fragment
                 {
                     searchBar.setHint("Search in " + groupB);
                 }
-                peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                 peopleList.setAdapter(adapter);
                 peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                     @Override
@@ -354,7 +355,7 @@ public class PeopleFragment extends Fragment
                         groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
                         people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
                         adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                        peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                        peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                         peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
@@ -383,7 +384,7 @@ public class PeopleFragment extends Fragment
                         groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
                         people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
                         adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
-                        peopleList = (PullToRefreshListView) getActivity().findViewById(R.id.people_list);
+                        peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                         peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
                             public void onRefresh() {
@@ -400,17 +401,20 @@ public class PeopleFragment extends Fragment
             }
         }
 
-        if(people.size() <= 0)
+        try
         {
-            noPeople.setVisibility(View.VISIBLE);
-            peopleList.setVisibility(View.GONE);
+            if(people.isEmpty())
+            {
+                noPeople.setVisibility(View.VISIBLE);
+                peopleList.setVisibility(View.GONE);
+            }
+            else
+            {
+                noPeople.setVisibility(View.GONE);
+                peopleList.setVisibility(View.VISIBLE);
+            }
         }
-        else
-        {
-            noPeople.setVisibility(View.GONE);
-            peopleList.setVisibility(View.VISIBLE);
-        }
-
+        catch(Exception e){}
 	}
 
 	private void selectItem(int position)

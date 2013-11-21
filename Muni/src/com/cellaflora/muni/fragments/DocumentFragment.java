@@ -75,6 +75,7 @@ public class DocumentFragment extends Fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		view = inflater.inflate(R.layout.document_fragment, container, false);
+        documentList = (PullToRefreshListView) view.findViewById(R.id.document_list);
         noDocuments = (TextView) view.findViewById(R.id.documents_none);
         noDocuments.setTypeface(MainActivity.myriadProSemiBold);
         networkManager = new NetworkManager(view.getContext(), getActivity(), getFragmentManager());
@@ -369,7 +370,7 @@ public class DocumentFragment extends Fragment
                             if(current_document_type == DOCUMENT_TYPE_BROWSE)
                             {
                                 adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                                documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
+                                documentList = (PullToRefreshListView) view.findViewById(R.id.document_list);
                                 documentList.setAdapter(adapter);
                                 documentList.setOnItemClickListener(new DocumentItemClickListener());
                                 documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
@@ -431,7 +432,7 @@ public class DocumentFragment extends Fragment
             else
             {
                 adapter = new DocumentListAdapter(view.getContext(), folders, currentDir);
-                documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
+                documentList = (PullToRefreshListView) view.findViewById(R.id.document_list);
                 documentList.setAdapter(adapter);
                 documentList.setOnItemClickListener(new DocumentItemClickListener());
                 documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
@@ -456,7 +457,7 @@ public class DocumentFragment extends Fragment
                         folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
                         documents = (ArrayList<Object>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
                         adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                        documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
+                        documentList = (PullToRefreshListView) view.findViewById(R.id.document_list);
                         documentList.setAdapter(adapter);
                         documentList.setOnItemClickListener(new DocumentItemClickListener());
                         documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
@@ -486,7 +487,7 @@ public class DocumentFragment extends Fragment
                         folders = (ArrayList<DocumentFolder>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENTS_PATH);
                         documents = (ArrayList<Object>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_DOCUMENT_FILE_PATH);
                         adapter = new DocumentListAdapter(view.getContext(), folders, null);
-                        documentList = (PullToRefreshListView) getActivity().findViewById(R.id.document_list);
+                        documentList = (PullToRefreshListView) view.findViewById(R.id.document_list);
                         documentList.setAdapter(adapter);
                         documentList.setOnItemClickListener(new DocumentItemClickListener());
                         documentList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
@@ -504,16 +505,20 @@ public class DocumentFragment extends Fragment
             }
         }
 
-        if(documents.size() <= 0)
+        try
         {
-            noDocuments.setVisibility(View.VISIBLE);
-            documentList.setVisibility(View.GONE);
+            if(documents.isEmpty())
+            {
+                noDocuments.setVisibility(View.VISIBLE);
+                documentList.setVisibility(View.GONE);
+            }
+            else
+            {
+                noDocuments.setVisibility(View.GONE);
+                documentList.setVisibility(View.VISIBLE);
+            }
         }
-        else
-        {
-            noDocuments.setVisibility(View.GONE);
-            documentList.setVisibility(View.VISIBLE);
-        }
+        catch(Exception e){}
     }
 
     public void changeFolder(DocumentFolder folder)
@@ -631,7 +636,7 @@ public class DocumentFragment extends Fragment
             if(file != null && !isCancelled())
             {
                 Uri path = Uri.fromFile(file);
-                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage("com.adobe.reader");
                 intent.setDataAndType(path, "application/pdf");
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

@@ -99,6 +99,7 @@ public class PollingFragment extends Fragment
                     completedPolls = new ArrayList<String[]>();
                 }
 
+                pollPager = (ViewPager) view.findViewById(R.id.poll_pager);
                 ViewPager pager=(ViewPager) view.findViewById(R.id.poll_pager);
                 pager.setAdapter(buildAdapter());
                 CirclePageIndicator titleIndicator = (CirclePageIndicator) view.findViewById(R.id.poll_indicator);
@@ -126,17 +127,21 @@ public class PollingFragment extends Fragment
             networkManager.showNoCacheErrorDialog();
         }
 
-        if(polls.size() <= 0)
+        /*try
         {
-            noPolls.setVisibility(View.VISIBLE);
-            pollPager.setVisibility(View.GONE);
+            if(polls.isEmpty())
+            {
+                noPolls.setVisibility(View.VISIBLE);
+                pollPager.setVisibility(View.GONE);
 
+            }
+            else
+            {
+                noPolls.setVisibility(View.GONE);
+                pollPager.setVisibility(View.VISIBLE);
+            }
         }
-        else
-        {
-            noPolls.setVisibility(View.GONE);
-            pollPager.setVisibility(View.VISIBLE);
-        }
+        catch(Exception e){}*/
     }
 
     private PagerAdapter buildAdapter()

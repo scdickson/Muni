@@ -86,9 +86,7 @@ public class EventListAdapter extends BaseAdapter
             }
         }
         catch(Exception e)
-        {
-            Toast.makeText(activity.getApplicationContext(), "An error occured while loading events. Please check your Internet connection and try again later.", Toast.LENGTH_LONG).show();
-        }
+        {}
     }
 
     public void switchView(int event_selector)
