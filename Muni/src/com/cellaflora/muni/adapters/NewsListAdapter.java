@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.fragments.NewsFragment;
 import com.cellaflora.muni.objects.NewsObject;
 import com.cellaflora.muni.R;
 import com.cellaflora.muni.fragments.FullScreenImageView;
@@ -53,6 +54,21 @@ public class NewsListAdapter extends BaseAdapter
 
     public int getCount()
     {
+        try
+        {
+            if(news.size() <= 0)
+            {
+                NewsFragment.noNews.setVisibility(View.VISIBLE);
+                NewsFragment.newsList.setVisibility(View.GONE);
+            }
+            else
+            {
+                NewsFragment.noNews.setVisibility(View.GONE);
+                NewsFragment.newsList.setVisibility(View.VISIBLE);
+            }
+        }
+        catch(Exception e){}
+
         return news.size();
     }
 

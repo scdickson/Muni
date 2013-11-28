@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
+import com.cellaflora.muni.fragments.PlaceFragment;
 import com.cellaflora.muni.objects.Place;
 import com.cellaflora.muni.R;
 
@@ -67,6 +68,21 @@ public class PlaceListAdapter extends BaseAdapter
 
     public int getCount()
     {
+        try
+        {
+            if(content.size() <= 0)
+            {
+                PlaceFragment.noPlaces.setVisibility(View.VISIBLE);
+                PlaceFragment.placeList.setVisibility(View.GONE);
+            }
+            else
+            {
+                PlaceFragment.noPlaces.setVisibility(View.GONE);
+                PlaceFragment.placeList.setVisibility(View.VISIBLE);
+            }
+        }
+        catch(Exception e){}
+
         return content.size();
     }
 

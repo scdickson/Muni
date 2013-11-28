@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cellaflora.muni.fragments.DocumentFragment;
 import com.cellaflora.muni.objects.Document;
 import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.R;
@@ -92,6 +93,21 @@ public class DocumentListAdapter extends BaseAdapter
 
     public int getCount()
     {
+        try
+        {
+            if(content.size() <= 0)
+            {
+                DocumentFragment.noDocuments.setVisibility(View.VISIBLE);
+                DocumentFragment.documentList.setVisibility(View.GONE);
+            }
+            else
+            {
+                DocumentFragment.noDocuments.setVisibility(View.GONE);
+                DocumentFragment.documentList.setVisibility(View.VISIBLE);
+            }
+        }
+        catch(Exception e){}
+
         return content.size();
     }
 

@@ -57,7 +57,7 @@ public class DocumentFragment extends Fragment
 
     View view;
     ProgressDialog progressDialog, pdfProgress;
-    PullToRefreshListView documentList;
+    public static PullToRefreshListView documentList;
     Parcelable state;
     EditText searchBar;
     TextView searchCancel;
@@ -70,7 +70,7 @@ public class DocumentFragment extends Fragment
     public ArrayList<Object> documents;
     public DocumentListAdapter adapter;
     NetworkManager networkManager;
-    TextView noDocuments;
+    public static TextView noDocuments;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -504,21 +504,6 @@ public class DocumentFragment extends Fragment
                 }
             }
         }
-
-        try
-        {
-            if(documents.isEmpty())
-            {
-                noDocuments.setVisibility(View.VISIBLE);
-                documentList.setVisibility(View.GONE);
-            }
-            else
-            {
-                noDocuments.setVisibility(View.GONE);
-                documentList.setVisibility(View.VISIBLE);
-            }
-        }
-        catch(Exception e){}
     }
 
     public void changeFolder(DocumentFolder folder)

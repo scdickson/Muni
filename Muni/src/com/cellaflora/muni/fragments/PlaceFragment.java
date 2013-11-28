@@ -48,7 +48,7 @@ public class PlaceFragment extends Fragment
     PlaceFragment placeFragment;
     ArrayList<Place> places;
     ArrayList<Place> searchResults;
-    PullToRefreshListView placeList;
+    public static PullToRefreshListView placeList;
     PlaceListAdapter adapter;
     private ProgressDialog progressDialog;
     Parcelable state;
@@ -60,7 +60,7 @@ public class PlaceFragment extends Fragment
     String provider;
     Location currentLocation;
     NetworkManager networkManager;
-    TextView noPlaces;
+    public static TextView noPlaces;
     public int SORT_TYPE = PlacesSortOptionDialog.NAME_REQUEST_CODE;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -337,21 +337,6 @@ public class PlaceFragment extends Fragment
                 }
             }
         }
-
-        try
-        {
-            if(places.isEmpty())
-            {
-                noPlaces.setVisibility(View.VISIBLE);
-                placeList.setVisibility(View.GONE);
-            }
-            else
-            {
-                noPlaces.setVisibility(View.GONE);
-                placeList.setVisibility(View.VISIBLE);
-            }
-        }
-        catch(Exception e){}
     }
 
     private class CoarseLocationListener implements LocationListener

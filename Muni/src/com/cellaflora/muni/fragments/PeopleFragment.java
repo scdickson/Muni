@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class PeopleFragment extends Fragment
     ArrayList<PersonGroup> groups = null;
 	ArrayList<Person> people = null;
     public PeopleListAdapter adapter = null;
-    public PullToRefreshListView peopleList = null;
+    public static PullToRefreshListView peopleList = null;
     private ProgressDialog progressDialog;
     Parcelable state;
     ArrayList<Object> searchResults;
@@ -49,7 +50,7 @@ public class PeopleFragment extends Fragment
     public String groupA = " ";
     public String groupB = null;
     NetworkManager networkManager;
-    TextView noPeople;
+    public static TextView noPeople;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -400,21 +401,6 @@ public class PeopleFragment extends Fragment
                 }
             }
         }
-
-        try
-        {
-            if(people.isEmpty())
-            {
-                noPeople.setVisibility(View.VISIBLE);
-                peopleList.setVisibility(View.GONE);
-            }
-            else
-            {
-                noPeople.setVisibility(View.GONE);
-                peopleList.setVisibility(View.VISIBLE);
-            }
-        }
-        catch(Exception e){}
 	}
 
 	private void selectItem(int position)

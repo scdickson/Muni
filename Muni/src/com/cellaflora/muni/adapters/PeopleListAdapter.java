@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cellaflora.muni.MainActivity;
+import com.cellaflora.muni.fragments.PeopleFragment;
 import com.cellaflora.muni.objects.Person;
 import com.cellaflora.muni.objects.PersonGroup;
 import com.cellaflora.muni.R;
@@ -124,6 +125,22 @@ public class PeopleListAdapter extends BaseAdapter
 
     public int getCount() 
     {
+        try
+        {
+            if(content.size() <= 0)
+            {
+                PeopleFragment.noPeople.setVisibility(View.VISIBLE);
+                PeopleFragment.peopleList.setVisibility(View.GONE);
+            }
+            else
+            {
+                PeopleFragment.noPeople.setVisibility(View.GONE);
+                PeopleFragment.peopleList.setVisibility(View.VISIBLE);
+            }
+        }
+        catch(Exception e)
+        {}
+
         return content.size();
     }
  

@@ -47,12 +47,12 @@ public class NewsFragment extends Fragment
     View view;
     ArrayList<NewsObject> news;
     private ProgressDialog progressDialog, pdfProgress;
-    PullToRefreshListView newsList;
+    public static PullToRefreshListView newsList;
     NewsListAdapter adapter;
     Parcelable state;
     loadPdf lp;
     NetworkManager networkManager;
-    TextView noNews;
+    public static TextView noNews;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -254,20 +254,7 @@ public class NewsFragment extends Fragment
             }
         }
 
-        try
-        {
-            if(news.isEmpty())
-            {
-                noNews.setVisibility(View.VISIBLE);
-                newsList.setVisibility(View.GONE);
-            }
-            else
-            {
-                noNews.setVisibility(View.GONE);
-                newsList.setVisibility(View.VISIBLE);
-            }
-        }
-        catch(Exception e){}
+
     }
 
     public void selectItem(int position)
