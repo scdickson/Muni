@@ -17,6 +17,8 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,8 +78,41 @@ public class ContactFragment extends Fragment
         photoAction = (ImageView) view.findViewById(R.id.contact_photo_action);
         txtDescription = (EditText) view.findViewById(R.id.contact_description_field);
         txtDescription.setTypeface(MainActivity.myriadProRegular);
+        txtDescription.addTextChangedListener(new TextWatcher()
+        {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+            {
+                if(!txtDescription.getText().toString().isEmpty() && !txtSubject.getText().toString().isEmpty() && !contactListItem.getName().isEmpty())
+                {
+                    sendAction.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    sendAction.setVisibility(View.GONE);
+                }
+            }
+            public void afterTextChanged(Editable editable) {}
+        });
         txtSubject = (EditText) view.findViewById(R.id.contact_subject_field);
         txtSubject.setTypeface(MainActivity.myriadProRegular);
+        txtSubject.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3)
+            {
+                if(!txtDescription.getText().toString().isEmpty() && !txtSubject.getText().toString().isEmpty() && !contactListItem.getName().isEmpty())
+                {
+                    sendAction.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    sendAction.setVisibility(View.GONE);
+                }
+            }
+            public void afterTextChanged(Editable editable) {}
+        });
         locationAction = (ImageView) view.findViewById(R.id.contact_location_action);
         sendAction = (Button) view.findViewById(R.id.contact_action_send);
         sendAction.setTypeface(MainActivity.myriadProSemiBold);
@@ -222,6 +257,11 @@ public class ContactFragment extends Fragment
         adapter.notifyDataSetChanged();
         contactGrid.invalidateViews();
 
+        if(!txtDescription.getText().toString().isEmpty() && !txtSubject.getText().toString().isEmpty())
+        {
+            sendAction.setVisibility(View.VISIBLE);
+        }
+
         Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.animator.slide_out);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -243,6 +283,7 @@ public class ContactFragment extends Fragment
     public void removeFromField(String name)
     {
         contactListItem.setVisibility(View.GONE);
+        sendAction.setVisibility(View.GONE);
 
         if(contactGrid.getVisibility() == View.GONE)
         {
@@ -283,7 +324,7 @@ public class ContactFragment extends Fragment
     {
         public void onClick(View view)
         {
-            if(!contactListItem.getName().isEmpty() && !txtDescription.getText().toString().isEmpty())
+            if(!contactListItem.getName().isEmpty())
             {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                 alertDialogBuilder.setTitle("Send Message");
@@ -356,18 +397,6 @@ public class ContactFragment extends Fragment
                         });
 
                 AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-            }
-            else
-            {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                alertDialog.setTitle("Send Message");
-                alertDialog.setMessage("Please make sure you have selected a recipient and entered a message.");
-                alertDialog.setButton("Okay", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
                 alertDialog.show();
             }
 

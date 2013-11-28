@@ -21,15 +21,17 @@ public class PeopleListAdapter extends BaseAdapter
 {
 	Context context;
     ArrayList<PersonGroup> groups;
+    ArrayList<Person> people;
     public ArrayList<Object> content;
     LayoutInflater inflater;
     public int level = 0;
     public String groupA, groupB;
 
-	public PeopleListAdapter(Context context, ArrayList<PersonGroup> groups, int level, String groupA, String groupB)
+	public PeopleListAdapter(Context context, ArrayList<PersonGroup> groups, ArrayList<Person> people, int level, String groupA, String groupB)
 	{
         this.context = context;
         this.groups = groups;
+        this.people = people;
         this.level = level;
         this.groupA = groupA;
         this.groupB = groupB;
@@ -47,7 +49,7 @@ public class PeopleListAdapter extends BaseAdapter
     {
         if(level == 0)
         {
-            for(PersonGroup group : groups)
+            /*for(PersonGroup group : groups)
             {
                 if(group.groupName.equals(groupA))
                 {
@@ -58,6 +60,14 @@ public class PeopleListAdapter extends BaseAdapter
                             content.add(person);
                         }
                     }
+                }
+            }*/
+
+            for(Person person : people)
+            {
+                if(person.group_a.equals(" "))
+                {
+                    content.add(person);
                 }
             }
 

@@ -242,9 +242,14 @@ public class PeopleFragment extends Fragment
                         }
 
                         if(tmp.group_a == null || tmp.group_a.isEmpty())
+                        {
                             tmp.group_a = " ";
+                        }
+
                         if(tmp.group_b == null || tmp.group_b.isEmpty())
+                        {
                             tmp.group_b = " ";
+                        }
 
                         people.add(tmp);
                         populateGroup(tmp);
@@ -265,7 +270,7 @@ public class PeopleFragment extends Fragment
                         progressDialog.dismiss();
                     }
 
-                    adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                    adapter = new PeopleListAdapter(view.getContext(), groups, people, 0, " ", null);
                     peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                     peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                         @Override
@@ -289,7 +294,7 @@ public class PeopleFragment extends Fragment
                         {
                             progressDialog.dismiss();
                         }
-                        adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                        adapter = new PeopleListAdapter(view.getContext(), groups, people, 0, " ", null);
                         peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                         peopleList.setAdapter(adapter);
                         peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
@@ -320,7 +325,7 @@ public class PeopleFragment extends Fragment
 
         if(state != null)
         {
-                adapter = new PeopleListAdapter(view.getContext(), groups, level, groupA, groupB);
+                adapter = new PeopleListAdapter(view.getContext(), groups, people, level, groupA, groupB);
                 if(level == 0)
                 {
                     searchBar.setHint("Search all people");
@@ -355,7 +360,7 @@ public class PeopleFragment extends Fragment
                     {
                         groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
                         people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
-                        adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                        adapter = new PeopleListAdapter(view.getContext(), groups, people, 0, " ", null);
                         peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                         peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
@@ -384,7 +389,7 @@ public class PeopleFragment extends Fragment
                 {
                         groups = (ArrayList<PersonGroup>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PATH);
                         people = (ArrayList<Person>) PersistenceManager.readObject(getActivity().getApplicationContext(), MuniConstants.SAVED_PEOPLE_PERSON_PATH);
-                        adapter = new PeopleListAdapter(view.getContext(), groups, 0, " ", null);
+                        adapter = new PeopleListAdapter(view.getContext(), groups, people, 0, " ", null);
                         peopleList = (PullToRefreshListView) view.findViewById(R.id.people_list);
                         peopleList.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
                             @Override
