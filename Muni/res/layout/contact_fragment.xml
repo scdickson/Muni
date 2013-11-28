@@ -130,6 +130,7 @@
                 android:textColor="#ffffff"
                 android:textSize="30sp"
                 android:background="#EC4B43"
+                android:visibility="gone"
                 android:text="Send Message"
                 android:layout_height="60dp"
                 android:layout_width="match_parent"/>
