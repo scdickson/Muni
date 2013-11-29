@@ -1,6 +1,7 @@
 package com.cellaflora.muni.fragments;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
@@ -8,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import support.CirclePageIndicator;
@@ -15,6 +17,8 @@ import com.cellaflora.muni.MainActivity;
 import com.cellaflora.muni.MuniConstants;
 import support.NetworkManager;
 import support.PersistenceManager;
+import support.PollingOptionDialog;
+
 import com.cellaflora.muni.objects.Poll;
 import com.cellaflora.muni.adapters.PollingPageAdapter;
 import com.cellaflora.muni.R;
@@ -28,12 +32,15 @@ import java.util.List;
 public class PollingFragment extends Fragment
 {
     View view;
+    PollingFragment pollingFragment;
     public static ArrayList<Poll> polls;
     public static ArrayList<String[]> completedPolls;
     private ProgressDialog progressDialog;
     NetworkManager networkManager;
     TextView noPolls;
+    ImageView pollOptions;
     ViewPager pollPager;
+    PagerAdapter pagerAdapter;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -43,6 +50,19 @@ public class PollingFragment extends Fragment
         pollPager = (ViewPager) view.findViewById(R.id.poll_pager);
         noPolls = (TextView) view.findViewById(R.id.polls_none);
         noPolls.setTypeface(MainActivity.myriadProSemiBold);
+        pollOptions = (ImageView) view.findViewById(R.id.poll_options);
+        pollOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent = new Intent(getActivity(), PollingOptionDialog.class);
+                if(intent != null)
+                {
+                    //startActivity(intent);
+                }
+            }
+        });
+        pollingFragment = this;
         return view;
     }
 
@@ -101,12 +121,31 @@ public class PollingFragment extends Fragment
 
                 pollPager = (ViewPager) view.findViewById(R.id.poll_pager);
                 ViewPager pager=(ViewPager) view.findViewById(R.id.poll_pager);
-                pager.setAdapter(buildAdapter());
+                pagerAdapter = buildAdapter();
+                pager.setAdapter(pagerAdapter);
                 CirclePageIndicator titleIndicator = (CirclePageIndicator) view.findViewById(R.id.poll_indicator);
                 titleIndicator.setViewPager(pager);
                 progressDialog.dismiss();
             }
         });
+    }
+
+    public static void setLivePolling(boolean livePollOn)
+    {
+        if(livePollOn)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    public void onPause()
+    {
+        super.onPause();
+
     }
 
     public void onResume()
@@ -126,22 +165,6 @@ public class PollingFragment extends Fragment
         {
             networkManager.showNoCacheErrorDialog();
         }
-
-        /*try
-        {
-            if(polls.isEmpty())
-            {
-                noPolls.setVisibility(View.VISIBLE);
-                pollPager.setVisibility(View.GONE);
-
-            }
-            else
-            {
-                noPolls.setVisibility(View.GONE);
-                pollPager.setVisibility(View.VISIBLE);
-            }
-        }
-        catch(Exception e){}*/
     }
 
     private PagerAdapter buildAdapter()

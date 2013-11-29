@@ -59,13 +59,16 @@ public class PollingPage extends Fragment
         switch(option)
         {
             case 1:
-                percent = (int)(((float) poll.option_A_results / (float) total) * 100.0);
+                //percent = (int)(((float) poll.option_A_results / (float) total) * 100.0);
+                percent = (int) poll.option_A_results;
                 break;
             case 2:
-                percent = (int)(((float) poll.option_B_results / (float) total) * 100.0);
+                //percent = (int)(((float) poll.option_B_results / (float) total) * 100.0);
+                percent = (int) poll.option_B_results;
                 break;
             case 3:
-                percent = (int)(((float) poll.option_C_results / (float) total) * 100.0);
+                //percent = (int)(((float) poll.option_C_results / (float) total) * 100.0);
+                percent = (int) poll.option_C_results;
                 break;
         }
 
@@ -109,7 +112,7 @@ public class PollingPage extends Fragment
         {
             if(poll.option_A != null)
             {
-                txtOptionA.setText(poll.option_A + "\n" + getPercent(1) + "%");
+                txtOptionA.setText(poll.option_A + "\n" + getPercent(1));
                 Bar optionA = new Bar();
                 optionA.setColor(Color.parseColor(MuniConstants.OPTION_A_COLOR));
                 optionA.setValue(poll.option_A_results);
@@ -123,7 +126,7 @@ public class PollingPage extends Fragment
 
             if(poll.option_B != null)
             {
-                txtOptionB.setText(poll.option_B + "\n" + getPercent(2) + "%");
+                txtOptionB.setText(poll.option_B + "\n" + getPercent(2));
                 Bar optionB = new Bar();
                 optionB.setColor(Color.parseColor(MuniConstants.OPTION_B_COLOR));
                 optionB.setValue(poll.option_B_results);
@@ -137,7 +140,7 @@ public class PollingPage extends Fragment
 
             if(poll.option_C != null)
             {
-                txtOptionC.setText(poll.option_C + "\n" + getPercent(3) + "%");
+                txtOptionC.setText(poll.option_C + "\n" + getPercent(3));
                 Bar optionC = new Bar();
                 optionC.setColor(Color.parseColor(MuniConstants.OPTION_C_COLOR));
                 optionC.setValue(poll.option_C_results);

@@ -14,8 +14,9 @@
             android:background="@drawable/rounded_rectangle_poll"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
+            android:layout_weight="9"
             android:layout_marginBottom="10dp"
-            android:layout_weight="9"/>
+            />
 
     <support.CirclePageIndicator
             android:layout_marginTop="5dp"
@@ -23,6 +24,15 @@
             android:id="@+id/poll_indicator"
             android:layout_height="0dp"
             android:layout_width="match_parent" />
+
+    <ImageView
+            android:layout_gravity="right"
+            android:id="@+id/poll_options"
+            android:layout_margin="10dp"
+            android:src="@drawable/info_button"
+            android:gravity="center_horizontal"
+            android:layout_height="22dp"
+            android:layout_width="22dp"/>
 
     <TextView
             android:visibility="gone"
